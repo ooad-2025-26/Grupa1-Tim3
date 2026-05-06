@@ -1,14 +1,22 @@
 is_global = true
 build_property.TargetFramework = net8.0
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v8.0
 build_property.RootNamespace = eVrticSistem
 build_property.RootNamespace = eVrticSistem
 build_property.ProjectDir = C:\Users\HOME\source\repos\eVrticSistem\
@@ -22,12 +30,272 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Administrator/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5pc3RyYXRvclxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Administrator/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5pc3RyYXRvclxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Administrator/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5pc3RyYXRvclxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Administrator/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5pc3RyYXRvclxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Administrator/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5pc3RyYXRvclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/AlergijaDjeteta/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxlcmdpamFEamV0ZXRhXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/AlergijaDjeteta/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxlcmdpamFEamV0ZXRhXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/AlergijaDjeteta/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxlcmdpamFEamV0ZXRhXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/AlergijaDjeteta/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxlcmdpamFEamV0ZXRhXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/AlergijaDjeteta/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWxlcmdpamFEamV0ZXRhXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/BolestDjeteta/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9sZXN0RGpldGV0YVxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/BolestDjeteta/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9sZXN0RGpldGV0YVxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/BolestDjeteta/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9sZXN0RGpldGV0YVxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/BolestDjeteta/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9sZXN0RGpldGV0YVxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/BolestDjeteta/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9sZXN0RGpldGV0YVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Dijete/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Dijete/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Dijete/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Dijete/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Dijete/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniIzvjestaj/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pSXp2amVzdGFqXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniIzvjestaj/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pSXp2amVzdGFqXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniIzvjestaj/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pSXp2amVzdGFqXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniIzvjestaj/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pSXp2amVzdGFqXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniIzvjestaj/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pSXp2amVzdGFqXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniQRCode/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pUVJDb2RlXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniQRCode/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pUVJDb2RlXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniQRCode/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pUVJDb2RlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniQRCode/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pUVJDb2RlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/DnevniQRCode/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG5ldm5pUVJDb2RlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/EvidencijaDolaskaOdlaska/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZpZGVuY2lqYURvbGFza2FPZGxhc2thXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/EvidencijaDolaskaOdlaska/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZpZGVuY2lqYURvbGFza2FPZGxhc2thXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/EvidencijaDolaskaOdlaska/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZpZGVuY2lqYURvbGFza2FPZGxhc2thXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/EvidencijaDolaskaOdlaska/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZpZGVuY2lqYURvbGFza2FPZGxhc2thXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/EvidencijaDolaskaOdlaska/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXZpZGVuY2lqYURvbGFza2FPZGxhc2thXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Grupa/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3J1cGFcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Grupa/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3J1cGFcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Grupa/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3J1cGFcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Grupa/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3J1cGFcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Grupa/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3J1cGFcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/HOME/source/repos/eVrticSistem/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/HOME/source/repos/eVrticSistem/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Korisnik/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS29yaXNuaWtcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Korisnik/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS29yaXNuaWtcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Korisnik/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS29yaXNuaWtcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Korisnik/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS29yaXNuaWtcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Korisnik/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS29yaXNuaWtcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Obavijest/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JhdmlqZXN0XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Obavijest/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JhdmlqZXN0XERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Obavijest/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JhdmlqZXN0XERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Obavijest/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JhdmlqZXN0XEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Obavijest/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2JhdmlqZXN0XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Odgajatelj/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2RnYWphdGVsalxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Odgajatelj/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2RnYWphdGVsalxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Odgajatelj/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2RnYWphdGVsalxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Odgajatelj/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2RnYWphdGVsalxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Odgajatelj/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2RnYWphdGVsalxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Roditelj/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Roditelj/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Roditelj/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Roditelj/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/Roditelj/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/SazetakAktivnosti/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2F6ZXRha0FrdGl2bm9zdGlcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/SazetakAktivnosti/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2F6ZXRha0FrdGl2bm9zdGlcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/SazetakAktivnosti/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2F6ZXRha0FrdGl2bm9zdGlcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/SazetakAktivnosti/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2F6ZXRha0FrdGl2bm9zdGlcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/source/repos/eVrticSistem/Views/SazetakAktivnosti/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2F6ZXRha0FrdGl2bm9zdGlcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/HOME/source/repos/eVrticSistem/Views/Shared/Error.cshtml]

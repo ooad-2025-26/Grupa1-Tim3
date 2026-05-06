@@ -1,0 +1,83 @@
+@model IEnumerable<EVrtic.Models.DnevniIzvjestaj>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Datum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Obrok)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StatusObroka)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpavanjeMinuta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VrijemeDolaska)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VrijemeOdlaska)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NapomenaAktivnosti)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DatumKreiranja)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dijete)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Datum)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Obrok)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusObroka)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpavanjeMinuta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VrijemeDolaska)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VrijemeOdlaska)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NapomenaAktivnosti)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatumKreiranja)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Dijete.IdentifikacioniKod)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

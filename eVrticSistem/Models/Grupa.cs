@@ -6,7 +6,7 @@ namespace EVrtic.Models
     public class Grupa
     {
         [Key]
-        public int IdGrupe { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]

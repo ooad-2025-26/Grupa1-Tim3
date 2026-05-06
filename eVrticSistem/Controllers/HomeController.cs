@@ -1,4 +1,4 @@
-using eVrticSistem.Models;
+using eVrtic.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

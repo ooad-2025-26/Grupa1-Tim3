@@ -6,7 +6,7 @@ namespace EVrtic.Models
     public class BolestDjeteta
     {
         [Key]
-        public int IdBolesti { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]

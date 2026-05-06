@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace eVrticSistem.Migrations
+namespace eVrtic.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -17,18 +17,18 @@ namespace eVrticSistem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EVrtic.Models.AlergijaDjeteta", b =>
                 {
-                    b.Property<int>("IdAlergije")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAlergije"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DijeteId")
                         .HasColumnType("int");
@@ -38,7 +38,7 @@ namespace eVrticSistem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("IdAlergije");
+                    b.HasKey("Id");
 
                     b.HasIndex("DijeteId");
 
@@ -47,11 +47,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.BolestDjeteta", b =>
                 {
-                    b.Property<int>("IdBolesti")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBolesti"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DijeteId")
                         .HasColumnType("int");
@@ -61,7 +61,7 @@ namespace eVrticSistem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("IdBolesti");
+                    b.HasKey("Id");
 
                     b.HasIndex("DijeteId");
 
@@ -70,11 +70,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.Dijete", b =>
                 {
-                    b.Property<int>("IdDjeteta")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDjeteta"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Aktivno")
                         .HasColumnType("bit");
@@ -100,7 +100,7 @@ namespace eVrticSistem.Migrations
                     b.Property<int?>("RoditeljId")
                         .HasColumnType("int");
 
-                    b.HasKey("IdDjeteta");
+                    b.HasKey("Id");
 
                     b.HasIndex("GrupaId");
 
@@ -114,11 +114,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.DnevniIzvjestaj", b =>
                 {
-                    b.Property<int>("IdIzvjestaja")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdIzvjestaja"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Datum")
                         .HasColumnType("datetime2");
@@ -151,7 +151,7 @@ namespace eVrticSistem.Migrations
                     b.Property<TimeSpan?>("VrijemeOdlaska")
                         .HasColumnType("time");
 
-                    b.HasKey("IdIzvjestaja");
+                    b.HasKey("Id");
 
                     b.HasIndex("DijeteId");
 
@@ -160,11 +160,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.DnevniQRCode", b =>
                 {
-                    b.Property<int>("IdQRCode")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdQRCode"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Aktivan")
                         .HasColumnType("bit");
@@ -180,18 +180,18 @@ namespace eVrticSistem.Migrations
                     b.Property<DateTime>("VrijemeIsteka")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("IdQRCode");
+                    b.HasKey("Id");
 
                     b.ToTable("DnevniQRCode", (string)null);
                 });
 
             modelBuilder.Entity("EVrtic.Models.EvidencijaDolaskaOdlaska", b =>
                 {
-                    b.Property<int>("IdEvidencije")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEvidencije"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DijeteId")
                         .HasColumnType("int");
@@ -219,7 +219,7 @@ namespace eVrticSistem.Migrations
                     b.Property<DateTime>("VrijemeDogadjaja")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("IdEvidencije");
+                    b.HasKey("Id");
 
                     b.HasIndex("DijeteId");
 
@@ -230,11 +230,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.Grupa", b =>
                 {
-                    b.Property<int>("IdGrupe")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGrupe"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ImeGrupe")
                         .IsRequired()
@@ -244,7 +244,7 @@ namespace eVrticSistem.Migrations
                     b.Property<int?>("OdgajateljId")
                         .HasColumnType("int");
 
-                    b.HasKey("IdGrupe");
+                    b.HasKey("Id");
 
                     b.HasIndex("OdgajateljId");
 
@@ -253,11 +253,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.Korisnik", b =>
                 {
-                    b.Property<int>("IdKorisnika")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdKorisnika"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -279,7 +279,7 @@ namespace eVrticSistem.Migrations
                     b.Property<int>("Uloga")
                         .HasColumnType("int");
 
-                    b.HasKey("IdKorisnika");
+                    b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -291,11 +291,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.Obavijest", b =>
                 {
-                    b.Property<int>("IdObavijesti")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdObavijesti"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DatumKreiranja")
                         .HasColumnType("datetime2");
@@ -325,7 +325,7 @@ namespace eVrticSistem.Migrations
                     b.Property<int>("StatusObavijesti")
                         .HasColumnType("int");
 
-                    b.HasKey("IdObavijesti");
+                    b.HasKey("Id");
 
                     b.HasIndex("OdgajateljId");
 
@@ -336,11 +336,11 @@ namespace eVrticSistem.Migrations
 
             modelBuilder.Entity("EVrtic.Models.SazetakAktivnosti", b =>
                 {
-                    b.Property<int>("IdSazetka")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSazetka"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AgregiranoSpavanjeMinuta")
                         .HasColumnType("int");
@@ -371,7 +371,7 @@ namespace eVrticSistem.Migrations
                     b.Property<int>("TipSazetka")
                         .HasColumnType("int");
 
-                    b.HasKey("IdSazetka");
+                    b.HasKey("Id");
 
                     b.HasIndex("DijeteId");
 
@@ -508,7 +508,7 @@ namespace eVrticSistem.Migrations
                 {
                     b.HasOne("EVrtic.Models.Korisnik", null)
                         .WithOne()
-                        .HasForeignKey("EVrtic.Models.Administrator", "IdKorisnika")
+                        .HasForeignKey("EVrtic.Models.Administrator", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -517,7 +517,7 @@ namespace eVrticSistem.Migrations
                 {
                     b.HasOne("EVrtic.Models.Korisnik", null)
                         .WithOne()
-                        .HasForeignKey("EVrtic.Models.Odgajatelj", "IdKorisnika")
+                        .HasForeignKey("EVrtic.Models.Odgajatelj", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -526,7 +526,7 @@ namespace eVrticSistem.Migrations
                 {
                     b.HasOne("EVrtic.Models.Korisnik", null)
                         .WithOne()
-                        .HasForeignKey("EVrtic.Models.Roditelj", "IdKorisnika")
+                        .HasForeignKey("EVrtic.Models.Roditelj", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

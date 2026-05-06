@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace eVrticSistem.Migrations
+namespace eVrtic.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260502172926_InitialEVrticModel")]

@@ -1,0 +1,69 @@
+@model EVrtic.Models.EvidencijaDolaskaOdlaska
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>EvidencijaDolaskaOdlaska</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="VrijemeDogadjaja" class="control-label"></label>
+                <input asp-for="VrijemeDogadjaja" class="form-control" />
+                <span asp-validation-for="VrijemeDogadjaja" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TipDogadjaja" class="control-label"></label>
+                <select asp-for="TipDogadjaja" class="form-control"></select>
+                <span asp-validation-for="TipDogadjaja" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UneseniKodDjeteta" class="control-label"></label>
+                <input asp-for="UneseniKodDjeteta" class="form-control" />
+                <span asp-validation-for="UneseniKodDjeteta" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ValidanQRKod" /> @Html.DisplayNameFor(model => model.ValidanQRKod)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="KodDjetetaIspravan" /> @Html.DisplayNameFor(model => model.KodDjetetaIspravan)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="StatusEvidencije" class="control-label"></label>
+                <select asp-for="StatusEvidencije" class="form-control"></select>
+                <span asp-validation-for="StatusEvidencije" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DijeteId" class="control-label"></label>
+                <select asp-for="DijeteId" class="form-control" asp-items="ViewBag.DijeteId"></select>
+                <span asp-validation-for="DijeteId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DnevniQRCodeId" class="control-label"></label>
+                <select asp-for="DnevniQRCodeId" class="form-control" asp-items="ViewBag.DnevniQRCodeId"></select>
+                <span asp-validation-for="DnevniQRCodeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

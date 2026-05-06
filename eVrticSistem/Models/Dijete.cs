@@ -6,7 +6,7 @@ namespace EVrtic.Models
     public class Dijete
     {
         [Key]
-        public int IdDjeteta { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eVrtic.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EVrtic.Models
@@ -6,7 +7,7 @@ namespace EVrtic.Models
     public class SazetakAktivnosti
     {
         [Key]
-        public int IdSazetka { get; set; }
+        public int Id { get; set; }
 
         public DateTime DatumPocetka { get; set; }
 

@@ -5,7 +5,7 @@ namespace EVrtic.Models
     public class DnevniQRCode
     {
         [Key]
-        public int IdQRCode { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(200)]

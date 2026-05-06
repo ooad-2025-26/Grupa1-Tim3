@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace eVrticSistem.Migrations
+namespace eVrtic.Migrations
 {
     /// <inheritdoc />
     public partial class InitialEVrticModel : Migration

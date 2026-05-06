@@ -1,4 +1,6 @@
-﻿namespace EVrtic.Models
+﻿using eVrtic.Models;
+
+namespace EVrtic.Models
 {
     public class Administrator : Korisnik
     {

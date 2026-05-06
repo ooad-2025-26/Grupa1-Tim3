@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eVrtic.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace EVrtic.Models
 {
     public class Korisnik
     {
         [Key]
-        public int IdKorisnika { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]

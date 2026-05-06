@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eVrtic.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EVrtic.Models
@@ -6,7 +7,7 @@ namespace EVrtic.Models
     public class Obavijest
     {
         [Key]
-        public int IdObavijesti { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(150)]

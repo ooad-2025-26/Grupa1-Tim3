@@ -1,4 +1,4 @@
-namespace eVrticSistem.Models
+namespace eVrtic.Models
 {
     public class ErrorViewModel
     {

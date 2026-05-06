@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using eVrtic.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EVrtic.Models
@@ -6,7 +7,7 @@ namespace EVrtic.Models
     public class EvidencijaDolaskaOdlaska
     {
         [Key]
-        public int IdEvidencije { get; set; }
+        public int Id { get; set; }
 
         public DateTime VrijemeDogadjaja { get; set; } = DateTime.Now;
 
