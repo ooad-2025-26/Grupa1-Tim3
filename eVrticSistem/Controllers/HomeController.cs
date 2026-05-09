@@ -18,7 +18,22 @@ namespace eVrticSistem.Controllers
             return View();
         }
 
+        public IActionResult RoditeljHome()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult OdgajateljHome()
+        {
+            return View();
+        }
+
+        public IActionResult AdministratorHome()
         {
             return View();
         }

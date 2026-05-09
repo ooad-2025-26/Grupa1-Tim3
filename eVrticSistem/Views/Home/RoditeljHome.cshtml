@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Roditelj početna";
+}
+
+<div class="parent-page">
+    <div class="parent-card">
+
+        <aside class="parent-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
+
+            <nav class="sidebar-menu">
+                <a class="sidebar-link active" asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span>
+                    Početna
+                </a>
+
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                    <span>📄</span>
+                    Izvještaji
+                </a>
+
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="Index">
+                    <span>🔔</span>
+                    Obavijesti
+                </a>
+
+                <a class="sidebar-link" asp-controller="Korisnik" asp-action="Details">
+                    <span>👤</span>
+                    Profil
+                </a>
+            </nav>
+
+            <div class="sidebar-illustration">
+                <div class="mini-cloud mini-cloud-1"></div>
+                <div class="mini-cloud mini-cloud-2"></div>
+
+                <div class="mini-school">
+                    <div class="mini-roof"></div>
+                    <div class="mini-building">
+                        <div class="mini-window"></div>
+                        <div class="mini-door"></div>
+                        <div class="mini-window"></div>
+                    </div>
+                </div>
+
+                <div class="mini-tree tree-one"></div>
+                <div class="mini-tree tree-two"></div>
+                <div class="mini-tree tree-three"></div>
+            </div>
+        </aside>
+
+        <main class="parent-main">
+            <div class="parent-top">
+                <div>
+                    <h2>Pozdrav,</h2>
+                    <h1>Roditelju! <span>👋</span></h1>
+                </div>
+
+                <a class="notification-icon" asp-controller="Obavijest" asp-action="Index">
+                    🔔
+                </a>
+            </div>
+
+            <section class="parent-hero">
+                <div class="child-card">
+                    <h3>Moje dijete</h3>
+
+                    <div class="child-info">
+                        <div class="child-avatar">👦</div>
+
+                        <div>
+                            <h4>Marko Kovač</h4>
+                            <p>Grupa: Leptirići</p>
+                        </div>
+
+                        <a class="card-arrow" asp-controller="Dijete" asp-action="Index">→</a>
+                    </div>
+                </div>
+
+                <div class="family-illustration">
+                    <div class="family-cloud"></div>
+                    <div class="family-tree family-tree-left"></div>
+                    <div class="family-tree family-tree-small"></div>
+                    <div class="family-people">👩‍👦</div>
+                    <div class="family-tree family-tree-right"></div>
+                    <div class="family-ground"></div>
+                </div>
+            </section>
+
+            <h3 class="section-title">Brzi pristup</h3>
+
+            <section class="quick-grid">
+                <a class="quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                    <div class="quick-icon green">📅</div>
+                    <div>
+                        <h4>Dnevni izvještaji</h4>
+                        <p>Pregledajte dnevne aktivnosti i izvještaje vašeg djeteta.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a class="quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
+                    <div class="quick-icon blue">🧾</div>
+                    <div>
+                        <h4>Sažeci</h4>
+                        <p>Pregledajte sažetke aktivnosti i napredak vašeg djeteta.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a class="quick-card" asp-controller="Obavijest" asp-action="Index">
+                    <div class="quick-icon pink">🔔</div>
+                    <div>
+                        <h4>Obavijesti</h4>
+                        <p>Pogledajte najnovije obavijesti i važne informacije.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a class="quick-card" asp-controller="Dijete" asp-action="Index">
+                    <div class="quick-icon cyan">📋</div>
+                    <div>
+                        <h4>Podaci o djetetu</h4>
+                        <p>Pregledajte i ažurirajte podatke o vašem djetetu.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+            </section>
+        </main>
+
+    </div>
+</div>

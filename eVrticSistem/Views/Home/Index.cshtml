@@ -1,8 +1,98 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Prijava";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="login-page">
+    <div class="login-card">
+
+        <div class="login-left">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="sun">☀</div>
+
+            <h1 class="logo-text">eVrtić</h1>
+            <h2>Dobro došli!</h2>
+            <p>Prijavite se na svoj nalog</p>
+
+            <div class="kindergarten">
+                <div class="tree tree-left"></div>
+                <div class="tree tree-right"></div>
+
+                <div class="school">
+                    <div class="roof"></div>
+                    <div class="building">
+                        <div class="window"></div>
+                        <div class="window"></div>
+                        <div class="door"></div>
+                        <div class="window"></div>
+                        <div class="window"></div>
+                    </div>
+                </div>
+
+                <div class="children-row">
+                    <span>👦</span>
+                    <span>👧</span>
+                    <span>👦</span>
+                    <span>👧</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <div class="login-box">
+                <h3>Prijavite se na svoj nalog</h3>
+
+                <form>
+                    <div class="input-group-custom">
+                        <span>✉</span>
+                        <input type="email" placeholder="Email" />
+                    </div>
+
+                    <div class="input-group-custom">
+                        <span>🔒</span>
+                        <input type="password" placeholder="Lozinka" />
+                        <span>👁</span>
+                    </div>
+
+                    <div class="login-options">
+                        <label>
+                            <input type="checkbox" />
+                            Zapamti me
+                        </label>
+
+                        <a href="#">Zaboravili ste lozinku?</a>
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Prijavi se
+                    </button>
+
+                    <div class="register-link">
+                        Nemate račun?
+                        <a asp-controller="Korisnik" asp-action="Create">
+                            Registrujte se
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="roles">
+                <div class="role-card">
+                    <div class="role-icon">👨‍👩‍👧</div>
+                    <strong>Roditelj</strong>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon">👩‍🏫</div>
+                    <strong>Odgajatelj</strong>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon">🛡</div>
+                    <strong>Administrator</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>

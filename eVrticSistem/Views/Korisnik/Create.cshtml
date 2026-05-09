@@ -1,53 +1,114 @@
 @model EVrtic.Models.Korisnik
+@using EVrtic.Models
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Registracija";
 }
 
-<h1>Create</h1>
+<div class="register-page">
+    <div class="register-card">
 
-<h4>Korisnik</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ImePrezime" class="control-label"></label>
-                <input asp-for="ImePrezime" class="form-control" />
-                <span asp-validation-for="ImePrezime" class="text-danger"></span>
+        <div class="register-left">
+            <div class="register-cloud cloud-a"></div>
+            <div class="register-cloud cloud-b"></div>
+            <div class="register-sun">☀</div>
+
+            <h1 class="register-logo">eVrtić</h1>
+            <h2>Kreirajte račun</h2>
+            <p>Unesite podatke za registraciju u sistem</p>
+
+            <div class="register-illustration">
+                <div class="register-school">
+                    <div class="register-roof"></div>
+                    <div class="register-building">
+                        <div class="register-window"></div>
+                        <div class="register-window"></div>
+                        <div class="register-door"></div>
+                        <div class="register-window"></div>
+                    </div>
+                </div>
+
+                <div class="register-kids">
+                    <span>👧</span>
+                    <span>👦</span>
+                    <span>👧</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="register-right">
+            <div class="register-box">
+                <h3>Registrujte se</h3>
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="register-input">
+                        <span>👤</span>
+                        <input asp-for="ImePrezime" placeholder="Ime i prezime" />
+                    </div>
+                    <span asp-validation-for="ImePrezime" class="text-danger"></span>
+
+                    <div class="register-input">
+                        <span>✉</span>
+                        <input asp-for="Email" placeholder="Email" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                    <div class="register-input">
+                        <span>🔒</span>
+                        <input asp-for="LozinkaHash" type="password" placeholder="Lozinka" />
+                    </div>
+                    <span asp-validation-for="LozinkaHash" class="text-danger"></span>
+
+                    <div class="register-input">
+                        <span>🧩</span>
+                        <select asp-for="Uloga" id="ulogaSelect">
+                            <option value="">Odaberite ulogu</option>
+                            <option value="RODITELJ">Roditelj</option>
+                            <option value="ODGAJATELJ">Odgajatelj</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Uloga" class="text-danger"></span>
+
+                    <div class="register-input" id="kodDjetetaDiv" style="display: none;">
+                        <span>🔑</span>
+                        <input name="IdentifikacioniKodDjeteta" placeholder="Identifikacioni kod djeteta" />
+                    </div>
+
+                    <button type="submit" class="register-button">
+                        Registruj se
+                    </button>
+
+                    <div class="login-link">
+                        Već imate račun?
+                        <a asp-controller="Home" asp-action="Index">Prijavite se</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="LozinkaHash" class="control-label"></label>
-                <input asp-for="LozinkaHash" class="form-control" />
-                <span asp-validation-for="LozinkaHash" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Uloga" class="control-label"></label>
-                <select asp-for="Uloga" class="form-control"></select>
-                <span asp-validation-for="Uloga" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StatusNaloga" class="control-label"></label>
-                <select asp-for="StatusNaloga" class="form-control"></select>
-                <span asp-validation-for="StatusNaloga" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const ulogaSelect = document.getElementById("ulogaSelect");
+        const kodDjetetaDiv = document.getElementById("kodDjetetaDiv");
+
+        function prikaziKodDjetetaAkoJeRoditelj() {
+            if (ulogaSelect.value === "RODITELJ") {
+                kodDjetetaDiv.style.display = "flex";
+            } else {
+                kodDjetetaDiv.style.display = "none";
+            }
+        }
+
+        ulogaSelect.addEventListener("change", prikaziKodDjetetaAkoJeRoditelj);
+        prikaziKodDjetetaAkoJeRoditelj();
+    </script>
 }

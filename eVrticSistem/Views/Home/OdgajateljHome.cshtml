@@ -1,0 +1,173 @@
+﻿@{
+    ViewData["Title"] = "Odgajatelj početna";
+}
+
+<div class="educator-page">
+    <div class="educator-card">
+
+        <aside class="educator-sidebar">
+            <h1 class="educator-logo">eVrtić</h1>
+
+            <nav class="educator-menu">
+                <a class="educator-link active" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>🏠</span>
+                    Početna
+                </a>
+
+                <a class="educator-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                    <span>🗒️</span>
+                    Aktivnosti
+                </a>
+
+                <a class="educator-link" asp-controller="Obavijest" asp-action="Index">
+                    <span class="badge-icon">🔔<b>3</b></span>
+                    Obavijesti
+                </a>
+
+                <a class="educator-link" asp-controller="Korisnik" asp-action="Index">
+                    <span>👤</span>
+                    Profil
+                </a>
+            </nav>
+
+            <div class="educator-side-art">
+                <div class="side-cloud side-cloud-1"></div>
+                <div class="side-cloud side-cloud-2"></div>
+
+                <div class="side-kindergarten">
+                    <div class="side-roof"></div>
+                    <div class="side-building">
+                        <div class="side-window"></div>
+                        <div class="side-door"></div>
+                        <div class="side-window"></div>
+                    </div>
+                </div>
+
+                <div class="side-tree side-tree-left"></div>
+                <div class="side-tree side-tree-right"></div>
+            </div>
+        </aside>
+
+        <main class="educator-main">
+            <div class="educator-top">
+                <div>
+                    <h2>Pozdrav,</h2>
+                    <h1>Odgajatelju! <span>☀️</span></h1>
+                </div>
+
+                <a class="educator-bell" asp-controller="Obavijest" asp-action="Index">
+                    🔔
+                </a>
+            </div>
+
+            <section class="educator-hero">
+                <div class="group-card">
+                    <h3>Moja grupa</h3>
+
+                    <div class="group-info">
+                        <div class="group-avatar">👩‍🏫</div>
+
+                        <div>
+                            <h4>Leptirići</h4>
+                            <p>18 djece</p>
+                        </div>
+
+                        <a class="group-arrow" asp-controller="Grupa" asp-action="Index">→</a>
+                    </div>
+                </div>
+
+                <div class="teacher-illustration">
+                    <div class="teacher-cloud teacher-cloud-1"></div>
+                    <div class="teacher-cloud teacher-cloud-2"></div>
+
+                    <div class="teacher-scene">
+                        <div class="cartoon-child child-one">
+                            <div class="child-head"></div>
+                            <div class="child-body"></div>
+                        </div>
+
+                        <div class="cartoon-child child-two">
+                            <div class="child-head"></div>
+                            <div class="child-body"></div>
+                        </div>
+
+                        <div class="cartoon-teacher">
+                            <div class="teacher-head"></div>
+                            <div class="teacher-body"></div>
+                        </div>
+
+                        <div class="cartoon-child child-three">
+                            <div class="child-head"></div>
+                            <div class="child-body"></div>
+                        </div>
+                    </div>
+
+                    <div class="teacher-ground"></div>
+                </div>
+            </section>
+
+            <h3 class="educator-section-title">Brzi pristup</h3>
+
+            <section class="educator-grid">
+                <a class="educator-quick-card" asp-controller="DnevniIzvjestaj" asp-action="Create">
+                    <div class="educator-quick-icon purple">📋</div>
+                    <div>
+                        <h4>Evidencija aktivnosti</h4>
+                        <p>Bilježite i pregledajte aktivnosti djece i grupe.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a class="educator-quick-card" asp-controller="EvidencijaOdlaskaDolaska" asp-action="Index">
+                    <div class="educator-quick-icon blue">☑️</div>
+                    <div>
+                        <h4>Dolazak/Odlazak</h4>
+                        <p>Pratite dolaske i odlaske djece u vrtić.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a class="educator-quick-card" asp-controller="Obavijest" asp-action="Index">
+                    <div class="educator-quick-icon pink">🔔</div>
+                    <div>
+                        <h4>Obavijesti</h4>
+                        <p>Pogledajte najnovije obavijesti i važne informacije.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a class="educator-quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
+                    <div class="educator-quick-icon blue">🧾</div>
+                    <div>
+                        <h4>Sažeci</h4>
+                        <p>Pregledajte sažetke aktivnosti i napredak djece.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+            </section>
+        </main>
+
+        <nav class="educator-bottom-nav">
+            <a class="bottom-link active" asp-controller="Home" asp-action="OdgajateljHome">
+                <span>🏠</span>
+                Početna
+            </a>
+
+            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                <span>🗒️</span>
+                Aktivnosti
+            </a>
+
+            <a class="bottom-link" asp-controller="Obavijest" asp-action="Index">
+                <span class="bottom-badge">🔔<b>3</b></span>
+                Obavijesti
+            </a>
+
+            <a class="bottom-link" asp-controller="Korisnik" asp-action="Index">
+                <span>👤</span>
+                Profil
+            </a>
+        </nav>
+
+    </div>
+</div>
