@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EVrtic.Data;
 using EVrtic.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eVrticSistem.Controllers
 {
+    [Authorize(Roles = "ADMINISTRATOR")]
     public class RoditeljController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -54,7 +56,7 @@ namespace eVrticSistem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ImePrezime,Email,LozinkaHash,Uloga,StatusNaloga")] Roditelj roditelj)
+        public async Task<IActionResult> Create([Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Roditelj roditelj)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +88,7 @@ namespace eVrticSistem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ImePrezime,Email,LozinkaHash,Uloga,StatusNaloga")] Roditelj roditelj)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Roditelj roditelj)
         {
             if (id != roditelj.Id)
             {

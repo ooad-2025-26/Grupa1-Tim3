@@ -15,8 +15,13 @@
                 </a>
 
                 <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                    <span>📄</span>
+                    <span>📋</span>
                     Izvještaji
+                </a>
+
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="Index">
+                    <span>📊</span>
+                    Sažeci
                 </a>
 
                 <a class="sidebar-link" asp-controller="Obavijest" asp-action="Index">
@@ -24,10 +29,20 @@
                     Obavijesti
                 </a>
 
-                <a class="sidebar-link" asp-controller="Korisnik" asp-action="Details">
-                    <span>👤</span>
-                    Profil
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
+                    <span>🚪</span>
+                    Dolazak/Odlazak
                 </a>
+
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="sidebar-link sidebar-logout-button">
+                        <span>🚪</span>
+                        Odjava
+                    </button>
+                </form>
             </nav>
 
             <div class="sidebar-illustration">
@@ -66,11 +81,11 @@
                     <h3>Moje dijete</h3>
 
                     <div class="child-info">
-                        <div class="child-avatar">👦</div>
+                        <div class="child-avatar">🧒</div>
 
                         <div>
-                            <h4>Marko Kovač</h4>
-                            <p>Grupa: Leptirići</p>
+                            <h4>Profil djeteta</h4>
+                            <p>Pregled osnovnih podataka i dnevnih aktivnosti.</p>
                         </div>
 
                         <a class="card-arrow" asp-controller="Dijete" asp-action="Index">→</a>
@@ -81,7 +96,7 @@
                     <div class="family-cloud"></div>
                     <div class="family-tree family-tree-left"></div>
                     <div class="family-tree family-tree-small"></div>
-                    <div class="family-people">👩‍👦</div>
+                    <div class="family-people">👨‍👩‍👧</div>
                     <div class="family-tree family-tree-right"></div>
                     <div class="family-ground"></div>
                 </div>
@@ -91,7 +106,7 @@
 
             <section class="quick-grid">
                 <a class="quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                    <div class="quick-icon green">📅</div>
+                    <div class="quick-icon green">📋</div>
                     <div>
                         <h4>Dnevni izvještaji</h4>
                         <p>Pregledajte dnevne aktivnosti i izvještaje vašeg djeteta.</p>
@@ -100,10 +115,10 @@
                 </a>
 
                 <a class="quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
-                    <div class="quick-icon blue">🧾</div>
+                    <div class="quick-icon blue">📊</div>
                     <div>
-                        <h4>Sažeci</h4>
-                        <p>Pregledajte sažetke aktivnosti i napredak vašeg djeteta.</p>
+                        <h4>Sažeci aktivnosti</h4>
+                        <p>Pregledajte sedmične i mjesečne sažetke aktivnosti.</p>
                     </div>
                     <span>→</span>
                 </a>
@@ -117,11 +132,11 @@
                     <span>→</span>
                 </a>
 
-                <a class="quick-card" asp-controller="Dijete" asp-action="Index">
-                    <div class="quick-icon cyan">📋</div>
+                <a class="quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
+                    <div class="quick-icon cyan">🚪</div>
                     <div>
-                        <h4>Podaci o djetetu</h4>
-                        <p>Pregledajte i ažurirajte podatke o vašem djetetu.</p>
+                        <h4>Dolazak/Odlazak</h4>
+                        <p>Evidentirajte ili pregledajte dolazak i odlazak djeteta.</p>
                     </div>
                     <span>→</span>
                 </a>

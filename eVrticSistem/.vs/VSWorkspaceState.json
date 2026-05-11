@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\bin\\Debug",
+    "\\bin\\Release",
+    "\\Controllers",
+    "\\Data",
+    "\\Migrations",
+    "\\Models",
+    "\\obj",
+    "\\Properties"
+  ],
+  "SelectedNode": "\\Controllers\\RoditeljController.cs",
+  "PreviewInSolutionExplorer": false
+}

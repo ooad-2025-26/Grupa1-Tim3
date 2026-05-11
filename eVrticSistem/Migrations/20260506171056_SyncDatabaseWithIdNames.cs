@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace eVrtic.Migrations
+namespace EVrtic.Migrations
 {
     /// <inheritdoc />
     public partial class SyncDatabaseWithIdNames : Migration

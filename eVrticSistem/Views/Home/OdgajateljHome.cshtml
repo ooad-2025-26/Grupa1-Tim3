@@ -15,8 +15,13 @@
                 </a>
 
                 <a class="educator-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                    <span>🗒️</span>
+                    <span>📝</span>
                     Aktivnosti
+                </a>
+
+                <a class="educator-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
+                    <span>🚪</span>
+                    Dolazak/Odlazak
                 </a>
 
                 <a class="educator-link" asp-controller="Obavijest" asp-action="Index">
@@ -24,10 +29,20 @@
                     Obavijesti
                 </a>
 
-                <a class="educator-link" asp-controller="Korisnik" asp-action="Index">
-                    <span>👤</span>
-                    Profil
+                <a class="educator-link" asp-controller="SazetakAktivnosti" asp-action="Index">
+                    <span>📊</span>
+                    Sažeci
                 </a>
+
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="educator-link educator-logout-button">
+                        <span>🚪</span>
+                        Odjava
+                    </button>
+                </form>
             </nav>
 
             <div class="educator-side-art">
@@ -65,11 +80,11 @@
                     <h3>Moja grupa</h3>
 
                     <div class="group-info">
-                        <div class="group-avatar">👩‍🏫</div>
+                        <div class="group-avatar">🦋</div>
 
                         <div>
                             <h4>Leptirići</h4>
-                            <p>18 djece</p>
+                            <p>Pregled djece i dnevnih aktivnosti grupe.</p>
                         </div>
 
                         <a class="group-arrow" asp-controller="Grupa" asp-action="Index">→</a>
@@ -86,14 +101,14 @@
                             <div class="child-body"></div>
                         </div>
 
-                        <div class="cartoon-child child-two">
-                            <div class="child-head"></div>
-                            <div class="child-body"></div>
-                        </div>
-
                         <div class="cartoon-teacher">
                             <div class="teacher-head"></div>
                             <div class="teacher-body"></div>
+                        </div>
+
+                        <div class="cartoon-child child-two">
+                            <div class="child-head"></div>
+                            <div class="child-body"></div>
                         </div>
 
                         <div class="cartoon-child child-three">
@@ -109,20 +124,20 @@
             <h3 class="educator-section-title">Brzi pristup</h3>
 
             <section class="educator-grid">
-                <a class="educator-quick-card" asp-controller="DnevniIzvjestaj" asp-action="Create">
-                    <div class="educator-quick-icon purple">📋</div>
+                <a class="educator-quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                    <div class="educator-quick-icon purple">📝</div>
                     <div>
                         <h4>Evidencija aktivnosti</h4>
-                        <p>Bilježite i pregledajte aktivnosti djece i grupe.</p>
+                        <p>Bilježite i pregledajte obroke, spavanje i aktivnosti djece.</p>
                     </div>
                     <span>→</span>
                 </a>
 
-                <a class="educator-quick-card" asp-controller="EvidencijaOdlaskaDolaska" asp-action="Index">
+                <a class="educator-quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
                     <div class="educator-quick-icon blue">☑️</div>
                     <div>
                         <h4>Dolazak/Odlazak</h4>
-                        <p>Pratite dolaske i odlaske djece u vrtić.</p>
+                        <p>Pratite dolaske i odlaske djece u vrtiću.</p>
                     </div>
                     <span>→</span>
                 </a>
@@ -131,16 +146,16 @@
                     <div class="educator-quick-icon pink">🔔</div>
                     <div>
                         <h4>Obavijesti</h4>
-                        <p>Pogledajte najnovije obavijesti i važne informacije.</p>
+                        <p>Pošaljite ili pregledajte obavijesti za roditelje.</p>
                     </div>
                     <span>→</span>
                 </a>
 
                 <a class="educator-quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
-                    <div class="educator-quick-icon blue">🧾</div>
+                    <div class="educator-quick-icon purple">📊</div>
                     <div>
                         <h4>Sažeci</h4>
-                        <p>Pregledajte sažetke aktivnosti i napredak djece.</p>
+                        <p>Generišite i pregledajte sažetke aktivnosti djece.</p>
                     </div>
                     <span>→</span>
                 </a>
@@ -154,18 +169,18 @@
             </a>
 
             <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                <span>🗒️</span>
+                <span>📝</span>
                 Aktivnosti
             </a>
 
-            <a class="bottom-link" asp-controller="Obavijest" asp-action="Index">
-                <span class="bottom-badge">🔔<b>3</b></span>
+            <a class="bottom-link bottom-badge" asp-controller="Obavijest" asp-action="Index">
+                <span>🔔<b>3</b></span>
                 Obavijesti
             </a>
 
-            <a class="bottom-link" asp-controller="Korisnik" asp-action="Index">
-                <span>👤</span>
-                Profil
+            <a class="bottom-link" asp-controller="SazetakAktivnosti" asp-action="Index">
+                <span>📊</span>
+                Sažeci
             </a>
         </nav>
 

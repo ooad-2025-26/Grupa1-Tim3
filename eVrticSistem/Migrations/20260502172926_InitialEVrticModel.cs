@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace eVrtic.Migrations
+namespace EVrtic.Migrations
 {
     /// <inheritdoc />
     public partial class InitialEVrticModel : Migration
@@ -35,7 +35,6 @@ namespace eVrtic.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImePrezime = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    LozinkaHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Uloga = table.Column<int>(type: "int", nullable: false),
                     StatusNaloga = table.Column<int>(type: "int", nullable: false)
                 },

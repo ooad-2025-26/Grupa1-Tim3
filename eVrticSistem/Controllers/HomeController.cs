@@ -1,8 +1,9 @@
-using eVrtic.Models;
+using EVrtic.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace eVrticSistem.Controllers
+namespace EVrtic.Controllers
 {
     public class HomeController : Controller
     {
@@ -15,10 +16,49 @@ namespace eVrticSistem.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction(nameof(RedirectByRole));
+            }
+
+            return Redirect("/Identity/Account/Login");
+        }
+
+        [Authorize]
+        public IActionResult RedirectByRole()
+        {
+            if (User.IsInRole("ADMINISTRATOR"))
+            {
+                return RedirectToAction(nameof(AdministratorHome));
+            }
+
+            if (User.IsInRole("ODGAJATELJ"))
+            {
+                return RedirectToAction(nameof(OdgajateljHome));
+            }
+
+            if (User.IsInRole("RODITELJ"))
+            {
+                return RedirectToAction(nameof(RoditeljHome));
+            }
+
+            return Redirect("/Identity/Account/Login");
+        }
+
+        [Authorize(Roles = "RODITELJ")]
+        public IActionResult RoditeljHome()
+        {
             return View();
         }
 
-        public IActionResult RoditeljHome()
+        [Authorize(Roles = "ODGAJATELJ")]
+        public IActionResult OdgajateljHome()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public IActionResult AdministratorHome()
         {
             return View();
         }
@@ -28,20 +68,13 @@ namespace eVrticSistem.Controllers
             return View();
         }
 
-        public IActionResult OdgajateljHome()
-        {
-            return View();
-        }
-
-        public IActionResult AdministratorHome()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

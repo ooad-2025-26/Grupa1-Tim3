@@ -8,7 +8,7 @@ namespace EVrtic.Models
 
         public Roditelj()
         {
-            Uloga = eVrtic.Models.Uloga.RODITELJ;
+            Uloga = Uloga.RODITELJ;
         }
     }
 }

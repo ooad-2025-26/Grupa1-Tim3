@@ -8,7 +8,7 @@ namespace EVrtic.Models
 
         public Odgajatelj()
         {
-            Uloga = eVrtic.Models.Uloga.ODGAJATELJ;
+            Uloga = Uloga.ODGAJATELJ;
         }
     }
 }

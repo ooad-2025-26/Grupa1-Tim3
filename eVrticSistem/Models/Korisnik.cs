@@ -1,5 +1,4 @@
-﻿using eVrtic.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EVrtic.Models
 {
@@ -16,9 +15,6 @@ namespace EVrtic.Models
         [EmailAddress]
         [StringLength(150)]
         public string Email { get; set; } = string.Empty;
-
-        [Required]
-        public string LozinkaHash { get; set; } = string.Empty;
 
         [Required]
         public Uloga Uloga { get; set; }

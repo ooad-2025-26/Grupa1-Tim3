@@ -269,10 +269,6 @@ namespace eVrtic.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("LozinkaHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("StatusNaloga")
                         .HasColumnType("int");
 

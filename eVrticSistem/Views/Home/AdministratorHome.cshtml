@@ -29,10 +29,15 @@
                     Grupe
                 </a>
 
-                <a class="admin-link" asp-controller="Home" asp-action="Index">
-                    <span>🚪</span>
-                    Odjava
-                </a>
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="admin-link admin-logout-button">
+                        <span>🚪</span>
+                        Odjava
+                    </button>
+                </form>
             </nav>
 
             <div class="admin-side-art">

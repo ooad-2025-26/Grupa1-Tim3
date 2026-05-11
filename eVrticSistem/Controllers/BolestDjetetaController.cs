@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using EVrtic.Data;
 using EVrtic.Models;
 
-namespace eVrticSistem.Controllers
+namespace EVrtic.Controllers
 {
     public class BolestDjetetaController : Controller
     {

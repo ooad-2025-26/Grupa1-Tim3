@@ -1991,3 +1991,35 @@ body {
         grid-template-columns: 1fr;
     }
 }
+.admin-logout-button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    text-align: left;
+}
+
+    .admin-logout-button:hover {
+        background: #f0fbfd;
+        color: #13a6b8;
+    }
+
+.sidebar-logout-button,
+.educator-logout-button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar-logout-button:hover {
+        background: #f1f8ff;
+        color: #1ca13c;
+}
+.educator-logout-button:hover {
+        background: #f5f1ff;
+        color: #7447d8;
+}

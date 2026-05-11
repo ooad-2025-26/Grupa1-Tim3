@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace eVrtic.Migrations
+namespace EVrtic.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260506171056_SyncDatabaseWithIdNames")]
@@ -271,10 +271,6 @@ namespace eVrtic.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LozinkaHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusNaloga")
                         .HasColumnType("int");

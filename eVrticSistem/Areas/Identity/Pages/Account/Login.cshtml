@@ -1,0 +1,107 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Prijava";
+}
+
+<div class="login-page">
+    <div class="login-card">
+
+        <section class="login-left">
+            <div class="sun">☀</div>
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+
+            <div class="logo-text">eVrtić</div>
+            <h2>Dobro došli!</h2>
+            <p>Prijavite se na svoj nalog</p>
+
+            <div class="kindergarten">
+                <div class="tree tree-left"></div>
+                <div class="tree tree-right"></div>
+
+                <div class="school">
+                    <div class="roof"></div>
+                    <div class="building">
+                        <div class="window"></div>
+                        <div class="door"></div>
+                        <div class="window"></div>
+                    </div>
+                </div>
+
+                <div class="children-row">
+                    <span>🧒</span>
+                    <span>👧</span>
+                    <span>👦</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="login-right">
+            <div class="login-box">
+                <h3>Prijava</h3>
+
+                <form id="account" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                    <div class="input-group-custom">
+                        <span>✉</span>
+                        <input asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="Email" />
+                    </div>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+
+                    <div class="input-group-custom">
+                        <span>🔒</span>
+                        <input asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="Lozinka" />
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+                    <div class="login-options">
+                        <label>
+                            <input asp-for="Input.RememberMe" />
+                            Zapamti me
+                        </label>
+
+                        <a id="forgot-password" asp-page="./ForgotPassword">
+                            Zaboravili ste lozinku?
+                        </a>
+                    </div>
+
+                    <button id="login-submit" type="submit" class="login-button">
+                        Prijavi se
+                    </button>
+
+                    <div class="register-link">
+                        Nemate račun?
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">
+                            Registrujte se
+                        </a>
+                    </div>
+                </form>
+
+                <div class="roles">
+                    <div class="role-card">
+                        <div class="role-icon">👨‍👩‍👧</div>
+                        <strong>Roditelj</strong>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">👩‍🏫</div>
+                        <strong>Odgajatelj</strong>
+                    </div>
+
+                    <div class="role-card">
+                        <div class="role-icon">🛡️</div>
+                        <strong>Administrator</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,4 +1,4 @@
-﻿namespace eVrtic.Models
+﻿namespace EVrtic.Models
 {
     public enum StatusNaloga
     {
