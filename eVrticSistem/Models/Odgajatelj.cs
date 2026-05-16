@@ -1,5 +1,3 @@
-﻿using System.Text.RegularExpressions;
-
 namespace EVrtic.Models
 {
     public class Odgajatelj : Korisnik

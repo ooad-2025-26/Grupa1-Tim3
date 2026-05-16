@@ -24,7 +24,7 @@ namespace eVrticSistem.Controllers
         // GET: Korisnik
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Korisnici.ToListAsync());
+            return View(await _context.Users.ToListAsync());
         }
 
         // GET: Korisnik/Details/5
@@ -35,7 +35,7 @@ namespace eVrticSistem.Controllers
                 return NotFound();
             }
 
-            var korisnik = await _context.Korisnici
+            var korisnik = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (korisnik == null)
             {
@@ -75,7 +75,7 @@ namespace eVrticSistem.Controllers
                 return NotFound();
             }
 
-            var korisnik = await _context.Korisnici.FindAsync(id);
+            var korisnik = await _context.Users.FindAsync(id);
             if (korisnik == null)
             {
                 return NotFound();
@@ -126,7 +126,7 @@ namespace eVrticSistem.Controllers
                 return NotFound();
             }
 
-            var korisnik = await _context.Korisnici
+            var korisnik = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (korisnik == null)
             {
@@ -141,10 +141,10 @@ namespace eVrticSistem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var korisnik = await _context.Korisnici.FindAsync(id);
+            var korisnik = await _context.Users.FindAsync(id);
             if (korisnik != null)
             {
-                _context.Korisnici.Remove(korisnik);
+                _context.Users.Remove(korisnik);
             }
 
             await _context.SaveChangesAsync();
@@ -153,7 +153,7 @@ namespace eVrticSistem.Controllers
 
         private bool KorisnikExists(int id)
         {
-            return _context.Korisnici.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

@@ -1,4 +1,5 @@
 using EVrtic.Data;
+using EVrtic.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +13,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Identity konfiguracija
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+// Identity konfiguracija — koristimo Korisnik i IdentityRole<int>
+builder.Services.AddDefaultIdentity<Korisnik>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 
@@ -23,7 +24,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
 })
-.AddRoles<IdentityRole>()
+.AddRoles<IdentityRole<int>>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add services to the container.
@@ -34,8 +35,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Korisnik>>();
 
     string[] roles = { "RODITELJ", "ODGAJATELJ", "ADMINISTRATOR" };
 
@@ -43,7 +44,7 @@ using (var scope = app.Services.CreateScope())
     {
         if (!await roleManager.RoleExistsAsync(role))
         {
-            await roleManager.CreateAsync(new IdentityRole(role));
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
         }
     }
 
@@ -54,11 +55,14 @@ using (var scope = app.Services.CreateScope())
 
     if (admin == null)
     {
-        admin = new IdentityUser
+        // Kreiramo Administrator objekat — nasljeđuje Korisnik koji nasljeđuje IdentityUser<int>
+        admin = new Administrator
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            ImePrezime = "Administrator",
+            StatusNaloga = StatusNaloga.AKTIVAN
         };
 
         var result = await userManager.CreateAsync(admin, adminPassword);

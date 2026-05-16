@@ -11,14 +11,14 @@ namespace EVrtic.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<Korisnik> _signInManager;
+        private readonly UserManager<Korisnik> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly ApplicationDbContext _context;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<Korisnik> userManager,
+            SignInManager<Korisnik> signInManager,
             ILogger<RegisterModel> logger,
             ApplicationDbContext context)
         {
@@ -88,10 +88,9 @@ namespace EVrtic.Areas.Identity.Pages.Account
                 ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Identifikacioni kod djeteta je obavezan za roditelja.");
             }
 
-            bool emailVecPostojiUIdentity = await _userManager.FindByEmailAsync(Input.Email) != null;
-            bool emailVecPostojiUDomenskimKorisnicima = await _context.Korisnici.AnyAsync(k => k.Email == Input.Email);
+            bool emailVecPostoji = await _userManager.FindByEmailAsync(Input.Email) != null;
 
-            if (emailVecPostojiUIdentity || emailVecPostojiUDomenskimKorisnicima)
+            if (emailVecPostoji)
             {
                 ModelState.AddModelError("Input.Email", "Korisnik sa ovom email adresom već postoji.");
             }
@@ -118,57 +117,51 @@ namespace EVrtic.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var identityUser = new IdentityUser
-            {
-                UserName = Input.Email,
-                Email = Input.Email,
-                EmailConfirmed = true
-            };
+            // Kreiramo direktno Roditelj ili Odgajatelj objekat — jedan zapis u bazi
+            // koji sadrži i Identity podatke i naše podatke
+            Korisnik noviKorisnik;
 
-            var result = await _userManager.CreateAsync(identityUser, Input.Password);
+            if (Input.Uloga == Uloga.RODITELJ)
+            {
+                noviKorisnik = new Roditelj
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    EmailConfirmed = true,
+                    ImePrezime = Input.ImePrezime,
+                    StatusNaloga = StatusNaloga.AKTIVAN
+                };
+            }
+            else // ODGAJATELJ
+            {
+                noviKorisnik = new Odgajatelj
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    EmailConfirmed = true,
+                    ImePrezime = Input.ImePrezime,
+                    StatusNaloga = StatusNaloga.AKTIVAN
+                };
+            }
+
+            // UserManager kreira korisnika u AspNetUsers i nasljeđenoj tabeli odjednom
+            var result = await _userManager.CreateAsync(noviKorisnik, Input.Password);
 
             if (result.Succeeded)
             {
                 _logger.LogInformation("Korisnik je kreirao novi nalog.");
 
-                if (Input.Uloga == Uloga.RODITELJ)
+                // Dodaj ulogu
+                await _userManager.AddToRoleAsync(noviKorisnik, Input.Uloga.ToString()!);
+
+                // Ako je roditelj, poveži sa djetetom
+                if (Input.Uloga == Uloga.RODITELJ && dijete != null)
                 {
-                    var roditelj = new Roditelj
-                    {
-                        ImePrezime = Input.ImePrezime,
-                        Email = Input.Email,
-                        Uloga = Uloga.RODITELJ,
-                        StatusNaloga = StatusNaloga.AKTIVAN
-                    };
-
-                    _context.Roditelji.Add(roditelj);
+                    dijete.RoditeljId = noviKorisnik.Id;
                     await _context.SaveChangesAsync();
-
-                    if (dijete != null)
-                    {
-                        dijete.RoditeljId = roditelj.Id;
-                        await _context.SaveChangesAsync();
-                    }
-
-                    await _userManager.AddToRoleAsync(identityUser, "RODITELJ");
-                }
-                else if (Input.Uloga == Uloga.ODGAJATELJ)
-                {
-                    var odgajatelj = new Odgajatelj
-                    {
-                        ImePrezime = Input.ImePrezime,
-                        Email = Input.Email,
-                        Uloga = Uloga.ODGAJATELJ,
-                        StatusNaloga = StatusNaloga.AKTIVAN
-                    };
-
-                    _context.Odgajatelji.Add(odgajatelj);
-                    await _context.SaveChangesAsync();
-
-                    await _userManager.AddToRoleAsync(identityUser, "ODGAJATELJ");
                 }
 
-                await _signInManager.SignInAsync(identityUser, isPersistent: false);
+                await _signInManager.SignInAsync(noviKorisnik, isPersistent: false);
 
                 return LocalRedirect(returnUrl);
             }

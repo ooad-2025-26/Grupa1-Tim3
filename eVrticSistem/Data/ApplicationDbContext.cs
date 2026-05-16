@@ -1,18 +1,18 @@
-﻿using EVrtic.Models;
+using EVrtic.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EVrtic.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class ApplicationDbContext : IdentityDbContext<Korisnik, IdentityRole<int>, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        public DbSet<Korisnik> Korisnici { get; set; }
+        // Users DbSet nije potreban — IdentityDbContext već registruje Users tabelu (AspNetUsers)
         public DbSet<Roditelj> Roditelji { get; set; }
         public DbSet<Odgajatelj> Odgajatelji { get; set; }
         public DbSet<Administrator> Administratori { get; set; }
@@ -34,7 +34,8 @@ namespace EVrtic.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Korisnik>().ToTable("Korisnik");
+            // Korisnik se mapira na AspNetUsers automatski — NE stavljaj ToTable("Korisnik")
+            // Nasljeđene klase i dalje imaju svoje tabele (TPT strategija)
             modelBuilder.Entity<Roditelj>().ToTable("Roditelj");
             modelBuilder.Entity<Odgajatelj>().ToTable("Odgajatelj");
             modelBuilder.Entity<Administrator>().ToTable("Administrator");
@@ -52,6 +53,7 @@ namespace EVrtic.Data
             modelBuilder.Entity<SazetakAktivnosti>().ToTable("SazetakAktivnosti");
             modelBuilder.Entity<Obavijest>().ToTable("Obavijest");
 
+            // Email unique index — Identity već to osigurava, ali možemo zadržati eksplicitno
             modelBuilder.Entity<Korisnik>()
                 .HasIndex(k => k.Email)
                 .IsUnique();

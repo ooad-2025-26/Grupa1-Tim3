@@ -1,5 +1,3 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace EVrtic.Models
 {
     public class Roditelj : Korisnik

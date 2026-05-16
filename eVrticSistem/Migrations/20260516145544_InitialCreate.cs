@@ -3,19 +3,63 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EVrtic.Migrations
+namespace eVrticSistem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialEVrticModel : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImePrezime = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Uloga = table.Column<int>(type: "int", nullable: false),
+                    StatusNaloga = table.Column<int>(type: "int", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DnevniQRCode",
                 columns: table => new
                 {
-                    IdQRCode = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VrijednostKoda = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DatumVazenja = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -24,39 +68,129 @@ namespace EVrtic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DnevniQRCode", x => x.IdQRCode);
+                    table.PrimaryKey("PK_DnevniQRCode", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Korisnik",
+                name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    IdKorisnika = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ImePrezime = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Uloga = table.Column<int>(type: "int", nullable: false),
-                    StatusNaloga = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Korisnik", x => x.IdKorisnika);
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Administrator",
                 columns: table => new
                 {
-                    IdKorisnika = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Administrator", x => x.IdKorisnika);
+                    table.PrimaryKey("PK_Administrator", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Administrator_Korisnik_IdKorisnika",
-                        column: x => x.IdKorisnika,
-                        principalTable: "Korisnik",
-                        principalColumn: "IdKorisnika",
+                        name: "FK_Administrator_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -64,16 +198,16 @@ namespace EVrtic.Migrations
                 name: "Odgajatelj",
                 columns: table => new
                 {
-                    IdKorisnika = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Odgajatelj", x => x.IdKorisnika);
+                    table.PrimaryKey("PK_Odgajatelj", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Odgajatelj_Korisnik_IdKorisnika",
-                        column: x => x.IdKorisnika,
-                        principalTable: "Korisnik",
-                        principalColumn: "IdKorisnika",
+                        name: "FK_Odgajatelj_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -81,16 +215,16 @@ namespace EVrtic.Migrations
                 name: "Roditelj",
                 columns: table => new
                 {
-                    IdKorisnika = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roditelj", x => x.IdKorisnika);
+                    table.PrimaryKey("PK_Roditelj", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Roditelj_Korisnik_IdKorisnika",
-                        column: x => x.IdKorisnika,
-                        principalTable: "Korisnik",
-                        principalColumn: "IdKorisnika",
+                        name: "FK_Roditelj_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -98,19 +232,19 @@ namespace EVrtic.Migrations
                 name: "Grupa",
                 columns: table => new
                 {
-                    IdGrupe = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImeGrupe = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OdgajateljId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Grupa", x => x.IdGrupe);
+                    table.PrimaryKey("PK_Grupa", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Grupa_Odgajatelj_OdgajateljId",
                         column: x => x.OdgajateljId,
                         principalTable: "Odgajatelj",
-                        principalColumn: "IdKorisnika",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
 
@@ -118,7 +252,7 @@ namespace EVrtic.Migrations
                 name: "Obavijest",
                 columns: table => new
                 {
-                    IdObavijesti = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Naslov = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Sadrzaj = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
@@ -131,17 +265,17 @@ namespace EVrtic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Obavijest", x => x.IdObavijesti);
+                    table.PrimaryKey("PK_Obavijest", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Obavijest_Odgajatelj_OdgajateljId",
                         column: x => x.OdgajateljId,
                         principalTable: "Odgajatelj",
-                        principalColumn: "IdKorisnika");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Obavijest_Roditelj_RoditeljId",
                         column: x => x.RoditeljId,
                         principalTable: "Roditelj",
-                        principalColumn: "IdKorisnika",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -149,7 +283,7 @@ namespace EVrtic.Migrations
                 name: "Dijete",
                 columns: table => new
                 {
-                    IdDjeteta = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImePrezime = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IdentifikacioniKod = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
@@ -160,18 +294,18 @@ namespace EVrtic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dijete", x => x.IdDjeteta);
+                    table.PrimaryKey("PK_Dijete", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Dijete_Grupa_GrupaId",
                         column: x => x.GrupaId,
                         principalTable: "Grupa",
-                        principalColumn: "IdGrupe",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Dijete_Roditelj_RoditeljId",
                         column: x => x.RoditeljId,
                         principalTable: "Roditelj",
-                        principalColumn: "IdKorisnika",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -179,19 +313,19 @@ namespace EVrtic.Migrations
                 name: "AlergijaDjeteta",
                 columns: table => new
                 {
-                    IdAlergije = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Naziv = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DijeteId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlergijaDjeteta", x => x.IdAlergije);
+                    table.PrimaryKey("PK_AlergijaDjeteta", x => x.Id);
                     table.ForeignKey(
                         name: "FK_AlergijaDjeteta_Dijete_DijeteId",
                         column: x => x.DijeteId,
                         principalTable: "Dijete",
-                        principalColumn: "IdDjeteta",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -199,19 +333,19 @@ namespace EVrtic.Migrations
                 name: "BolestDjeteta",
                 columns: table => new
                 {
-                    IdBolesti = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Naziv = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DijeteId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BolestDjeteta", x => x.IdBolesti);
+                    table.PrimaryKey("PK_BolestDjeteta", x => x.Id);
                     table.ForeignKey(
                         name: "FK_BolestDjeteta_Dijete_DijeteId",
                         column: x => x.DijeteId,
                         principalTable: "Dijete",
-                        principalColumn: "IdDjeteta",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -219,7 +353,7 @@ namespace EVrtic.Migrations
                 name: "DnevniIzvjestaj",
                 columns: table => new
                 {
-                    IdIzvjestaja = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Datum = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Obrok = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -233,12 +367,12 @@ namespace EVrtic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DnevniIzvjestaj", x => x.IdIzvjestaja);
+                    table.PrimaryKey("PK_DnevniIzvjestaj", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DnevniIzvjestaj_Dijete_DijeteId",
                         column: x => x.DijeteId,
                         principalTable: "Dijete",
-                        principalColumn: "IdDjeteta",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -246,7 +380,7 @@ namespace EVrtic.Migrations
                 name: "EvidencijaDolaskaOdlaska",
                 columns: table => new
                 {
-                    IdEvidencije = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VrijemeDogadjaja = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TipDogadjaja = table.Column<int>(type: "int", nullable: false),
@@ -259,25 +393,25 @@ namespace EVrtic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EvidencijaDolaskaOdlaska", x => x.IdEvidencije);
+                    table.PrimaryKey("PK_EvidencijaDolaskaOdlaska", x => x.Id);
                     table.ForeignKey(
                         name: "FK_EvidencijaDolaskaOdlaska_Dijete_DijeteId",
                         column: x => x.DijeteId,
                         principalTable: "Dijete",
-                        principalColumn: "IdDjeteta",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EvidencijaDolaskaOdlaska_DnevniQRCode_DnevniQRCodeId",
                         column: x => x.DnevniQRCodeId,
                         principalTable: "DnevniQRCode",
-                        principalColumn: "IdQRCode");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "SazetakAktivnosti",
                 columns: table => new
                 {
-                    IdSazetka = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DatumPocetka = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DatumKraja = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -291,12 +425,12 @@ namespace EVrtic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SazetakAktivnosti", x => x.IdSazetka);
+                    table.PrimaryKey("PK_SazetakAktivnosti", x => x.Id);
                     table.ForeignKey(
                         name: "FK_SazetakAktivnosti_Dijete_DijeteId",
                         column: x => x.DijeteId,
                         principalTable: "Dijete",
-                        principalColumn: "IdDjeteta",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -304,6 +438,52 @@ namespace EVrtic.Migrations
                 name: "IX_AlergijaDjeteta_DijeteId",
                 table: "AlergijaDjeteta",
                 column: "DijeteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Email",
+                table: "AspNetUsers",
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BolestDjeteta_DijeteId",
@@ -347,12 +527,6 @@ namespace EVrtic.Migrations
                 column: "OdgajateljId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Korisnik_Email",
-                table: "Korisnik",
-                column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Obavijest_OdgajateljId",
                 table: "Obavijest",
                 column: "OdgajateljId");
@@ -378,6 +552,21 @@ namespace EVrtic.Migrations
                 name: "AlergijaDjeteta");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
                 name: "BolestDjeteta");
 
             migrationBuilder.DropTable(
@@ -391,6 +580,9 @@ namespace EVrtic.Migrations
 
             migrationBuilder.DropTable(
                 name: "SazetakAktivnosti");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "DnevniQRCode");
@@ -408,7 +600,7 @@ namespace EVrtic.Migrations
                 name: "Odgajatelj");
 
             migrationBuilder.DropTable(
-                name: "Korisnik");
+                name: "AspNetUsers");
         }
     }
 }
