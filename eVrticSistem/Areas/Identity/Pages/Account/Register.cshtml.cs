@@ -74,8 +74,7 @@ namespace EVrtic.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/Home/RedirectByRole");
-
+            // Roditelja ćemo preusmjeriti na unos podataka djeteta — ne na returnUrl
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (Input.Uloga == Uloga.ADMINISTRATOR)
@@ -89,7 +88,6 @@ namespace EVrtic.Areas.Identity.Pages.Account
             }
 
             bool emailVecPostoji = await _userManager.FindByEmailAsync(Input.Email) != null;
-
             if (emailVecPostoji)
             {
                 ModelState.AddModelError("Input.Email", "Korisnik sa ovom email adresom već postoji.");
@@ -100,25 +98,24 @@ namespace EVrtic.Areas.Identity.Pages.Account
             if (Input.Uloga == Uloga.RODITELJ && !string.IsNullOrWhiteSpace(Input.IdentifikacioniKodDjeteta))
             {
                 dijete = await _context.Djeca
-                    .FirstOrDefaultAsync(d => d.IdentifikacioniKod == Input.IdentifikacioniKodDjeteta);
+                    .FirstOrDefaultAsync(d => d.IdentifikacioniKod == Input.IdentifikacioniKodDjeteta.Trim());
 
                 if (dijete == null)
                 {
-                    ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Dijete sa unesenim identifikacionim kodom nije pronađeno.");
+                    ModelState.AddModelError("Input.IdentifikacioniKodDjeteta",
+                        "Dijete sa unesenim identifikacionim kodom nije pronađeno.");
                 }
                 else if (dijete.RoditeljId != null)
                 {
-                    ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Dijete je već povezano sa roditeljem.");
+                    ModelState.AddModelError("Input.IdentifikacioniKodDjeteta",
+                        "Dijete je već povezano sa roditeljem.");
                 }
             }
 
             if (!ModelState.IsValid)
-            {
                 return Page();
-            }
 
-            // Kreiramo direktno Roditelj ili Odgajatelj objekat — jedan zapis u bazi
-            // koji sadrži i Identity podatke i naše podatke
+            // Kreiramo korisnika (Roditelj ili Odgajatelj)
             Korisnik noviKorisnik;
 
             if (Input.Uloga == Uloga.RODITELJ)
@@ -144,7 +141,6 @@ namespace EVrtic.Areas.Identity.Pages.Account
                 };
             }
 
-            // UserManager kreira korisnika u AspNetUsers i nasljeđenoj tabeli odjednom
             var result = await _userManager.CreateAsync(noviKorisnik, Input.Password);
 
             if (result.Succeeded)
@@ -163,6 +159,14 @@ namespace EVrtic.Areas.Identity.Pages.Account
 
                 await _signInManager.SignInAsync(noviKorisnik, isPersistent: false);
 
+                // ── Ključna izmjena: roditelj ide na unos podataka o djetetu ──
+                if (Input.Uloga == Uloga.RODITELJ)
+                {
+                    return RedirectToAction("UnosPodataka", "Dijete");
+                }
+
+                // Odgajatelj ide na standardni redirect
+                returnUrl ??= Url.Content("~/Home/RedirectByRole");
                 return LocalRedirect(returnUrl);
             }
 

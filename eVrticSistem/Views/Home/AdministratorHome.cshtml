@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Administrator početna";
 }
 
@@ -159,11 +159,12 @@
                     <span>→</span>
                 </a>
 
-                <a class="admin-quick-card" asp-controller="Dijete" asp-action="Create">
-                    <div class="admin-quick-icon purple">➕</div>
+                @* ► Nova kartica za dodavanje identifikacionog koda ◄ *@
+                <a class="admin-quick-card" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
+                    <div class="admin-quick-icon purple">🔑</div>
                     <div>
-                        <h4>Dodaj novi profil</h4>
-                        <p>Brzo kreiranje novog profila djeteta u sistemu.</p>
+                        <h4>Novo dijete (kod)</h4>
+                        <p>Unesi identifikacioni kod za novo dijete koje će se upisati u vrtić.</p>
                     </div>
                     <span>→</span>
                 </a>
@@ -186,9 +187,9 @@
                 Djeca
             </a>
 
-            <a class="admin-bottom-link" asp-controller="Grupa" asp-action="Index">
-                <span>🏫</span>
-                Grupe
+            <a class="admin-bottom-link" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
+                <span>🔑</span>
+                Novi kod
             </a>
         </nav>
 

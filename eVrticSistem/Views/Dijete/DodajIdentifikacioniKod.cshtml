@@ -1,0 +1,255 @@
+@model EVrtic.Models.Dijete
+@{
+    ViewData["Title"] = "Dodaj identifikacioni kod djeteta";
+}
+
+<div class="admin-page">
+    <div class="admin-card">
+
+        <aside class="admin-sidebar">
+            <h1 class="admin-logo">eVrtić</h1>
+            <nav class="admin-menu">
+                <a class="admin-link" asp-controller="Home" asp-action="AdministratorHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="admin-link active" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
+                    <span>➕</span> Novo dijete
+                </a>
+                <a class="admin-link" asp-controller="Dijete" asp-action="Index">
+                    <span>👧</span> Djeca
+                </a>
+                <a class="admin-link" asp-controller="Korisnik" asp-action="Index">
+                    <span>👥</span> Korisnici
+                </a>
+                <a class="admin-link" asp-controller="Grupa" asp-action="Index">
+                    <span>🏫</span> Grupe
+                </a>
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="admin-link admin-logout-button">
+                        <span>🚪</span> Odjava
+                    </button>
+                </form>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-top">
+                <div>
+                    <h2>Upravljanje djecom</h2>
+                    <h1>Novo dijete <span>👶</span></h1>
+                </div>
+            </div>
+
+            @if (TempData["Uspjeh"] != null)
+            {
+                <div class="alert-success-evr">
+                    <span>✅</span> @TempData["Uspjeh"]
+                </div>
+            }
+
+            <section class="evr-form-section">
+                <div class="evr-form-card">
+                    <div class="evr-form-header">
+                        <div class="evr-form-icon">🔑</div>
+                        <div>
+                            <h3>Dodaj identifikacioni kod</h3>
+                            <p>
+                                Unesite jedinstveni identifikacioni kod za novo dijete.
+                                Roditelj će ovaj kod koristiti pri registraciji kako bi se
+                                povezao sa profilom svog djeteta.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form asp-action="DodajIdentifikacioniKod" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        @Html.AntiForgeryToken()
+
+                        <div class="evr-field">
+                            <label asp-for="IdentifikacioniKod" class="evr-label">
+                                Identifikacioni kod djeteta
+                            </label>
+                            <div class="evr-input-wrap">
+                                <span class="evr-input-icon">🔑</span>
+                                <input asp-for="IdentifikacioniKod"
+                                       class="evr-input"
+                                       placeholder="npr. VRTIC-2024-001"
+                                       autocomplete="off" />
+                            </div>
+                            <span asp-validation-for="IdentifikacioniKod" class="text-danger"></span>
+                            <small class="evr-hint">
+                                Kod mora biti jedinstven. Roditelju dostavite ovaj kod kako bi se
+                                registrirao i povezao sa djetetom.
+                            </small>
+                        </div>
+
+                        <div class="evr-form-actions">
+                            <button type="submit" class="evr-btn-primary">
+                                ➕ Dodaj kod u sistem
+                            </button>
+                            <a asp-action="Index" class="evr-btn-secondary">
+                                Odustani
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <nav class="admin-bottom-nav">
+            <a class="admin-bottom-link" asp-controller="Home" asp-action="AdministratorHome">
+                <span>🏠</span> Početna
+            </a>
+            <a class="admin-bottom-link" asp-controller="Korisnik" asp-action="Index">
+                <span>👥</span> Korisnici
+            </a>
+            <a class="admin-bottom-link active" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
+                <span>➕</span> Novo dijete
+            </a>
+            <a class="admin-bottom-link" asp-controller="Dijete" asp-action="Index">
+                <span>👧</span> Djeca
+            </a>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .alert-success-evr {
+        background: #d1fae5;
+        border: 1px solid #6ee7b7;
+        color: #065f46;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .evr-form-section {
+        margin-top: 10px;
+        max-width: 560px;
+    }
+
+    .evr-form-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .evr-form-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .evr-form-icon {
+        font-size: 2.5rem;
+        background: #fef9c3;
+        border-radius: 14px;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .evr-form-header h3 { margin: 0 0 6px; font-size: 1.2rem; color: #1e293b; }
+    .evr-form-header p  { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
+
+    .evr-field { margin-bottom: 22px; }
+
+    .evr-label {
+        display: block;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .evr-input-wrap {
+        display: flex;
+        align-items: center;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: border-color 0.2s;
+    }
+
+    .evr-input-wrap:focus-within { border-color: #6366f1; }
+
+    .evr-input-icon {
+        padding: 0 14px;
+        font-size: 1.1rem;
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        height: 48px;
+        display: flex;
+        align-items: center;
+    }
+
+    .evr-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 0 14px;
+        height: 48px;
+        font-size: 1rem;
+        color: #1e293b;
+        background: transparent;
+    }
+
+    .evr-hint {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.82rem;
+        margin-top: 6px;
+    }
+
+    .evr-form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .evr-btn-primary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .evr-btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .evr-btn-secondary {
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: background 0.2s;
+    }
+
+    .evr-btn-secondary:hover { background: #e2e8f0; }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

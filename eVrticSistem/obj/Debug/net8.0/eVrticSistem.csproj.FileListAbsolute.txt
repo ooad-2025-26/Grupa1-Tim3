@@ -250,10 +250,10 @@ C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\staticwebas
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\eVrticSi.4E0FF64F.Up2Date
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\eVrticSistem.dll
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\refint\eVrticSistem.dll
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\eVrticSistem.pdb
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\eVrticSistem.genruntimeconfig.cache
 C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\ref\eVrticSistem.dll
-C:\Users\HOME\Desktop\OOAD\Grupa1-Tim3\eVrticSistem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

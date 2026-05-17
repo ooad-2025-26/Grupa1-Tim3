@@ -1,0 +1,209 @@
+@model EVrtic.Controllers.UnosPodatakaViewModel
+@{
+    ViewData["Title"] = "Podaci o djetetu";
+}
+
+<div style="min-height:100vh; background:linear-gradient(135deg,#fef9c3,#fde68a,#fbbf24); display:flex; align-items:center; justify-content:center; padding:30px;">
+    <div style="background:#fff; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.12); width:100%; max-width:600px; padding:40px 48px;">
+
+        <div style="text-align:center; margin-bottom:32px;">
+            <h2 style="font-size:1.8rem; font-weight:800; color:#1e293b; margin:0 0 8px;">Podaci o djetetu</h2>
+            <p style="color:#94a3b8; margin:0; font-size:0.93rem;">Sve informacije mogu se naknadno izmijeniti u profilu.</p>
+        </div>
+
+        <form asp-action="UnosPodataka" method="post" id="unosForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="DijeteId" />
+
+            <div class="unos-section-title">📋 Osnovne informacije</div>
+
+            <div class="unos-input">
+                <span>👤</span>
+                <input asp-for="ImePrezime" placeholder="Ime i prezime djeteta" />
+            </div>
+            <span asp-validation-for="ImePrezime" class="text-danger"></span>
+
+            <div class="unos-input textarea-wrap" style="margin-top:10px;">
+                <span>📝</span>
+                <textarea asp-for="DodatnaNapomena" placeholder="Dodatna napomena (opcionalno)" rows="3"></textarea>
+            </div>
+            <span asp-validation-for="DodatnaNapomena" class="text-danger"></span>
+
+            <div class="unos-section-title" style="margin-top:22px;">⚠️ Alergije</div>
+            <div id="alergije-container">
+                @for (int i = 0; i < Model.Alergije.Count; i++)
+                {
+                    <div class="unos-tag-row">
+                        <div class="unos-tag-input-wrap">
+                            <span>🌿</span>
+                            <input type="text" name="Alergije[@i]" value="@Model.Alergije[i]"
+                                   placeholder="Naziv alergije" class="unos-tag-input"
+                                   oninput="provjeriDuplicate('alergije-container','Alergije','alergija-error')" />
+                        </div>
+                        <button type="button" class="unos-remove-btn"
+                                onclick="ukloniRed(this,'alergije-container','Alergije','alergija-error')">✕</button>
+                    </div>
+                }
+            </div>
+            <div id="alergija-error" class="text-danger" style="font-size:.85rem; margin-top:4px;"></div>
+            <button type="button" class="unos-add-btn"
+                    onclick="dodajRed('alergije-container','Alergije','🌿','Naziv alergije','alergija-error')">
+                ＋ Dodaj alergiju
+            </button>
+
+            <div class="unos-section-title" style="margin-top:22px;">🏥 Bolesti / hronična stanja</div>
+            <div id="bolesti-container">
+                @for (int i = 0; i < Model.Bolesti.Count; i++)
+                {
+                    <div class="unos-tag-row">
+                        <div class="unos-tag-input-wrap">
+                            <span>💊</span>
+                            <input type="text" name="Bolesti[@i]" value="@Model.Bolesti[i]"
+                                   placeholder="Naziv bolesti ili stanja" class="unos-tag-input"
+                                   oninput="provjeriDuplicate('bolesti-container','Bolesti','bolest-error')" />
+                        </div>
+                        <button type="button" class="unos-remove-btn"
+                                onclick="ukloniRed(this,'bolesti-container','Bolesti','bolest-error')">✕</button>
+                    </div>
+                }
+            </div>
+            <div id="bolest-error" class="text-danger" style="font-size:.85rem; margin-top:4px;"></div>
+            <button type="button" class="unos-add-btn"
+                    onclick="dodajRed('bolesti-container','Bolesti','💊','Naziv bolesti ili stanja','bolest-error')">
+                ＋ Dodaj bolest / stanje
+            </button>
+
+            <button type="submit" class="unos-button" id="submitBtn" style="margin-top:32px;">
+                Sačuvaj podatke →
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .unos-section-title {
+        font-weight: 700; color: #475569; font-size: 0.88rem;
+        text-transform: uppercase; letter-spacing: .04em; margin: 0 0 10px;
+    }
+    .unos-input {
+        display: flex; align-items: center;
+        border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+        margin-bottom: 10px; transition: border-color .2s;
+    }
+    .unos-input.textarea-wrap { align-items: flex-start; }
+    .unos-input:focus-within { border-color: #f97316; }
+    .unos-input > span {
+        padding: 0 14px; font-size: 1.1rem; background: #fafafa;
+        border-right: 1px solid #e2e8f0; height: 48px;
+        display: flex; align-items: center; flex-shrink: 0;
+    }
+    .unos-input.textarea-wrap > span { height: auto; padding-top: 13px; }
+    .unos-input input, .unos-input textarea {
+        flex: 1; border: none; outline: none; padding: 12px 14px;
+        font-size: .95rem; color: #1e293b; background: transparent;
+        font-family: inherit; resize: vertical;
+    }
+    .unos-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .unos-tag-input-wrap {
+        flex: 1; display: flex; align-items: center;
+        border: 2px solid #e2e8f0; border-radius: 10px; overflow: hidden; transition: border-color .2s;
+    }
+    .unos-tag-input-wrap:focus-within { border-color: #f97316; }
+    .unos-tag-input-wrap > span {
+        padding: 0 12px; font-size: 1rem; background: #fafafa;
+        border-right: 1px solid #e2e8f0; height: 42px;
+        display: flex; align-items: center; flex-shrink: 0;
+    }
+    .unos-tag-input {
+        flex: 1; border: none; outline: none;
+        padding: 10px 12px; font-size: .93rem; color: #1e293b; background: transparent;
+    }
+    .unos-remove-btn {
+        background: #fee2e2; color: #dc2626; border: none; border-radius: 8px;
+        width: 36px; height: 36px; font-size: .9rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .unos-remove-btn:hover { background: #fecaca; }
+    .unos-add-btn {
+        background: #f0fdf4; color: #15803d; border: 2px dashed #86efac;
+        border-radius: 10px; padding: 9px 18px; font-size: .9rem; font-weight: 600;
+        cursor: pointer; display: block; width: 100%; text-align: center; margin-top: 4px;
+    }
+    .unos-add-btn:hover { background: #dcfce7; border-color: #4ade80; }
+    .unos-button {
+        width: 100%; background: linear-gradient(135deg, #f97316, #fb923c);
+        color: #fff; border: none; border-radius: 14px; padding: 15px;
+        font-size: 1.05rem; font-weight: 700; cursor: pointer;
+    }
+    .unos-button:hover { opacity: .9; }
+    .unos-button:disabled { opacity: .6; cursor: not-allowed; }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const nextIndex = {
+            'alergije-container': @Model.Alergije.Count,
+            'bolesti-container': @Model.Bolesti.Count
+        };
+
+        function dodajRed(containerId, fieldName, ikona, placeholder, errorId) {
+            const container = document.getElementById(containerId);
+            const idx = nextIndex[containerId]++;
+            const row = document.createElement('div');
+            row.className = 'unos-tag-row';
+            row.innerHTML = `
+                <div class="unos-tag-input-wrap">
+                    <span>${ikona}</span>
+                    <input type="text" name="${fieldName}[${idx}]" placeholder="${placeholder}"
+                           class="unos-tag-input"
+                           oninput="provjeriDuplicate('${containerId}','${fieldName}','${errorId}')" />
+                </div>
+                <button type="button" class="unos-remove-btn"
+                        onclick="ukloniRed(this,'${containerId}','${fieldName}','${errorId}')">✕</button>`;
+            container.appendChild(row);
+            row.querySelector('input').focus();
+        }
+
+        function ukloniRed(btn, containerId, fieldName, errorId) {
+            btn.closest('.unos-tag-row').remove();
+            renumeriraj(containerId, fieldName);
+            provjeriDuplicate(containerId, fieldName, errorId);
+        }
+
+        function renumeriraj(containerId, fieldName) {
+            document.querySelectorAll(`#${containerId} input[type="text"]`)
+                .forEach((inp, i) => inp.name = `${fieldName}[${i}]`);
+        }
+
+        function provjeriDuplicate(containerId, fieldName, errorId) {
+            const inputs = document.querySelectorAll(`#${containerId} input[type="text"]`);
+            const errDiv = document.getElementById(errorId);
+            const vrijednosti = Array.from(inputs).map(i => i.value.trim().toLowerCase()).filter(v => v !== '');
+            const duplikati = vrijednosti.filter((v, i) => vrijednosti.indexOf(v) !== i);
+
+            if (duplikati.length > 0) {
+                errDiv.textContent = `Duplikat: "${duplikati[0]}" je već unesen/a.`;
+                inputs.forEach(inp => {
+                    inp.closest('.unos-tag-input-wrap').style.borderColor =
+                        (inp.value.trim().toLowerCase() !== '' && duplikati.includes(inp.value.trim().toLowerCase()))
+                        ? '#dc2626' : '';
+                });
+            } else {
+                errDiv.textContent = '';
+                inputs.forEach(inp => inp.closest('.unos-tag-input-wrap').style.borderColor = '');
+            }
+
+            document.getElementById('submitBtn').disabled =
+                document.getElementById('alergija-error').textContent !== '' ||
+                document.getElementById('bolest-error').textContent !== '';
+        }
+
+        document.getElementById('unosForm').addEventListener('submit', function(e) {
+            provjeriDuplicate('alergije-container', 'Alergije', 'alergija-error');
+            provjeriDuplicate('bolesti-container', 'Bolesti', 'bolest-error');
+            if (document.getElementById('submitBtn').disabled) e.preventDefault();
+        });
+    </script>
+}
