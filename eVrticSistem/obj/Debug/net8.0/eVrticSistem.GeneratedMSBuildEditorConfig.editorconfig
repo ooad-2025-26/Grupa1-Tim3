@@ -126,6 +126,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/HOME/Desktop/OOAD/Grupa1-Tim3/eVrticSistem/Views/Dijete/DodajDijete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXERvZGFqRGlqZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/HOME/Desktop/OOAD/Grupa1-Tim3/eVrticSistem/Views/Dijete/DodajIdentifikacioniKod.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlqZXRlXERvZGFqSWRlbnRpZmlrYWNpb25pS29kLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -324,6 +328,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/HOME/Desktop/OOAD/Grupa1-Tim3/eVrticSistem/Views/Roditelj/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HOME/Desktop/OOAD/Grupa1-Tim3/eVrticSistem/Views/Roditelj/MojProfil.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9kaXRlbGpcTW9qUHJvZmlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/HOME/Desktop/OOAD/Grupa1-Tim3/eVrticSistem/Views/SazetakAktivnosti/Create.cshtml]

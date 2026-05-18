@@ -147,7 +147,7 @@ namespace EVrtic.Areas.Identity.Pages.Account
                 await _signInManager.SignInAsync(noviKorisnik, isPersistent: false);
 
                 if (Input.Uloga == Uloga.RODITELJ)
-                    return RedirectToAction("UnosPodataka", "Dijete");
+                    return RedirectToAction("UnosPodataka", "Dijete", new { novaRegistracija = true });
 
                 returnUrl ??= Url.Content("~/Home/RedirectByRole");
                 return LocalRedirect(returnUrl);

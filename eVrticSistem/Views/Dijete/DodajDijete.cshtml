@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Dodaj dijete";
+}
+
+<div style="min-height:100vh; background:#bfdbfe; display:flex; align-items:center; justify-content:center; padding:30px;">
+    <div style="background:#fff; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.12); width:100%; max-width:500px; padding:40px 48px;">
+
+        <div style="text-align:center; margin-bottom:32px;">
+            <div style="font-size:3rem; margin-bottom:12px;">👶</div>
+            <h2 style="font-size:1.7rem; font-weight:800; color:#1e293b; margin:0 0 8px;">Dodaj dijete</h2>
+            <p style="color:#94a3b8; margin:0; font-size:0.93rem;">
+                Unesite identifikacioni kod koji vam je dodijelio administrator vrtića.
+            </p>
+        </div>
+
+        <form asp-action="DodajDijete" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:600; color:#334155; margin-bottom:8px; font-size:.95rem;">
+                    Identifikacioni kod djeteta
+                </label>
+                <div style="display:flex; align-items:center; border:2px solid #e2e8f0; border-radius:12px; overflow:hidden; transition:border-color .2s;"
+                     onfocusin="this.style.borderColor='#3b82f6'" onfocusout="this.style.borderColor='#e2e8f0'">
+                    <span style="padding:0 14px; font-size:1.1rem; background:#f8fafc; border-right:1px solid #e2e8f0; height:48px; display:flex; align-items:center;">🔑</span>
+                    <input type="text" name="identifikacioniKod"
+                           placeholder="npr. VRTIC-2024-001"
+                           style="flex:1; border:none; outline:none; padding:0 14px; height:48px; font-size:1rem; color:#1e293b; background:transparent;"
+                           autocomplete="off" />
+                </div>
+                <span class="text-danger" style="font-size:.85rem;">
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey("identifikacioniKod"))
+                    {
+                        @ViewData.ModelState["identifikacioniKod"]!.Errors[0].ErrorMessage
+                    }
+                </span>
+            </div>
+
+            <button type="submit"
+                    style="width:100%; background:linear-gradient(135deg,#3b82f6,#60a5fa); color:#fff; border:none; border-radius:14px; padding:15px; font-size:1.05rem; font-weight:700; cursor:pointer; margin-top:8px;">
+                Poveži dijete →
+            </button>
+
+            <div style="text-align:center; margin-top:16px;">
+                <a asp-controller="Home" asp-action="RoditeljHome"
+                   style="color:#94a3b8; font-size:.88rem; text-decoration:none;">
+                    ← Nazad na početnu
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -17,7 +17,7 @@
                     Profil djeteta &nbsp;·&nbsp; Kod: <strong>@Model.IdentifikacioniKod</strong>
                 </p>
             </div>
-            <a asp-action="UnosPodataka"
+            <a asp-action="UnosPodataka" asp-route-id="@Model.Id"
                style="background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); border:1.5px solid rgba(255,255,255,0.4); color:#fff; border-radius:12px; padding:10px 20px; text-decoration:none; font-weight:600; font-size:0.9rem; white-space:nowrap;">
                 ✏️ Uredi
             </a>
@@ -34,9 +34,7 @@
                     <div>
                         <div style="font-size:0.78rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Datum rođenja</div>
                         <div style="color:#1e293b; font-weight:600; margin-top:2px;">
-                            @(Model.DatumRodjenja != default
-                                ? Model.DatumRodjenja.ToString("dd.MM.yyyy")
-                                : "Nije uneseno")
+                            @(Model.DatumRodjenja != default ? Model.DatumRodjenja.ToString("dd.MM.yyyy") : "Nije uneseno")
                         </div>
                     </div>
                 </div>
@@ -55,61 +53,48 @@
 
         @* Alergije *@
         <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">
-                ⚠️ Alergije
-            </div>
+            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">⚠️ Alergije</div>
             @if (Model.Alergije.Any())
             {
                 <div style="display:flex; flex-wrap:wrap; gap:10px;">
                     @foreach (var a in Model.Alergije)
                     {
-                        <span style="background:#fff1f2; border:1.5px solid #fecdd3; color:#be123c; border-radius:50px; padding:8px 18px; font-size:0.9rem; font-weight:600; display:flex; align-items:center; gap:6px;">
+                        <span style="background:#fff1f2; border:1.5px solid #fecdd3; color:#be123c; border-radius:50px; padding:8px 18px; font-size:.9rem; font-weight:600; display:flex; align-items:center; gap:6px;">
                             🌿 @a.Naziv
                         </span>
                     }
                 </div>
             }
-            else
-            {
-                <p style="margin:0; color:#94a3b8; font-size:0.9rem;">Nema unesenih alergija.</p>
-            }
+            else { <p style="margin:0; color:#94a3b8; font-size:.9rem;">Nema unesenih alergija.</p> }
         </div>
 
         @* Bolesti *@
         <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">
-                🏥 Bolesti / hronična stanja
-            </div>
+            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">🏥 Bolesti / hronična stanja</div>
             @if (Model.Bolesti.Any())
             {
                 <div style="display:flex; flex-wrap:wrap; gap:10px;">
                     @foreach (var b in Model.Bolesti)
                     {
-                        <span style="background:#eff6ff; border:1.5px solid #bfdbfe; color:#1d4ed8; border-radius:50px; padding:8px 18px; font-size:0.9rem; font-weight:600; display:flex; align-items:center; gap:6px;">
+                        <span style="background:#eff6ff; border:1.5px solid #bfdbfe; color:#1d4ed8; border-radius:50px; padding:8px 18px; font-size:.9rem; font-weight:600; display:flex; align-items:center; gap:6px;">
                             💊 @b.Naziv
                         </span>
                     }
                 </div>
             }
-            else
-            {
-                <p style="margin:0; color:#94a3b8; font-size:0.9rem;">Nema unesenih bolesti.</p>
-            }
+            else { <p style="margin:0; color:#94a3b8; font-size:.9rem;">Nema unesenih bolesti.</p> }
         </div>
 
-        @* Grupa *@
         @if (Model.Grupa != null)
         {
             <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-                <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">
-                    🏫 Grupa
-                </div>
-                <p style="margin:0; color:#334155; font-size:0.95rem; font-weight:600;">@Model.Grupa.ImeGrupe</p>
+                <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">🏫 Grupa</div>
+                <p style="margin:0; color:#334155; font-size:.95rem; font-weight:600;">@Model.Grupa.ImeGrupe</p>
             </div>
         }
 
         <a asp-controller="Home" asp-action="RoditeljHome"
-           style="text-align:center; color:#475569; font-size:0.88rem; text-decoration:none; padding:8px;">
+           style="text-align:center; color:#475569; font-size:.88rem; text-decoration:none; padding:8px;">
             ← Nazad na početnu
         </a>
 

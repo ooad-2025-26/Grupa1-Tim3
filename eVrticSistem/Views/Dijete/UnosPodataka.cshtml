@@ -1,6 +1,7 @@
 @model EVrtic.Controllers.UnosPodatakaViewModel
 @{
     ViewData["Title"] = "Podaci o djetetu";
+    bool novaRegistracija = (bool)(ViewData["NovaRegistracija"] ?? false);
 }
 
 <div style="min-height:100vh; background:#bfdbfe; display:flex; align-items:center; justify-content:center; padding:30px;">
@@ -15,6 +16,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="DijeteId" />
+            <input type="hidden" name="novaRegistracija" value="@novaRegistracija.ToString().ToLower()" />
 
             <div class="unos-section-title">📋 Osnovne informacije</div>
 
@@ -83,6 +85,16 @@
             <button type="submit" class="unos-button" id="submitBtn" style="margin-top:32px;">
                 Sačuvaj podatke →
             </button>
+
+            @if (!novaRegistracija)
+            {
+                <div style="text-align:center; margin-top:14px;">
+                    <a asp-controller="Home" asp-action="RoditeljHome"
+                       style="color:#94a3b8; font-size:.85rem; text-decoration:none;">
+                        ← Nazad na početnu
+                    </a>
+                </div>
+            }
         </form>
     </div>
 </div>

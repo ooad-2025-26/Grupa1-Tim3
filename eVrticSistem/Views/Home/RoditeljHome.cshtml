@@ -1,5 +1,18 @@
-﻿@{
+@using EVrtic.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Korisnik> UserManager
+@inject EVrtic.Data.ApplicationDbContext DbContext
+@using Microsoft.EntityFrameworkCore
+
+@{
     ViewData["Title"] = "Roditelj početna";
+    var korisnik = await UserManager.GetUserAsync(User);
+    var roditelj = korisnik as Roditelj;
+    var djeca = roditelj != null
+        ? await DbContext.Djeca
+            .Where(d => d.RoditeljId == korisnik.Id && d.ImePrezime != string.Empty)
+            .ToListAsync()
+        : new List<Dijete>();
 }
 
 <div class="parent-page">
@@ -10,45 +23,22 @@
 
             <nav class="sidebar-menu">
                 <a class="sidebar-link active" asp-controller="Home" asp-action="RoditeljHome">
-                    <span>🏠</span>
-                    Početna
+                    <span>🏠</span> Početna
                 </a>
-
                 <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                    <span>📋</span>
-                    Izvještaji
+                    <span>📋</span> Izvještaji
                 </a>
-
-                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="Index">
-                    <span>📊</span>
-                    Sažeci
-                </a>
-
                 <a class="sidebar-link" asp-controller="Obavijest" asp-action="Index">
-                    <span>🔔</span>
-                    Obavijesti
+                    <span>🔔</span> Obavijesti
                 </a>
-
-                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
-                    <span>🚪</span>
-                    Dolazak/Odlazak
+                <a class="sidebar-link" asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
                 </a>
-
-                <form asp-area="Identity"
-                      asp-page="/Account/Logout"
-                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
-                      method="post">
-                    <button type="submit" class="sidebar-link sidebar-logout-button">
-                        <span>🚪</span>
-                        Odjava
-                    </button>
-                </form>
             </nav>
 
             <div class="sidebar-illustration">
                 <div class="mini-cloud mini-cloud-1"></div>
                 <div class="mini-cloud mini-cloud-2"></div>
-
                 <div class="mini-school">
                     <div class="mini-roof"></div>
                     <div class="mini-building">
@@ -57,7 +47,6 @@
                         <div class="mini-window"></div>
                     </div>
                 </div>
-
                 <div class="mini-tree tree-one"></div>
                 <div class="mini-tree tree-two"></div>
                 <div class="mini-tree tree-three"></div>
@@ -68,80 +57,153 @@
             <div class="parent-top">
                 <div>
                     <h2>Pozdrav,</h2>
-                    <h1>Roditelju! <span>👋</span></h1>
+                    <h1>@(roditelj?.ImePrezime?.Split(' ')[0] ?? "Roditelju")! <span>👋</span></h1>
                 </div>
-
-                <a class="notification-icon" asp-controller="Obavijest" asp-action="Index">
-                    🔔
-                </a>
+                <a class="notification-icon" asp-controller="Obavijest" asp-action="Index">🔔</a>
             </div>
 
-            <section class="parent-hero">
-                <div class="child-card">
-                    <h3>Moje dijete</h3>
+            @* ── Djeca kartice ── *@
+            <h3 class="section-title" style="margin-bottom:14px;">Moja djeca</h3>
+            <section class="djeca-grid">
 
-                    <div class="child-info">
-                        <div class="child-avatar">🧒</div>
-
-                        <div>
-                            <h4>Profil djeteta</h4>
-                            <p>Pregled osnovnih podataka i dnevnih aktivnosti.</p>
+                @foreach (var dijete in djeca)
+                {
+                    <a class="dijete-card" asp-controller="Dijete" asp-action="MojeDijete" asp-route-id="@dijete.Id">
+                        <div class="dijete-avatar">🧒</div>
+                        <div class="dijete-info">
+                            <h4>@dijete.ImePrezime</h4>
                         </div>
+                        <span class="dijete-arrow">→</span>
+                    </a>
+                }
 
-                        <a class="card-arrow" asp-controller="Dijete" asp-action="MojeDijete">→</a>
+                @* Kartica za dodavanje novog djeteta *@
+                <a class="dijete-card dijete-card-add" asp-controller="Dijete" asp-action="DodajDijete">
+                    <div class="dijete-add-icon">＋</div>
+                    <div class="dijete-info">
+                        <h4>Dodaj dijete</h4>
+                        <p>Unesi identifikacioni kod</p>
                     </div>
-                </div>
+                    <span class="dijete-arrow">→</span>
+                </a>
 
-                <div class="family-illustration">
-                    <div class="family-cloud"></div>
-                    <div class="family-tree family-tree-left"></div>
-                    <div class="family-tree family-tree-small"></div>
-                    <div class="family-people">👨‍👩‍👧</div>
-                    <div class="family-tree family-tree-right"></div>
-                    <div class="family-ground"></div>
-                </div>
             </section>
 
             <h3 class="section-title">Brzi pristup</h3>
 
             <section class="quick-grid">
-                <a class="quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                    <div class="quick-icon green">📋</div>
-                    <div>
-                        <h4>Dnevni izvještaji</h4>
-                        <p>Pregledajte dnevne aktivnosti i izvještaje vašeg djeteta.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
-                    <div class="quick-icon blue">📊</div>
-                    <div>
-                        <h4>Sažeci aktivnosti</h4>
-                        <p>Pregledajte sedmične i mjesečne sažetke aktivnosti.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="quick-card" asp-controller="Obavijest" asp-action="Index">
-                    <div class="quick-icon pink">🔔</div>
-                    <div>
-                        <h4>Obavijesti</h4>
-                        <p>Pogledajte najnovije obavijesti i važne informacije.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
-                    <div class="quick-icon cyan">🚪</div>
-                    <div>
-                        <h4>Dolazak/Odlazak</h4>
-                        <p>Evidentirajte ili pregledajte dolazak i odlazak djeteta.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-            </section>
+    <a class="quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
+        <div class="quick-icon green">📋</div>
+        <div>
+            <h4>Dnevni izvještaji</h4>
+            <p>Pregledajte dnevne aktivnosti i izvještaje vašeg djeteta.</p>
+        </div>
+        <span>→</span>
+    </a>
+    <a class="quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
+        <div class="quick-icon blue">📊</div>
+        <div>
+            <h4>Sažeci aktivnosti</h4>
+            <p>Pregledajte sedmične i mjesečne sažetke aktivnosti.</p>
+        </div>
+        <span>→</span>
+    </a>
+    <a class="quick-card" asp-controller="Obavijest" asp-action="Index">
+        <div class="quick-icon pink">🔔</div>
+        <div>
+            <h4>Obavijesti</h4>
+            <p>Pogledajte najnovije obavijesti i važne informacije.</p>
+        </div>
+        <span>→</span>
+    </a>
+    <a class="quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
+        <div class="quick-icon cyan">🚪</div>
+        <div>
+            <h4>Dolazak/Odlazak</h4>
+            <p>Evidentirajte ili pregledajte dolazak i odlazak djeteta.</p>
+        </div>
+        <span>→</span>
+    </a>
+</section>
         </main>
 
     </div>
 </div>
+
+<style>
+    .djeca-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .dijete-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+        border: 2px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 18px 20px;
+        text-decoration: none;
+        color: inherit;
+        min-width: 220px;
+        flex: 1;
+        max-width: 300px;
+        transition: border-color .2s, box-shadow .2s, transform .15s;
+    }
+
+    .dijete-card:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 4px 16px rgba(59,130,246,.12);
+        transform: translateY(-2px);
+    }
+
+    .dijete-avatar {
+        font-size: 2rem;
+        background: #eff6ff;
+        border-radius: 50%;
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .dijete-info { flex: 1; }
+    .dijete-info h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #1e293b; }
+    .dijete-info p  { margin: 4px 0 0; font-size: 0.82rem; color: #94a3b8; }
+
+    .dijete-arrow {
+        color: #3b82f6;
+        font-size: 1.2rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .dijete-card-add {
+        background: #eff6ff;
+        border: 2px dashed #93c5fd;
+    }
+
+    .dijete-card-add:hover {
+        background: #dbeafe;
+        border-color: #60a5fa;
+    }
+
+    .dijete-add-icon {
+        font-size: 1.6rem;
+        background: #3b82f6;
+        color: #fff;
+        border-radius: 12px;
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-weight: 300;
+    }
+</style>
