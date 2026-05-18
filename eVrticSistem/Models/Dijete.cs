@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EVrtic.Models
@@ -19,6 +19,11 @@ namespace EVrtic.Models
         [StringLength(500)]
         public string DodatnaNapomena { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Datum rođenja je obavezan.")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Datum rođenja")]
+        public DateTime DatumRodjenja { get; set; }
+
         public bool Aktivno { get; set; } = true;
 
         public int? GrupaId { get; set; }
@@ -32,17 +37,11 @@ namespace EVrtic.Models
         public Roditelj? Roditelj { get; set; }
 
         public ICollection<AlergijaDjeteta> Alergije { get; set; } = new List<AlergijaDjeteta>();
-
         public ICollection<BolestDjeteta> Bolesti { get; set; } = new List<BolestDjeteta>();
-
         public ICollection<DnevniIzvjestaj> DnevniIzvjestaji { get; set; } = new List<DnevniIzvjestaj>();
-
         public ICollection<EvidencijaDolaskaOdlaska> EvidencijeDolaskaOdlaska { get; set; } = new List<EvidencijaDolaskaOdlaska>();
-
         public ICollection<SazetakAktivnosti> SazeciAktivnosti { get; set; } = new List<SazetakAktivnosti>();
 
-        public Dijete()
-        {
-        }
+        public Dijete() { }
     }
 }

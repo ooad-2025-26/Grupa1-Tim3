@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model EVrtic.Areas.Identity.Pages.Account.RegisterModel
 @using EVrtic.Models
 
@@ -27,7 +27,6 @@
                         <div class="register-window"></div>
                     </div>
                 </div>
-
                 <div class="register-kids">
                     <span>🧒</span>
                     <span>👧</span>
@@ -77,11 +76,22 @@
                     </div>
                     <span asp-validation-for="Input.Uloga" class="text-danger"></span>
 
-                    <div id="kodDjetetaWrapper" class="register-input" style="display:none;">
-                        <span>🔑</span>
-                        <input asp-for="Input.IdentifikacioniKodDjeteta" placeholder="Identifikacioni kod djeteta" />
+                    {{-- Polja vidljiva samo za roditelja --}}
+                    <div id="roditeljPolja" style="display:none;">
+
+                        <div class="register-input">
+                            <span>📱</span>
+                            <input asp-for="Input.KontaktTelefon" placeholder="Kontakt telefon" autocomplete="tel" />
+                        </div>
+                        <span asp-validation-for="Input.KontaktTelefon" class="text-danger"></span>
+
+                        <div class="register-input">
+                            <span>🔑</span>
+                            <input asp-for="Input.IdentifikacioniKodDjeteta" placeholder="Identifikacioni kod djeteta" />
+                        </div>
+                        <span asp-validation-for="Input.IdentifikacioniKodDjeteta" class="text-danger"></span>
+
                     </div>
-                    <span asp-validation-for="Input.IdentifikacioniKodDjeteta" class="text-danger"></span>
 
                     <button id="registerSubmit" type="submit" class="register-button">
                         Registrujte se
@@ -104,18 +114,13 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        function prikaziKodDjetetaAkoJeRoditelj() {
-            const ulogaSelect = document.getElementById("ulogaSelect");
-            const kodWrapper = document.getElementById("kodDjetetaWrapper");
-
-            if (ulogaSelect.value === "RODITELJ") {
-                kodWrapper.style.display = "flex";
-            } else {
-                kodWrapper.style.display = "none";
-            }
+        function prikaziRoditeljPolja() {
+            const uloga = document.getElementById("ulogaSelect").value;
+            document.getElementById("roditeljPolja").style.display =
+                uloga === "RODITELJ" ? "block" : "none";
         }
 
-        document.getElementById("ulogaSelect").addEventListener("change", prikaziKodDjetetaAkoJeRoditelj);
-        prikaziKodDjetetaAkoJeRoditelj();
+        document.getElementById("ulogaSelect").addEventListener("change", prikaziRoditeljPolja);
+        prikaziRoditeljPolja();
     </script>
 }

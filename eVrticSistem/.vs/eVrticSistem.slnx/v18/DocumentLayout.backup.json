@@ -3,6 +3,22 @@
   "WorkspaceRootPath": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Migrations\\20260518093510_DodajTelefonIDatumRodjenja.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20260518093510_DodajTelefonIDatumRodjenja.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\controllers\\dijetecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:controllers\\dijetecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\models\\korisnik.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:models\\korisnik.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\views\\dijete\\dodajidentifikacionikod.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:views\\dijete\\dodajidentifikacionikod.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\views\\dijete\\mojedijete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:views\\dijete\\mojedijete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -13,10 +29,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\views\\home\\roditeljhome.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:views\\home\\roditeljhome.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\controllers\\dijetecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:controllers\\dijetecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HOME\\AppData\\Local\\Temp\\d54a1yi5..sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|"
@@ -59,10 +71,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\models\\roditelj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:models\\roditelj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\models\\korisnik.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:models\\korisnik.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\scaffoldingreadme.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -250,12 +258,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|c:\\users\\home\\desktop\\ooad\\grupa1-tim3\\evrticsistem\\migrations\\20260516145544_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A8A021D1-A2EC-CA75-F860-25B841A94E1D}|eVrticSistem.csproj|solutionrelative:migrations\\20260516145544_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HOME\\AppData\\Local\\Temp\\d54a1yi5..sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HOME\\AppData\\Local\\Temp\\d54a1yi5..sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|ResultFrame"
     }
   ],
   "DocumentGroupContainers": [
@@ -265,61 +267,89 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "20260518093510_DodajTelefonIDatumRodjenja.cs",
+              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Migrations\\20260518093510_DodajTelefonIDatumRodjenja.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260518093510_DodajTelefonIDatumRodjenja.cs",
+              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Migrations\\20260518093510_DodajTelefonIDatumRodjenja.cs",
+              "RelativeToolTip": "Migrations\\20260518093510_DodajTelefonIDatumRodjenja.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T09:35:10.855Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DodajIdentifikacioniKod.cshtml",
+              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\DodajIdentifikacioniKod.cshtml",
+              "RelativeDocumentMoniker": "Views\\Dijete\\DodajIdentifikacioniKod.cshtml",
+              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\DodajIdentifikacioniKod.cshtml",
+              "RelativeToolTip": "Views\\Dijete\\DodajIdentifikacioniKod.cshtml",
+              "ViewState": "AgIAAKIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-18T09:11:48.755Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "UnosPodataka.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\UnosPodataka.cshtml",
               "RelativeDocumentMoniker": "Views\\Dijete\\UnosPodataka.cshtml",
               "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\UnosPodataka.cshtml",
               "RelativeToolTip": "Views\\Dijete\\UnosPodataka.cshtml",
-              "ViewState": "AgIAAL4AAAAAAAAAAAAYwNAAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-05-17T20:47:44.243Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "MojeDijete.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\MojeDijete.cshtml",
               "RelativeDocumentMoniker": "Views\\Dijete\\MojeDijete.cshtml",
-              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\MojeDijete.cshtml*",
-              "RelativeToolTip": "Views\\Dijete\\MojeDijete.cshtml*",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAYwF0AAAAGAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\MojeDijete.cshtml",
+              "RelativeToolTip": "Views\\Dijete\\MojeDijete.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-05-17T20:38:47.962Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "SQLQuery1.sql ",
-              "DocumentMoniker": "C:\\Users\\HOME\\AppData\\Local\\Temp\\d54a1yi5..sql",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\d54a1yi5..sql",
-              "ToolTip": "SQLQuery1.sql *",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-05-17T20:35:50.607Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Register.cshtml.cs",
-              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
-              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
-              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
-              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
-              "ViewState": "AgIAACkAAAAAAAAAAAAkwE4AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "DijeteController.cs",
+              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\DijeteController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DijeteController.cs",
+              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\DijeteController.cs",
+              "RelativeToolTip": "Controllers\\DijeteController.cs",
+              "ViewState": "AgIAAA0BAAAAAAAAAAAIwCMBAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-11T22:24:28.102Z",
+              "WhenOpened": "2026-05-06T15:37:53.397Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 2,
+              "Title": "Korisnik.cs",
+              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Korisnik.cs",
+              "RelativeDocumentMoniker": "Models\\Korisnik.cs",
+              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Korisnik.cs",
+              "RelativeToolTip": "Models\\Korisnik.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-06T14:20:58.031Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "AdministratorHome.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Home\\AdministratorHome.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\AdministratorHome.cshtml",
@@ -327,12 +357,34 @@
               "RelativeToolTip": "Views\\Home\\AdministratorHome.cshtml",
               "ViewState": "AgIAAJgAAAAAAAAAAADwv8MAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-06T20:52:10.011Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-06T20:52:10.011Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 9,
+              "Title": "Register.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
+              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Register.cshtml.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAkwE4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-11T22:24:28.102Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "d54a1yi5..sql",
+              "DocumentMoniker": "C:\\Users\\HOME\\AppData\\Local\\Temp\\d54a1yi5..sql",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\d54a1yi5..sql",
+              "ToolTip": "C:\\Users\\HOME\\AppData\\Local\\Temp\\d54a1yi5..sql",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\d54a1yi5..sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:35:50.607Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "RoditeljHome.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Home\\RoditeljHome.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\RoditeljHome.cshtml",
@@ -340,12 +392,11 @@
               "RelativeToolTip": "Views\\Home\\RoditeljHome.cshtml",
               "ViewState": "AgIAAFIAAAAAAAAAAADwv1gAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-06T20:31:52.809Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-06T20:31:52.809Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "_LoginPartial.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Shared\\_LoginPartial.cshtml",
               "RelativeDocumentMoniker": "Views\\Shared\\_LoginPartial.cshtml",
@@ -353,25 +404,11 @@
               "RelativeToolTip": "Views\\Shared\\_LoginPartial.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-11T21:46:05.272Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-11T21:46:05.272Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "DijeteController.cs",
-              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\DijeteController.cs",
-              "RelativeDocumentMoniker": "Controllers\\DijeteController.cs",
-              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\DijeteController.cs",
-              "RelativeToolTip": "Controllers\\DijeteController.cs",
-              "ViewState": "AgIAADsAAAAAAAAAAAAkwDEAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-06T15:37:53.397Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "0t2sqzkc..sql",
               "DocumentMoniker": "C:\\Users\\HOME\\AppData\\Local\\Temp\\0t2sqzkc..sql",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\0t2sqzkc..sql",
@@ -382,7 +419,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "Roditelj.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Roditelj.cs",
               "RelativeDocumentMoniker": "Models\\Roditelj.cs",
@@ -394,7 +431,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "Administrator.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Administrator.cs",
               "RelativeDocumentMoniker": "Models\\Administrator.cs",
@@ -406,7 +443,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "Login.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Areas\\Identity\\Pages\\Account\\Login.cshtml",
               "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Login.cshtml",
@@ -418,7 +455,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 64,
               "Title": "20260516145544_InitialCreate.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Migrations\\20260516145544_InitialCreate.cs",
               "RelativeDocumentMoniker": "Migrations\\20260516145544_InitialCreate.cs",
@@ -430,7 +467,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "Odgajatelj.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Odgajatelj.cs",
               "RelativeDocumentMoniker": "Models\\Odgajatelj.cs",
@@ -442,7 +479,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
@@ -454,7 +491,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -466,19 +503,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Korisnik.cs",
-              "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Korisnik.cs",
-              "RelativeDocumentMoniker": "Models\\Korisnik.cs",
-              "ToolTip": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Korisnik.cs",
-              "RelativeToolTip": "Models\\Korisnik.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAkwBwAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-06T14:20:58.031Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 18,
               "Title": "ScaffoldingReadMe.txt",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\ScaffoldingReadMe.txt",
               "RelativeDocumentMoniker": "ScaffoldingReadMe.txt",
@@ -490,7 +515,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 23,
               "Title": "site.css",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\wwwroot\\css\\site.css",
               "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
@@ -502,7 +527,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 20,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -514,7 +539,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 19,
               "Title": "Uloga.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Uloga.cs",
               "RelativeDocumentMoniker": "Models\\Uloga.cs",
@@ -526,7 +551,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 21,
               "Title": "Register.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Areas\\Identity\\Pages\\Account\\Register.cshtml",
               "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Register.cshtml",
@@ -538,7 +563,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 25,
               "Title": "site.js",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\wwwroot\\js\\site.js",
               "RelativeDocumentMoniker": "wwwroot\\js\\site.js",
@@ -550,7 +575,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 22,
               "Title": "HomeController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\HomeController.cs",
               "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
@@ -562,7 +587,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 24,
               "Title": "OdgajateljHome.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Home\\OdgajateljHome.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\OdgajateljHome.cshtml",
@@ -574,7 +599,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 26,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
@@ -586,7 +611,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 27,
               "Title": "RoditeljController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\RoditeljController.cs",
               "RelativeDocumentMoniker": "Controllers\\RoditeljController.cs",
@@ -598,7 +623,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 28,
               "Title": "OdgajateljController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\OdgajateljController.cs",
               "RelativeDocumentMoniker": "Controllers\\OdgajateljController.cs",
@@ -610,7 +635,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 29,
               "Title": "KorisnikController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\KorisnikController.cs",
               "RelativeDocumentMoniker": "Controllers\\KorisnikController.cs",
@@ -622,7 +647,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 30,
               "Title": "AdministratorController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\AdministratorController.cs",
               "RelativeDocumentMoniker": "Controllers\\AdministratorController.cs",
@@ -634,7 +659,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 31,
               "Title": "Microsoft.Common.CurrentVersion.targets",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
@@ -646,7 +671,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 32,
               "Title": "_ViewImports.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\_ViewImports.cshtml",
               "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
@@ -658,7 +683,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 33,
               "Title": "SazetakAktivnostiController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\SazetakAktivnostiController.cs",
               "RelativeDocumentMoniker": "Controllers\\SazetakAktivnostiController.cs",
@@ -670,7 +695,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 34,
               "Title": "ObavijestController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\ObavijestController.cs",
               "RelativeDocumentMoniker": "Controllers\\ObavijestController.cs",
@@ -682,7 +707,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 35,
               "Title": "GrupaController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\GrupaController.cs",
               "RelativeDocumentMoniker": "Controllers\\GrupaController.cs",
@@ -694,7 +719,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 36,
               "Title": "EvidencijaDolaskaOdlaskaController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\EvidencijaDolaskaOdlaskaController.cs",
               "RelativeDocumentMoniker": "Controllers\\EvidencijaDolaskaOdlaskaController.cs",
@@ -706,7 +731,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 37,
               "Title": "DnevniQRCodeController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\DnevniQRCodeController.cs",
               "RelativeDocumentMoniker": "Controllers\\DnevniQRCodeController.cs",
@@ -718,7 +743,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 38,
               "Title": "DnevniIzvjestajController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\DnevniIzvjestajController.cs",
               "RelativeDocumentMoniker": "Controllers\\DnevniIzvjestajController.cs",
@@ -730,7 +755,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 39,
               "Title": "BolestDjetetaController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\BolestDjetetaController.cs",
               "RelativeDocumentMoniker": "Controllers\\BolestDjetetaController.cs",
@@ -742,7 +767,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 40,
               "Title": "AlergijaDjetetaController.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Controllers\\AlergijaDjetetaController.cs",
               "RelativeDocumentMoniker": "Controllers\\AlergijaDjetetaController.cs",
@@ -754,7 +779,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 41,
               "Title": "Error.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Shared\\Error.cshtml",
               "RelativeDocumentMoniker": "Views\\Shared\\Error.cshtml",
@@ -766,7 +791,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 42,
               "Title": "eVrticSistem",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\eVrticSistem.csproj",
               "RelativeDocumentMoniker": "eVrticSistem.csproj",
@@ -777,7 +802,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 45,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Dijete\\Details.cshtml",
               "RelativeDocumentMoniker": "Views\\Dijete\\Details.cshtml",
@@ -789,7 +814,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 44,
               "Title": "ErrorViewModel.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\ErrorViewModel.cs",
               "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
@@ -801,7 +826,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 43,
               "Title": "BolestDjeteta.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\BolestDjeteta.cs",
               "RelativeDocumentMoniker": "Models\\BolestDjeteta.cs",
@@ -813,7 +838,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 46,
               "Title": "TipSazetka.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\TipSazetka.cs",
               "RelativeDocumentMoniker": "Models\\TipSazetka.cs",
@@ -825,7 +850,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 47,
               "Title": "TipDogadjaja.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\TipDogadjaja.cs",
               "RelativeDocumentMoniker": "Models\\TipDogadjaja.cs",
@@ -837,7 +862,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 48,
               "Title": "StatusObroka.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\StatusObroka.cs",
               "RelativeDocumentMoniker": "Models\\StatusObroka.cs",
@@ -849,7 +874,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 49,
               "Title": "StatusObavijesti.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\StatusObavijesti.cs",
               "RelativeDocumentMoniker": "Models\\StatusObavijesti.cs",
@@ -861,7 +886,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 50,
               "Title": "StatusNaloga.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\StatusNaloga.cs",
               "RelativeDocumentMoniker": "Models\\StatusNaloga.cs",
@@ -873,7 +898,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 51,
               "Title": "StatusEvidencije.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\StatusEvidencije.cs",
               "RelativeDocumentMoniker": "Models\\StatusEvidencije.cs",
@@ -885,7 +910,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 52,
               "Title": "SazetakAktivnosti.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\SazetakAktivnosti.cs",
               "RelativeDocumentMoniker": "Models\\SazetakAktivnosti.cs",
@@ -897,7 +922,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 53,
               "Title": "Obavijest.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Obavijest.cs",
               "RelativeDocumentMoniker": "Models\\Obavijest.cs",
@@ -909,7 +934,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 54,
               "Title": "KanalSlanja.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\KanalSlanja.cs",
               "RelativeDocumentMoniker": "Models\\KanalSlanja.cs",
@@ -921,7 +946,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 55,
               "Title": "Grupa.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Grupa.cs",
               "RelativeDocumentMoniker": "Models\\Grupa.cs",
@@ -933,7 +958,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 56,
               "Title": "EvidencijaDolaskaOdlaska.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\EvidencijaDolaskaOdlaska.cs",
               "RelativeDocumentMoniker": "Models\\EvidencijaDolaskaOdlaska.cs",
@@ -945,7 +970,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 57,
               "Title": "DnevniQRCode.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\DnevniQRCode.cs",
               "RelativeDocumentMoniker": "Models\\DnevniQRCode.cs",
@@ -957,7 +982,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 58,
               "Title": "DnevniIzvjestaj.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\DnevniIzvjestaj.cs",
               "RelativeDocumentMoniker": "Models\\DnevniIzvjestaj.cs",
@@ -969,7 +994,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 59,
               "Title": "Dijete.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\Dijete.cs",
               "RelativeDocumentMoniker": "Models\\Dijete.cs",
@@ -981,7 +1006,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 60,
               "Title": "AlergijaDjeteta.cs",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Models\\AlergijaDjeteta.cs",
               "RelativeDocumentMoniker": "Models\\AlergijaDjeteta.cs",
@@ -993,7 +1018,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 61,
               "Title": "eVrticSistem.csproj",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\eVrticSistem.csproj",
               "RelativeDocumentMoniker": "eVrticSistem.csproj",
@@ -1005,7 +1030,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 62,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
@@ -1017,7 +1042,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 63,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\HOME\\Desktop\\OOAD\\Grupa1-Tim3\\eVrticSistem\\Views\\Grupa\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Grupa\\Index.cshtml",
