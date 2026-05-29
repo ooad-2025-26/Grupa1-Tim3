@@ -43,6 +43,72 @@ namespace EVrtic.Controllers
             return View(dijete);
         }
 
+        // ─── ADMINISTRATOR: Deaktivacija / aktivacija profila djeteta ────────
+        // (scenarij 6.6 - administrator deaktivira profil djeteta)
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Deaktiviraj(int id)
+        {
+            var dijete = await _context.Djeca.FindAsync(id);
+            if (dijete == null) return NotFound();
+
+            dijete.Aktivno = false;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil djeteta \"{dijete.ImePrezime}\" je deaktiviran.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Aktiviraj(int id)
+        {
+            var dijete = await _context.Djeca.FindAsync(id);
+            if (dijete == null) return NotFound();
+
+            dijete.Aktivno = true;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil djeteta \"{dijete.ImePrezime}\" je ponovo aktiviran.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // ─── ADMINISTRATOR: Trajno brisanje profila djeteta ─────────────────
+        // Briše i sve vezane zapise: alergije, bolesti, evidencije dolaska/odlaska,
+        // dnevne izvještaje i sažetke aktivnosti.
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Obrisi(int id)
+        {
+            var dijete = await _context.Djeca
+                .Include(d => d.Alergije)
+                .Include(d => d.Bolesti)
+                .Include(d => d.DnevniIzvjestaji)
+                .Include(d => d.EvidencijeDolaskaOdlaska)
+                .Include(d => d.SazeciAktivnosti)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dijete == null) return NotFound();
+
+            var ime = string.IsNullOrWhiteSpace(dijete.ImePrezime)
+                ? $"(kod: {dijete.IdentifikacioniKod})"
+                : dijete.ImePrezime;
+
+            // Eksplicitno ukloni povezane zapise (sigurnije od oslanjanja na cascade)
+            _context.AlergijeDjece.RemoveRange(dijete.Alergije);
+            _context.BolestiDjece.RemoveRange(dijete.Bolesti);
+            _context.DnevniIzvjestaji.RemoveRange(dijete.DnevniIzvjestaji);
+            _context.EvidencijeDolaskaOdlaska.RemoveRange(dijete.EvidencijeDolaskaOdlaska);
+            _context.SazeciAktivnosti.RemoveRange(dijete.SazeciAktivnosti);
+            _context.Djeca.Remove(dijete);
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil djeteta \"{ime}\" je trajno obrisan iz sistema.";
+            return RedirectToAction(nameof(Index));
+        }
+
         // ─── ADMINISTRATOR: Unos identifikacionog koda ───────────────────────
 
         [Authorize(Roles = "ADMINISTRATOR")]

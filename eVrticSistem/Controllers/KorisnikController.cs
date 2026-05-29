@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using EVrtic.Data;
 using EVrtic.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eVrticSistem.Controllers
 {
@@ -15,145 +13,95 @@ namespace eVrticSistem.Controllers
     public class KorisnikController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Korisnik> _userManager;
 
-        public KorisnikController(ApplicationDbContext context)
+        public KorisnikController(ApplicationDbContext context, UserManager<Korisnik> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: Korisnik
+        // GET: /Korisnik
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            var korisnici = await _context.Users
+                .OrderBy(u => u.ImePrezime)
+                .ToListAsync();
+            return View(korisnici);
         }
 
-        // GET: Korisnik/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        // ─── Deaktivacija / aktivacija profila (scenarij 6.6) ────────────────
 
-            var korisnik = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (korisnik == null)
-            {
-                return NotFound();
-            }
-
-            return View(korisnik);
-        }
-
-        // GET: Korisnik/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Korisnik/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Korisnik korisnik)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(korisnik);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(korisnik);
-        }
-
-        // GET: Korisnik/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var korisnik = await _context.Users.FindAsync(id);
-            if (korisnik == null)
-            {
-                return NotFound();
-            }
-            return View(korisnik);
-        }
-
-        // POST: Korisnik/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Korisnik korisnik)
-        {
-            if (id != korisnik.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(korisnik);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!KorisnikExists(korisnik.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(korisnik);
-        }
-
-        // GET: Korisnik/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var korisnik = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (korisnik == null)
-            {
-                return NotFound();
-            }
-
-            return View(korisnik);
-        }
-
-        // POST: Korisnik/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deaktiviraj(int id)
         {
             var korisnik = await _context.Users.FindAsync(id);
-            if (korisnik != null)
-            {
-                _context.Users.Remove(korisnik);
-            }
+            if (korisnik == null) return NotFound();
 
+            korisnik.StatusNaloga = StatusNaloga.DEAKTIVIRAN;
             await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil korisnika \"{korisnik.ImePrezime}\" je deaktiviran.";
             return RedirectToAction(nameof(Index));
         }
 
-        private bool KorisnikExists(int id)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Aktiviraj(int id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            var korisnik = await _context.Users.FindAsync(id);
+            if (korisnik == null) return NotFound();
+
+            korisnik.StatusNaloga = StatusNaloga.AKTIVAN;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil korisnika \"{korisnik.ImePrezime}\" je ponovo aktiviran.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ─── Trajno brisanje korisnika ───────────────────────────────────────
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Obrisi(int id)
+        {
+            // Sigurnosna provjera: administrator ne smije obrisati vlastiti nalog
+            var trenutniKorisnik = await _userManager.GetUserAsync(User);
+            if (trenutniKorisnik != null && trenutniKorisnik.Id == id)
+            {
+                TempData["Greska"] = "Ne možete obrisati vlastiti nalog.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var korisnik = await _context.Users.FindAsync(id);
+            if (korisnik == null) return NotFound();
+
+            // Raskini FK veze koje bi inače spriječile brisanje
+            //   Roditelj ima djecu (Restrict FK) → djeca ostaju u sistemu, samo bez roditelja
+            //   Odgajatelj ima grupe → grupe ostaju, samo bez odgajatelja
+            if (korisnik.Uloga == Uloga.RODITELJ)
+            {
+                var djeca = await _context.Djeca.Where(d => d.RoditeljId == id).ToListAsync();
+                foreach (var d in djeca) d.RoditeljId = null;
+                await _context.SaveChangesAsync();
+            }
+            else if (korisnik.Uloga == Uloga.ODGAJATELJ)
+            {
+                var grupe = await _context.Grupe.Where(g => g.OdgajateljId == id).ToListAsync();
+                foreach (var g in grupe) g.OdgajateljId = null;
+                await _context.SaveChangesAsync();
+            }
+
+            var ime = korisnik.ImePrezime;
+            var rezultat = await _userManager.DeleteAsync(korisnik);
+
+            if (!rezultat.Succeeded)
+            {
+                var greske = string.Join(", ", rezultat.Errors.Select(e => e.Description));
+                TempData["Greska"] = $"Brisanje neuspješno: {greske}";
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Uspjeh"] = $"Korisnik \"{ime}\" je trajno obrisan iz sistema.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

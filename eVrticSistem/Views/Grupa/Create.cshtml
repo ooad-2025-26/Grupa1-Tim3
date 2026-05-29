@@ -1,37 +1,87 @@
-@model EVrtic.Models.Grupa
+@model EVrtic.Controllers.GrupaFormViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nova grupa";
+    ViewData["ActiveNav"] = "grupe";
+    Layout = "_AdminLayout";
 }
 
-<h1>Create</h1>
+<a class="admin-back" asp-action="Index">← Nazad na grupe</a>
 
-<h4>Grupa</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ImeGrupe" class="control-label"></label>
-                <input asp-for="ImeGrupe" class="form-control" />
-                <span asp-validation-for="ImeGrupe" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OdgajateljId" class="control-label"></label>
-                <select asp-for="OdgajateljId" class ="form-control" asp-items="ViewBag.OdgajateljId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="admin-page-head">
+    <h1>➕ Nova grupa</h1>
+</div>
+<p class="admin-page-sub">Unesite ime grupe, dodijelite odgajatelja i odaberite najmanje 2 djeteta.</p>
+
+<form asp-action="Create" method="post" class="admin-form" id="grupaForm">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <div class="admin-field">
+        <label asp-for="ImeGrupe">Ime grupe</label>
+        <input asp-for="ImeGrupe" type="text" placeholder="npr. Pčelice" />
+        <span asp-validation-for="ImeGrupe" class="admin-validation"></span>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="admin-field">
+        <label asp-for="OdgajateljId">Odgajatelj</label>
+        <select asp-for="OdgajateljId" asp-items="Model.Odgajatelji">
+            <option value="">— Odaberite odgajatelja —</option>
+        </select>
+        <span asp-validation-for="OdgajateljId" class="admin-validation"></span>
+    </div>
+
+    <div class="admin-field">
+        <label>Djeca u grupi <span id="brojOdabranih" style="color:#13a6b8;">(odabrano: 0)</span></label>
+        @if (!Model.DostupnaDjeca.Any())
+        {
+            <p class="admin-help">Nema dostupne djece bez grupe. Dijete se prvo mora upisati u sistem.</p>
+        }
+        else
+        {
+            <div class="admin-check-list">
+                @foreach (var d in Model.DostupnaDjeca)
+                {
+                    <label class="admin-check-item">
+                        <input type="checkbox" name="OdabranaDjecaIds" value="@d.Id" class="chk-dijete" />
+                        <span>
+                            <span class="ci-name">@d.ImePrezime</span><br />
+                            <span class="ci-sub">Roditelj: @d.Roditelj</span>
+                        </span>
+                    </label>
+                }
+            </div>
+        }
+        <span asp-validation-for="OdabranaDjecaIds" class="admin-validation"></span>
+        <p class="admin-help">Napomena: nova grupa mora sadržavati najmanje 2 djeteta.</p>
+    </div>
+
+    <div class="admin-form-foot">
+        <button type="submit" class="admin-btn admin-btn-primary">💾 Sačuvaj grupu</button>
+        <a class="admin-btn admin-btn-ghost" asp-action="Index">Odustani</a>
+    </div>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var form = document.getElementById('grupaForm');
+            var brojac = document.getElementById('brojOdabranih');
+            function checkovi() { return document.querySelectorAll('.chk-dijete:checked').length; }
+            function osvjezi() { if (brojac) brojac.textContent = '(odabrano: ' + checkovi() + ')'; }
+            document.querySelectorAll('.chk-dijete').forEach(function (c) {
+                c.addEventListener('change', osvjezi);
+            });
+            osvjezi();
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    if (checkovi() < 2) {
+                        e.preventDefault();
+                        alert('U grupu morate dodati najmanje 2 djeteta.');
+                    }
+                });
+            }
+        })();
+    </script>
 }

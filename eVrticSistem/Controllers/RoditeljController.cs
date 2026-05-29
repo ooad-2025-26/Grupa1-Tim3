@@ -44,7 +44,40 @@ namespace eVrticSistem.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Roditelji.ToListAsync());
+            return View(await _context.Roditelji
+                .Include(r => r.Djeca)
+                .ToListAsync());
+        }
+
+        // ─── ADMINISTRATOR: Deaktivacija / aktivacija profila roditelja ──────
+        // (scenarij 6.6 - administrator deaktivira profil roditelja)
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Deaktiviraj(int id)
+        {
+            var roditelj = await _context.Roditelji.FindAsync(id);
+            if (roditelj == null) return NotFound();
+
+            roditelj.StatusNaloga = StatusNaloga.DEAKTIVIRAN;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil roditelja \"{roditelj.ImePrezime}\" je deaktiviran.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Aktiviraj(int id)
+        {
+            var roditelj = await _context.Roditelji.FindAsync(id);
+            if (roditelj == null) return NotFound();
+
+            roditelj.StatusNaloga = StatusNaloga.AKTIVAN;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil roditelja \"{roditelj.ImePrezime}\" je ponovo aktiviran.";
+            return RedirectToAction(nameof(Index));
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]

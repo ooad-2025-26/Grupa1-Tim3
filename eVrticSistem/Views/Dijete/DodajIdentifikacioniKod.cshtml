@@ -1,120 +1,71 @@
 @model EVrtic.Models.Dijete
 @{
     ViewData["Title"] = "Dodaj identifikacioni kod djeteta";
+    ViewData["ActiveNav"] = "novo-dijete";
+    Layout = "_AdminLayout";
 }
 
-<div class="admin-page">
-    <div class="admin-card">
-
-        <aside class="admin-sidebar">
-            <h1 class="admin-logo">eVrtić</h1>
-            <nav class="admin-menu">
-                <a class="admin-link" asp-controller="Home" asp-action="AdministratorHome">
-                    <span>🏠</span> Početna
-                </a>
-                <a class="admin-link active" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
-                    <span>➕</span> Novo dijete
-                </a>
-                <a class="admin-link" asp-controller="Dijete" asp-action="Index">
-                    <span>👧</span> Djeca
-                </a>
-                <a class="admin-link" asp-controller="Korisnik" asp-action="Index">
-                    <span>👥</span> Korisnici
-                </a>
-                <a class="admin-link" asp-controller="Grupa" asp-action="Index">
-                    <span>🏫</span> Grupe
-                </a>
-                <form asp-area="Identity"
-                      asp-page="/Account/Logout"
-                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
-                      method="post">
-                    <button type="submit" class="admin-link admin-logout-button">
-                        <span>🚪</span> Odjava
-                    </button>
-                </form>
-            </nav>
-        </aside>
-
-        <main class="admin-main">
-            <div class="admin-top">
-                <div>
-                    <h2>Upravljanje djecom</h2>
-                    <h1>Novo dijete <span>👶</span></h1>
-                </div>
-            </div>
-
-            @if (TempData["Uspjeh"] != null)
-            {
-                <div class="alert-success-evr">
-                    <span>✅</span> @TempData["Uspjeh"]
-                </div>
-            }
-
-            <section class="evr-form-section">
-                <div class="evr-form-card">
-                    <div class="evr-form-header">
-                        <div class="evr-form-icon">🔑</div>
-                        <div>
-                            <h3>Dodaj identifikacioni kod</h3>
-                            <p>
-                                Unesite jedinstveni identifikacioni kod za novo dijete.
-                                Roditelj će ovaj kod koristiti pri registraciji kako bi se
-                                povezao sa profilom svog djeteta.
-                            </p>
-                        </div>
-                    </div>
-
-                    <form asp-action="DodajIdentifikacioniKod" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        @Html.AntiForgeryToken()
-
-                        <div class="evr-field">
-                            <label asp-for="IdentifikacioniKod" class="evr-label">
-                                Identifikacioni kod djeteta
-                            </label>
-                            <div class="evr-input-wrap">
-                                <span class="evr-input-icon">🔑</span>
-                                <input asp-for="IdentifikacioniKod"
-                                       class="evr-input"
-                                       placeholder="npr. VRTIC-2024-001"
-                                       autocomplete="off" />
-                            </div>
-                            <span asp-validation-for="IdentifikacioniKod" class="text-danger"></span>
-                            <small class="evr-hint">
-                                Kod mora biti jedinstven. Roditelju dostavite ovaj kod kako bi se
-                                registrirao i povezao sa djetetom.
-                            </small>
-                        </div>
-
-                        <div class="evr-form-actions">
-                            <button type="submit" class="evr-btn-primary">
-                                ➕ Dodaj kod u sistem
-                            </button>
-                            <a asp-action="Index" class="evr-btn-secondary">
-                                Odustani
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </section>
-        </main>
-
-        <nav class="admin-bottom-nav">
-            <a class="admin-bottom-link" asp-controller="Home" asp-action="AdministratorHome">
-                <span>🏠</span> Početna
-            </a>
-            <a class="admin-bottom-link" asp-controller="Korisnik" asp-action="Index">
-                <span>👥</span> Korisnici
-            </a>
-            <a class="admin-bottom-link active" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
-                <span>➕</span> Novo dijete
-            </a>
-            <a class="admin-bottom-link" asp-controller="Dijete" asp-action="Index">
-                <span>👧</span> Djeca
-            </a>
-        </nav>
+<div class="admin-top">
+    <div>
+        <h2>Upravljanje djecom</h2>
+        <h1>Novo dijete <span>👶</span></h1>
     </div>
 </div>
+
+@if (TempData["Uspjeh"] != null)
+{
+    <div class="alert-success-evr">
+        <span>✅</span> @TempData["Uspjeh"]
+    </div>
+}
+
+<section class="evr-form-section">
+    <div class="evr-form-card">
+        <div class="evr-form-header">
+            <div class="evr-form-icon">🔑</div>
+            <div>
+                <h3>Dodaj identifikacioni kod</h3>
+                <p>
+                    Unesite jedinstveni identifikacioni kod za novo dijete.
+                    Roditelj će ovaj kod koristiti pri registraciji kako bi se
+                    povezao sa profilom svog djeteta.
+                </p>
+            </div>
+        </div>
+
+        <form asp-action="DodajIdentifikacioniKod" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            @Html.AntiForgeryToken()
+
+            <div class="evr-field">
+                <label asp-for="IdentifikacioniKod" class="evr-label">
+                    Identifikacioni kod djeteta
+                </label>
+                <div class="evr-input-wrap">
+                    <span class="evr-input-icon">🔑</span>
+                    <input asp-for="IdentifikacioniKod"
+                           class="evr-input"
+                           placeholder="npr. VRTIC-2024-001"
+                           autocomplete="off" />
+                </div>
+                <span asp-validation-for="IdentifikacioniKod" class="text-danger"></span>
+                <small class="evr-hint">
+                    Kod mora biti jedinstven. Roditelju dostavite ovaj kod kako bi se
+                    registrirao i povezao sa djetetom.
+                </small>
+            </div>
+
+            <div class="evr-form-actions">
+                <button type="submit" class="evr-btn-primary">
+                    ➕ Dodaj kod u sistem
+                </button>
+                <a asp-action="Index" class="evr-btn-secondary">
+                    Odustani
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
 
 <style>
     .alert-success-evr {
@@ -130,10 +81,7 @@
         gap: 10px;
     }
 
-    .evr-form-section {
-        margin-top: 10px;
-        max-width: 560px;
-    }
+    .evr-form-section { margin-top: 10px; max-width: 560px; }
 
     .evr-form-card {
         background: #fff;
@@ -183,7 +131,7 @@
         transition: border-color 0.2s;
     }
 
-    .evr-input-wrap:focus-within { border-color: #6366f1; }
+    .evr-input-wrap:focus-within { border-color: #2456db; }
 
     .evr-input-icon {
         padding: 0 14px;
@@ -221,7 +169,7 @@
     }
 
     .evr-btn-primary {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: linear-gradient(135deg, #2456db, #4f7cff);
         color: #fff;
         border: none;
         border-radius: 12px;

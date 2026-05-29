@@ -27,6 +27,33 @@ namespace eVrticSistem.Controllers
             return View(await _context.Odgajatelji.ToListAsync());
         }
 
+        // ─── Deaktivacija / aktivacija profila odgajatelja ───────────────────
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deaktiviraj(int id)
+        {
+            var odgajatelj = await _context.Odgajatelji.FindAsync(id);
+            if (odgajatelj == null) return NotFound();
+
+            odgajatelj.StatusNaloga = StatusNaloga.DEAKTIVIRAN;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil odgajatelja \"{odgajatelj.ImePrezime}\" je deaktiviran.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Aktiviraj(int id)
+        {
+            var odgajatelj = await _context.Odgajatelji.FindAsync(id);
+            if (odgajatelj == null) return NotFound();
+
+            odgajatelj.StatusNaloga = StatusNaloga.AKTIVAN;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil odgajatelja \"{odgajatelj.ImePrezime}\" je ponovo aktiviran.";
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: Odgajatelj/Details/5
         public async Task<IActionResult> Details(int? id)
         {

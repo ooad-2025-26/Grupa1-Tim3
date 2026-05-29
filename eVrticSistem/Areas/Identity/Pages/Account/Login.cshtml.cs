@@ -75,6 +75,15 @@ namespace eVrticSistem.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    // Scenarij 6.2 (alternativni tok): deaktiviran nalog ne smije pristupiti sistemu
+                    var korisnik = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                    if (korisnik != null && korisnik.StatusNaloga == StatusNaloga.DEAKTIVIRAN)
+                    {
+                        await _signInManager.SignOutAsync();
+                        ModelState.AddModelError(string.Empty, "Vaš nalog je deaktiviran. Obratite se administratoru.");
+                        return Page();
+                    }
+
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }

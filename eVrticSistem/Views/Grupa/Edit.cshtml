@@ -1,39 +1,79 @@
-@model EVrtic.Models.Grupa
+@model EVrtic.Controllers.GrupaFormViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Uredi grupu";
+    ViewData["ActiveNav"] = "grupe";
+    Layout = "_AdminLayout";
 }
 
-<h1>Edit</h1>
+<a class="admin-back" asp-action="Index">← Nazad na grupe</a>
 
-<h4>Grupa</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ImeGrupe" class="control-label"></label>
-                <input asp-for="ImeGrupe" class="form-control" />
-                <span asp-validation-for="ImeGrupe" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OdgajateljId" class="control-label"></label>
-                <select asp-for="OdgajateljId" class="form-control" asp-items="ViewBag.OdgajateljId"></select>
-                <span asp-validation-for="OdgajateljId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="admin-page-head">
+    <h1>✏️ Uredi grupu</h1>
+</div>
+<p class="admin-page-sub">Promijenite odgajatelja, izbacite djecu iz grupe ili dodajte novu djecu.</p>
+
+<form asp-action="Edit" method="post" class="admin-form" id="grupaForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <div class="admin-field">
+        <label asp-for="ImeGrupe">Ime grupe</label>
+        <input asp-for="ImeGrupe" type="text" />
+        <span asp-validation-for="ImeGrupe" class="admin-validation"></span>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="admin-field">
+        <label asp-for="OdgajateljId">Odgajatelj</label>
+        <select asp-for="OdgajateljId" asp-items="Model.Odgajatelji">
+            <option value="">— Odaberite odgajatelja —</option>
+        </select>
+        <span asp-validation-for="OdgajateljId" class="admin-validation"></span>
+    </div>
+
+    <div class="admin-field">
+        <label>Djeca u grupi <span id="brojOdabranih" style="color:#13a6b8;">(odabrano: 0)</span></label>
+        @if (!Model.DostupnaDjeca.Any())
+        {
+            <p class="admin-help">Nema dostupne djece za dodjelu.</p>
+        }
+        else
+        {
+            <div class="admin-check-list">
+                @foreach (var d in Model.DostupnaDjeca)
+                {
+                    var oznaceno = Model.OdabranaDjecaIds != null && Model.OdabranaDjecaIds.Contains(d.Id);
+                    <label class="admin-check-item">
+                        <input type="checkbox" name="OdabranaDjecaIds" value="@d.Id" class="chk-dijete" @(oznaceno ? "checked" : "") />
+                        <span>
+                            <span class="ci-name">@d.ImePrezime</span><br />
+                            <span class="ci-sub">Roditelj: @d.Roditelj</span>
+                        </span>
+                    </label>
+                }
+            </div>
+        }
+        <p class="admin-help">Odčekirano dijete bit će uklonjeno iz grupe. Čekirano dijete bit će dodano u grupu.</p>
+    </div>
+
+    <div class="admin-form-foot">
+        <button type="submit" class="admin-btn admin-btn-primary">💾 Sačuvaj izmjene</button>
+        <a class="admin-btn admin-btn-ghost" asp-action="Index">Odustani</a>
+    </div>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var brojac = document.getElementById('brojOdabranih');
+            function checkovi() { return document.querySelectorAll('.chk-dijete:checked').length; }
+            function osvjezi() { if (brojac) brojac.textContent = '(odabrano: ' + checkovi() + ')'; }
+            document.querySelectorAll('.chk-dijete').forEach(function (c) {
+                c.addEventListener('change', osvjezi);
+            });
+            osvjezi();
+        })();
+    </script>
 }

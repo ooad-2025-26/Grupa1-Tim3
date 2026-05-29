@@ -1,41 +1,73 @@
 @model IEnumerable<EVrtic.Models.Grupa>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Grupe";
+    ViewData["ActiveNav"] = "grupe";
+    Layout = "_AdminLayout";
 }
 
-<h1>Index</h1>
+<div class="admin-page-head">
+    <h1>🏫 Grupe</h1>
+    <a class="admin-btn admin-btn-primary" asp-action="Create">➕ Dodaj grupu</a>
+</div>
+<p class="admin-page-sub">Kliknite na grupu da proširite prikaz odgajatelja i liste djece.</p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ImeGrupe)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Odgajatelj)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImeGrupe)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Odgajatelj.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (TempData["Uspjeh"] != null)
+{
+    <div class="admin-flash admin-flash-ok">@TempData["Uspjeh"]</div>
 }
-    </tbody>
-</table>
+
+@if (!Model.Any())
+{
+    <div class="admin-empty">
+        <span class="ico">🏫</span>
+        Još nema kreiranih grupa. Kliknite „Dodaj grupu“ da kreirate prvu.
+    </div>
+}
+else
+{
+    <div class="grupa-list">
+        @foreach (var g in Model)
+        {
+            var brojDjece = g.Djeca?.Count ?? 0;
+
+            <div class="grupa-card">
+                <div class="grupa-card-head" onclick="this.parentElement.classList.toggle('open')">
+                    <div class="g-ico">🏫</div>
+                    <span class="g-name">@g.ImeGrupe</span>
+                    <span class="g-count">@brojDjece @(brojDjece == 1 ? "dijete" : "djece")</span>
+                    <span class="g-chevron">▼</span>
+                </div>
+
+                <div class="grupa-card-body">
+                    <div class="grupa-odg">
+                        👩‍🏫 Odgajatelj:&nbsp;<b>@(g.Odgajatelj != null
+                            ? (string.IsNullOrWhiteSpace(g.Odgajatelj.ImePrezime) ? g.Odgajatelj.Email : g.Odgajatelj.ImePrezime)
+                            : "Nije dodijeljen")</b>
+                    </div>
+
+                    <p class="grupa-djeca-naslov">Djeca u grupi</p>
+                    @if (g.Djeca != null && g.Djeca.Any())
+                    {
+                        <div class="grupa-djeca">
+                            @foreach (var d in g.Djeca.OrderBy(x => x.ImePrezime))
+                            {
+                                <div class="grupa-dijete">
+                                    👧 @(string.IsNullOrWhiteSpace(d.ImePrezime) ? $"(kod: {d.IdentifikacioniKod})" : d.ImePrezime)
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="value" style="color:#6a768b;">Nema djece u ovoj grupi.</p>
+                    }
+
+                    <div class="grupa-card-foot">
+                        <a class="grupa-edit" asp-action="Edit" asp-route-id="@g.Id">✏️ Uredi grupu</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

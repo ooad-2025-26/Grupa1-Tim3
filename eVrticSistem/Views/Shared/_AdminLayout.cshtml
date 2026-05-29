@@ -1,0 +1,89 @@
+@{
+    Layout = "_Layout";
+    // ViewData["ActiveNav"] može biti: "pocetna", "novo-dijete", "djeca", "korisnici", "grupe"
+    var active = (ViewData["ActiveNav"] as string) ?? "";
+    var isHome = active == "pocetna";
+    string Cls(string key) => active == key ? "admin-link active" : "admin-link";
+    string ClsBottom(string key) => active == key ? "admin-bottom-link active" : "admin-bottom-link";
+}
+
+<div class="admin-page">
+    <div class="admin-card">
+
+        <aside class="admin-sidebar">
+            <h1 class="admin-logo"><span class="logo-ico">🏠</span> eVrtić</h1>
+
+            <nav class="admin-menu">
+                <a class="@Cls("pocetna")" asp-controller="Home" asp-action="AdministratorHome">
+                    <span>🏠</span> Početna
+                </a>
+
+                @* Puni meni se prikazuje samo na podstranicama; na Početnoj ostaje samo Početna + Odjava *@
+                @if (!isHome)
+                {
+                    <a class="@Cls("novo-dijete")" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
+                        <span>➕</span> Novo dijete
+                    </a>
+                    <a class="@Cls("djeca")" asp-controller="Dijete" asp-action="Index">
+                        <span>👧</span> Djeca
+                    </a>
+                    <a class="@Cls("korisnici")" asp-controller="Korisnik" asp-action="Index">
+                        <span>👥</span> Korisnici
+                    </a>
+                    <a class="@Cls("grupe")" asp-controller="Grupa" asp-action="Index">
+                        <span>🏫</span> Grupe
+                    </a>
+                }
+
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="admin-link admin-logout-button">
+                        <span>🚪</span> Odjava
+                    </button>
+                </form>
+            </nav>
+
+            <div class="admin-side-art">
+                <div class="admin-cloud admin-cloud-1"></div>
+                <div class="admin-cloud admin-cloud-2"></div>
+                <div class="admin-mini-building">
+                    <div class="admin-mini-roof"></div>
+                    <div class="admin-mini-body">
+                        <div class="admin-mini-window"></div>
+                        <div class="admin-mini-door"></div>
+                        <div class="admin-mini-window"></div>
+                    </div>
+                </div>
+                <div class="admin-side-tree admin-tree-left"></div>
+                <div class="admin-side-tree admin-tree-right"></div>
+            </div>
+        </aside>
+
+        <main class="admin-main admin-main-scroll">
+            @RenderBody()
+        </main>
+
+        @* Donja navigacija — ista na svim stranicama (Početna, Korisnici, Djeca, Grupe) *@
+        <nav class="admin-bottom-nav">
+            <a class="@ClsBottom("pocetna")" asp-controller="Home" asp-action="AdministratorHome">
+                <span>🏠</span> Početna
+            </a>
+            <a class="@ClsBottom("korisnici")" asp-controller="Korisnik" asp-action="Index">
+                <span>👥</span> Korisnici
+            </a>
+            <a class="@ClsBottom("djeca")" asp-controller="Dijete" asp-action="Index">
+                <span>👧</span> Djeca
+            </a>
+            <a class="@ClsBottom("grupe")" asp-controller="Grupa" asp-action="Index">
+                <span>🏫</span> Grupe
+            </a>
+        </nav>
+
+    </div>
+</div>
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}
