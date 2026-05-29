@@ -30,6 +30,32 @@ namespace eVrticSistem.Controllers
             return View(korisnici);
         }
 
+        // GET: /Korisnik/Profil/5
+        // Prikaz osnovnih podataka o korisniku. Za roditelja prikazuje i listu djece,
+        // za odgajatelja listu grupa.
+        public async Task<IActionResult> Profil(int id)
+        {
+            // Najprije provjeri tip preko Uloge, pa loadaj sa povezanim entitetima
+            var bazni = await _context.Users.FindAsync(id);
+            if (bazni == null) return NotFound();
+
+            if (bazni.Uloga == Uloga.RODITELJ)
+            {
+                var roditelj = await _context.Roditelji
+                    .Include(r => r.Djeca).ThenInclude(d => d.Grupa)
+                    .FirstOrDefaultAsync(r => r.Id == id);
+                return View(roditelj);
+            }
+            if (bazni.Uloga == Uloga.ODGAJATELJ)
+            {
+                var odgajatelj = await _context.Odgajatelji
+                    .Include(o => o.Grupe).ThenInclude(g => g.Djeca)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+                return View(odgajatelj);
+            }
+            return View(bazni);
+        }
+
         // ─── Deaktivacija / aktivacija profila (scenarij 6.6) ────────────────
 
         [HttpPost, ValidateAntiForgeryToken]

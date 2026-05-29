@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("eVrticSistem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+caeb6d9ca7b873b31c6f378cdb069beeb4c6d60c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ca6e1410fabf84c3b873907d47446c2504e01ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("eVrticSistem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("eVrticSistem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

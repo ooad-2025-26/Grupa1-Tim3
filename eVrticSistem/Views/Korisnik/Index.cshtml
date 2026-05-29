@@ -74,14 +74,16 @@ else
             <div class="korisnik-stavka @(aktivan ? "" : "is-deaktiviran")"
                  data-uloga="@tabKey"
                  data-search="@searchKey">
-                <div class="korisnik-avatar">@AvatarEmoji(u.Uloga)</div>
-                <div class="korisnik-info">
-                    <p class="korisnik-ime">
-                        @u.ImePrezime
-                        <span class="korisnik-uloga">(@UlogaTekst(u.Uloga))</span>
-                    </p>
-                    <p class="korisnik-email">@u.Email</p>
-                </div>
+                <a class="korisnik-glavni" asp-action="Profil" asp-route-id="@u.Id">
+                    <div class="korisnik-avatar">@AvatarEmoji(u.Uloga)</div>
+                    <div class="korisnik-info">
+                        <p class="korisnik-ime">
+                            @u.ImePrezime
+                            <span class="korisnik-uloga">(@UlogaTekst(u.Uloga))</span>
+                        </p>
+                        <p class="korisnik-email">@u.Email</p>
+                    </div>
+                </a>
                 <div class="korisnik-akcije">
                     @if (aktivan)
                     {
@@ -119,6 +121,23 @@ else
 
 @section Scripts {
     <style>
+        .korisnik-glavni {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 10px;
+            padding: 4px;
+            margin: -4px;
+            transition: background .12s;
+        }
+        .korisnik-glavni:hover {
+            background: #f1f5fb;
+            color: inherit;
+        }
         .korisnik-trash {
             background: transparent;
             border: none;

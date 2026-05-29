@@ -11,7 +11,7 @@
 <div class="admin-page-head">
     <h1>➕ Nova grupa</h1>
 </div>
-<p class="admin-page-sub">Unesite ime grupe, dodijelite odgajatelja i odaberite najmanje 2 djeteta.</p>
+<p class="admin-page-sub">Unesite ime grupe, dodijelite odgajatelja i dodajte najmanje 2 djeteta klikom na plavi plus.</p>
 
 <form asp-action="Create" method="post" class="admin-form" id="grupaForm">
     @Html.AntiForgeryToken()
@@ -31,29 +31,43 @@
         <span asp-validation-for="OdgajateljId" class="admin-validation"></span>
     </div>
 
+    @* ── Djeca u grupi — počinje prazno ──────────────────────────────────── *@
     <div class="admin-field">
-        <label>Djeca u grupi <span id="brojOdabranih" style="color:#13a6b8;">(odabrano: 0)</span></label>
-        @if (!Model.DostupnaDjeca.Any())
-        {
-            <p class="admin-help">Nema dostupne djece bez grupe. Dijete se prvo mora upisati u sistem.</p>
-        }
-        else
-        {
-            <div class="admin-check-list">
-                @foreach (var d in Model.DostupnaDjeca)
-                {
-                    <label class="admin-check-item">
-                        <input type="checkbox" name="OdabranaDjecaIds" value="@d.Id" class="chk-dijete" />
-                        <span>
-                            <span class="ci-name">@d.ImePrezime</span><br />
-                            <span class="ci-sub">Roditelj: @d.Roditelj</span>
-                        </span>
-                    </label>
-                }
-            </div>
-        }
+        <label>
+            👧 Djeca u grupi
+            <span class="brojac brojac-plava" id="brojUgrupi">(0)</span>
+        </label>
+        <div class="djete-lista" id="djecaUgrupi">
+            <div class="djete-prazno">Još nema djece u grupi. Kliknite plavi + ispod.</div>
+        </div>
         <span asp-validation-for="OdabranaDjecaIds" class="admin-validation"></span>
-        <p class="admin-help">Napomena: nova grupa mora sadržavati najmanje 2 djeteta.</p>
+        <p class="admin-help">Nova grupa mora sadržavati najmanje 2 djeteta.</p>
+    </div>
+
+    @* ── Dostupna djeca — sva slobodna djeca ─────────────────────────────── *@
+    <div class="admin-field">
+        <label>
+            ➕ Dostupna djeca (bez grupe)
+            <span class="brojac brojac-siva" id="brojDostupnih">(@Model.DostupnaDjeca.Count)</span>
+        </label>
+        <div class="djete-lista" id="dostupnaDjeca">
+            @if (!Model.DostupnaDjeca.Any())
+            {
+                <div class="djete-prazno">Nema slobodne djece. Dijete prvo mora biti upisano u sistem.</div>
+            }
+            @foreach (var d in Model.DostupnaDjeca)
+            {
+                <div class="djete-stavka" data-id="@d.Id">
+                    <div class="djete-info">
+                        <p class="djete-ime">@d.ImePrezime</p>
+                        <p class="djete-sub">Roditelj: @d.Roditelj</p>
+                    </div>
+                    <button type="button" class="btn-plus"
+                            onclick="dodajUGrupu(@d.Id)"
+                            title="Dodaj u grupu">+</button>
+                </div>
+            }
+        </div>
     </div>
 
     <div class="admin-form-foot">
@@ -62,21 +76,136 @@
     </div>
 </form>
 
+<style>
+    .brojac { font-weight: 700; margin-left: 4px; }
+    .brojac-plava { color: #2456db; }
+    .brojac-siva  { color: #94a3b8; }
+
+    .djete-lista {
+        border: 1px solid #e2e7f0;
+        border-radius: 12px;
+        background: #fafbfd;
+        padding: 8px;
+        max-height: 320px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .djete-stavka {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1px solid #eef1f8;
+    }
+
+    .djete-info { flex: 1; min-width: 0; }
+    .djete-ime  { margin: 0; font-weight: 700; font-size: 14px; color: #1c2538; }
+    .djete-sub  { margin: 3px 0 0; font-size: 12.5px; color: #64748b; }
+
+    .djete-prazno {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px;
+        padding: 16px;
+        font-style: italic;
+    }
+
+    .btn-plus, .btn-minus {
+        width: 34px; height: 34px;
+        border-radius: 50%;
+        border: none;
+        font-size: 20px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        transition: transform .1s, filter .12s;
+        flex-shrink: 0;
+    }
+    .btn-plus  { background: #2456db; color: #fff; }
+    .btn-minus { background: #dc2626; color: #fff; }
+    .btn-plus:hover, .btn-minus:hover { transform: scale(1.08); filter: brightness(1.05); }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         (function () {
+            window.ukloniIzGrupe = function (id) { premjesti(id, false); };
+            window.dodajUGrupu  = function (id) { premjesti(id, true); };
+
+            function premjesti(id, uGrupu) {
+                var izvor    = document.getElementById(uGrupu ? 'dostupnaDjeca' : 'djecaUgrupi');
+                var odrediste = document.getElementById(uGrupu ? 'djecaUgrupi' : 'dostupnaDjeca');
+                var stavka   = izvor.querySelector('.djete-stavka[data-id="' + id + '"]');
+                if (!stavka) return;
+
+                var hidden = stavka.querySelector('input[type=hidden]');
+                if (uGrupu && !hidden) {
+                    hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'OdabranaDjecaIds';
+                    hidden.value = id;
+                    stavka.appendChild(hidden);
+                } else if (!uGrupu && hidden) {
+                    hidden.remove();
+                }
+
+                var btn = stavka.querySelector('button');
+                if (uGrupu) {
+                    btn.textContent = '−';
+                    btn.className = 'btn-minus';
+                    btn.title = 'Ukloni iz grupe';
+                    btn.setAttribute('onclick', 'ukloniIzGrupe(' + id + ')');
+                } else {
+                    btn.textContent = '+';
+                    btn.className = 'btn-plus';
+                    btn.title = 'Dodaj u grupu';
+                    btn.setAttribute('onclick', 'dodajUGrupu(' + id + ')');
+                }
+
+                odrediste.appendChild(stavka);
+                ocistiPraznePlaceholdere();
+                osvjeziBrojace();
+            }
+
+            function ocistiPraznePlaceholdere() {
+                ['djecaUgrupi', 'dostupnaDjeca'].forEach(function (idLista) {
+                    var lista = document.getElementById(idLista);
+                    var stavki = lista.querySelectorAll('.djete-stavka').length;
+                    var placeholder = lista.querySelector('.djete-prazno');
+                    if (stavki > 0 && placeholder) placeholder.remove();
+                    if (stavki === 0 && !placeholder) {
+                        var p = document.createElement('div');
+                        p.className = 'djete-prazno';
+                        p.textContent = idLista === 'djecaUgrupi'
+                            ? 'Još nema djece u grupi. Kliknite plavi + ispod.'
+                            : 'Nema slobodne djece.';
+                        lista.appendChild(p);
+                    }
+                });
+            }
+
+            function osvjeziBrojace() {
+                var u = document.getElementById('djecaUgrupi').querySelectorAll('.djete-stavka').length;
+                var d = document.getElementById('dostupnaDjeca').querySelectorAll('.djete-stavka').length;
+                document.getElementById('brojUgrupi').textContent = '(' + u + ')';
+                document.getElementById('brojDostupnih').textContent = '(' + d + ')';
+            }
+
+            // Validacija pri submitu — najmanje 2 djeteta
             var form = document.getElementById('grupaForm');
-            var brojac = document.getElementById('brojOdabranih');
-            function checkovi() { return document.querySelectorAll('.chk-dijete:checked').length; }
-            function osvjezi() { if (brojac) brojac.textContent = '(odabrano: ' + checkovi() + ')'; }
-            document.querySelectorAll('.chk-dijete').forEach(function (c) {
-                c.addEventListener('change', osvjezi);
-            });
-            osvjezi();
             if (form) {
                 form.addEventListener('submit', function (e) {
-                    if (checkovi() < 2) {
+                    var u = document.getElementById('djecaUgrupi').querySelectorAll('.djete-stavka').length;
+                    if (u < 2) {
                         e.preventDefault();
                         alert('U grupu morate dodati najmanje 2 djeteta.');
                     }

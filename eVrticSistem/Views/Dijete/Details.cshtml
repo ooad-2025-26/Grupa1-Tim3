@@ -43,6 +43,15 @@
         </div>
 
         <div class="admin-detail-row">
+            <p class="label">Kontakt telefon roditelja</p>
+            <p class="value">
+                @(Model.Roditelj != null && !string.IsNullOrWhiteSpace(Model.Roditelj.KontaktTelefon)
+                    ? Model.Roditelj.KontaktTelefon
+                    : "—")
+            </p>
+        </div>
+
+        <div class="admin-detail-row">
             <p class="label">Datum rođenja</p>
             <p class="value">
                 @(Model.DatumRodjenja == default ? "—" : Model.DatumRodjenja.ToString("dd.MM.yyyy."))
@@ -51,7 +60,27 @@
 
         <div class="admin-detail-row">
             <p class="label">Grupa</p>
-            <p class="value">@(Model.Grupa != null ? Model.Grupa.ImeGrupe : "Nije dodijeljena")</p>
+            <form asp-action="PromijeniGrupu" asp-route-id="@Model.Id" method="post" class="grupa-promjena">
+                @Html.AntiForgeryToken()
+                <select name="grupaId" class="grupa-select">
+                    <option value="">— Bez grupe —</option>
+                    @{
+                        var sveGrupe = ViewBag.SveGrupe as List<EVrtic.Models.Grupa> ?? new List<EVrtic.Models.Grupa>();
+                    }
+                    @foreach (var g in sveGrupe)
+                    {
+                        if (Model.GrupaId == g.Id)
+                        {
+                            <option value="@g.Id" selected>@g.ImeGrupe</option>
+                        }
+                        else
+                        {
+                            <option value="@g.Id">@g.ImeGrupe</option>
+                        }
+                    }
+                </select>
+                <button type="submit" class="grupa-save-btn" title="Sačuvaj grupu">💾</button>
+            </form>
         </div>
 
         <div class="admin-detail-row">
@@ -121,3 +150,45 @@
         </form>
     </div>
 </div>
+
+<style>
+    .grupa-promjena {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    .grupa-select {
+        flex: 1;
+        max-width: 260px;
+        height: 38px;
+        border: 1px solid #e2e7f0;
+        border-radius: 8px;
+        padding: 0 12px;
+        font-size: 14px;
+        color: #1c2538;
+        background: #fff;
+        outline: none;
+        font-family: inherit;
+    }
+
+        .grupa-select:focus { border-color: #2456db; }
+
+    .grupa-save-btn {
+        height: 38px;
+        width: 38px;
+        border-radius: 8px;
+        background: #e4ecff;
+        color: #2456db;
+        border: none;
+        font-size: 17px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .12s;
+    }
+
+        .grupa-save-btn:hover { background: #d3def8; }
+</style>

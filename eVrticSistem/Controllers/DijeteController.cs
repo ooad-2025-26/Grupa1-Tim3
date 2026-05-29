@@ -40,6 +40,7 @@ namespace EVrtic.Controllers
                 .Include(d => d.Alergije).Include(d => d.Bolesti)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (dijete == null) return NotFound();
+            ViewBag.SveGrupe = await _context.Grupe.OrderBy(g => g.ImeGrupe).ToListAsync();
             return View(dijete);
         }
 
@@ -74,9 +75,26 @@ namespace EVrtic.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
+        // ─── ADMINISTRATOR: Promjena grupe djeteta (s Details ekrana) ──────
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> PromijeniGrupu(int id, int? grupaId)
+        {
+            var dijete = await _context.Djeca.FindAsync(id);
+            if (dijete == null) return NotFound();
+
+            // grupaId može biti null (= ukloni iz grupe)
+            dijete.GrupaId = grupaId;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = grupaId.HasValue
+                ? "Grupa djeteta je uspješno ažurirana."
+                : "Dijete je uklonjeno iz grupe.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
         // ─── ADMINISTRATOR: Trajno brisanje profila djeteta ─────────────────
-        // Briše i sve vezane zapise: alergije, bolesti, evidencije dolaska/odlaska,
-        // dnevne izvještaje i sažetke aktivnosti.
 
         [HttpPost, ValidateAntiForgeryToken]
         [Authorize(Roles = "ADMINISTRATOR")]
