@@ -3,211 +3,201 @@
 @{
     ViewData["Title"] = "Profil korisnika";
     ViewData["ActiveNav"] = "korisnici";
-    Layout = "_AdminLayout";
 
-    string UlogaTekst(EVrtic.Models.Uloga u) => u switch
+    bool jeAdminUView = User.IsInRole("ADMINISTRATOR");
+
+    // Admin: koristi admin layout (sidebar). Ostali (educator, parent): bez admin layouta.
+    Layout = jeAdminUView ? "_AdminLayout" : null;
+
+    string PovratniController = Model.Uloga switch
     {
-        EVrtic.Models.Uloga.RODITELJ => "Roditelj",
-        EVrtic.Models.Uloga.ODGAJATELJ => "Odgajatelj",
-        EVrtic.Models.Uloga.ADMINISTRATOR => "Administrator",
+        EVrtic.Models.Uloga.ODGAJATELJ => "Home",
+        EVrtic.Models.Uloga.RODITELJ => "Home",
         _ => "Korisnik"
     };
-
-    string AvatarEmoji(EVrtic.Models.Uloga u) => u switch
+    string PovratniAction = Model.Uloga switch
     {
-        EVrtic.Models.Uloga.RODITELJ => "🧑",
-        EVrtic.Models.Uloga.ODGAJATELJ => "🧑‍🏫",
-        EVrtic.Models.Uloga.ADMINISTRATOR => "🛡️",
-        _ => "👤"
+        EVrtic.Models.Uloga.ODGAJATELJ => "OdgajateljHome",
+        EVrtic.Models.Uloga.RODITELJ => "RoditeljHome",
+        _ => "Index"
     };
-
-    var aktivan = Model.StatusNaloga == EVrtic.Models.StatusNaloga.AKTIVAN;
 }
 
-<a class="admin-back" asp-action="Index">← Nazad na korisnike</a>
-
-@if (TempData["Uspjeh"] != null)
+@if (jeAdminUView)
 {
-    <div class="admin-flash admin-flash-ok">@TempData["Uspjeh"]</div>
+    @* ADMIN PRIKAZ — koristi _AdminLayout *@
+    <a class="admin-back" asp-action="Index">← Nazad na korisnike</a>
+
+    @await Html.PartialAsync("_ProfilSadrzaj", Model)
 }
-@if (TempData["Greska"] != null)
+else
 {
-    <div class="admin-flash admin-flash-err">@TempData["Greska"]</div>
-}
+    @* EDUCATOR / RODITELJ PRIKAZ — standalone stranica sa svojim wrapperom *@
+    <!DOCTYPE html>
+    <html lang="bs">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Moj profil — eVrtić</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </head>
+    <body>
+        <div class="educator-page">
+            <div class="educator-card">
 
-<div class="admin-detail-card @(aktivan ? "" : "is-deaktiviran")">
-    <div class="admin-detail-head">
-        <div class="big-avatar">@AvatarEmoji(Model.Uloga)</div>
-        <div>
-            <h2>@Model.ImePrezime</h2>
-            <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
-                <span class="admin-chip">@UlogaTekst(Model.Uloga)</span>
-                @if (aktivan)
-                {
-                    <span class="admin-badge admin-badge-on">Aktivan profil</span>
-                }
-                else
-                {
-                    <span class="admin-badge admin-badge-off">Deaktiviran profil</span>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="admin-detail-grid">
-        <div class="admin-detail-row">
-            <p class="label">Ime i prezime</p>
-            <p class="value">@Model.ImePrezime</p>
-        </div>
-
-        <div class="admin-detail-row">
-            <p class="label">Email</p>
-            <p class="value">@Model.Email</p>
-        </div>
-
-        @if (Model is EVrtic.Models.Roditelj roditelj)
-        {
-            <div class="admin-detail-row">
-                <p class="label">Kontakt telefon</p>
-                <p class="value">
-                    @(string.IsNullOrWhiteSpace(roditelj.KontaktTelefon) ? "—" : roditelj.KontaktTelefon)
-                </p>
-            </div>
-
-            <div class="admin-detail-row">
-                <p class="label">Broj djece u sistemu</p>
-                <p class="value">@(roditelj.Djeca?.Count ?? 0)</p>
-            </div>
-
-            <div class="admin-detail-row full">
-                <p class="label">Djeca</p>
-                @if (roditelj.Djeca != null && roditelj.Djeca.Any())
-                {
-                    <div class="profil-lista">
-                        @foreach (var d in roditelj.Djeca.OrderBy(x => x.ImePrezime))
+                <aside class="educator-sidebar">
+                    <h1 class="educator-logo">eVrtić</h1>
+                    <nav class="educator-menu">
+                        <a class="educator-link" asp-controller="@PovratniController" asp-action="@PovratniAction">
+                            <span>🏠</span> Početna
+                        </a>
+                        @if (Model.Uloga == EVrtic.Models.Uloga.ODGAJATELJ)
                         {
-                            var ime = string.IsNullOrWhiteSpace(d.ImePrezime) ? $"(kod: {d.IdentifikacioniKod})" : d.ImePrezime;
-                            <a class="profil-stavka" asp-controller="Dijete" asp-action="Details" asp-route-id="@d.Id">
-                                <span class="ps-ico">👧</span>
-                                <span class="ps-info">
-                                    <strong>@ime</strong>
-                                    <small>Grupa: @(d.Grupa != null ? d.Grupa.ImeGrupe : "nije dodijeljena")</small>
-                                </span>
-                                <span class="ps-arrow">→</span>
+                            <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                                <span>🔔</span> Obavijesti
                             </a>
                         }
+                        <a class="educator-link active" asp-controller="Korisnik" asp-action="Profil">
+                            <span>👤</span> Profil
+                        </a>
+                        <form asp-area="Identity" asp-page="/Account/Logout"
+                              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                            <button type="submit" class="educator-link educator-logout-button">
+                                <span>🚪</span> Odjava
+                            </button>
+                        </form>
+                    </nav>
+
+                    <div class="educator-side-art">
+                        <div class="side-cloud side-cloud-1"></div>
+                        <div class="side-cloud side-cloud-2"></div>
+                        <div class="side-kindergarten">
+                            <div class="side-roof"></div>
+                            <div class="side-building">
+                                <div class="side-window"></div>
+                                <div class="side-door"></div>
+                                <div class="side-window"></div>
+                            </div>
+                        </div>
+                        <div class="side-tree side-tree-left"></div>
+                        <div class="side-tree side-tree-right"></div>
                     </div>
-                }
-                else
-                {
-                    <p class="value">Nema povezane djece.</p>
-                }
+                </aside>
+
+                <main class="educator-main educator-main-scroll">
+                    <a class="posalji-back" asp-controller="@PovratniController" asp-action="@PovratniAction">← Nazad</a>
+                    <h1 class="edu-page-title">Moj profil</h1>
+
+                    @await Html.PartialAsync("_ProfilSadrzaj", Model)
+                </main>
+
             </div>
+        </div>
+
+        <style>
+            .profil-lista {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 4px;
+            }
+            .profil-stavka {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                background: #fafbfd;
+                border: 1px solid #eef1f8;
+                border-radius: 12px;
+                padding: 12px 16px;
+                color: #1c2538;
+            }
+            .profil-stavka .ps-ico { font-size: 22px; flex-shrink: 0; }
+            .profil-stavka .ps-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+            .profil-stavka .ps-info strong { font-size: 14.5px; color: #1c2538; }
+            .profil-stavka .ps-info small { font-size: 12.5px; color: #64748b; margin-top: 2px; }
+
+            .educator-main-scroll { overflow-y: auto; }
+            .posalji-back {
+                color: #7447d8; text-decoration: none; font-weight: 700;
+                font-size: 16px; display: inline-flex; align-items: center;
+                gap: 6px; margin-bottom: 12px;
+            }
+            .posalji-back:hover { color: #5f38b8; }
+            .edu-page-title {
+                font-size: 28px; font-weight: 800; color: #16233b; margin: 0 0 20px;
+            }
+
+            /* Profil card stilovi unutar educator-main */
+            .educator-main .admin-detail-card {
+                background: white; border-radius: 16px; padding: 24px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            }
+            .educator-main .admin-detail-head {
+                display: flex; align-items: center; gap: 20px;
+                margin-bottom: 24px; padding-bottom: 20px;
+                border-bottom: 1px solid #eef1f8;
+            }
+            .educator-main .big-avatar {
+                font-size: 52px; width: 80px; height: 80px;
+                background: #f0eaff; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0;
+            }
+            .educator-main .admin-detail-head h2 {
+                font-size: 22px; font-weight: 800; color: #16233b; margin: 0;
+            }
+            .educator-main .admin-chip {
+                background: #f0eaff; color: #7447d8;
+                border-radius: 20px; padding: 4px 12px;
+                font-size: 13px; font-weight: 700;
+            }
+            .educator-main .admin-badge {
+                border-radius: 20px; padding: 4px 12px;
+                font-size: 13px; font-weight: 700;
+            }
+            .educator-main .admin-badge-on { background: #e8f8ee; color: #1a7a3e; }
+            .educator-main .admin-badge-off { background: #fff0f0; color: #c0392b; }
+            .educator-main .admin-detail-grid {
+                display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+            }
+            .educator-main .admin-detail-row {
+                display: flex; flex-direction: column; gap: 4px;
+            }
+            .educator-main .admin-detail-row.full { grid-column: 1 / -1; }
+            .educator-main .admin-detail-row .label {
+                font-size: 13px; color: #6a768b; font-weight: 600; margin: 0;
+            }
+            .educator-main .admin-detail-row .value {
+                font-size: 15px; color: #16233b; font-weight: 500; margin: 0;
+            }
+            .admin-flash {
+                border-radius: 10px; padding: 12px 18px; margin-bottom: 18px;
+                font-weight: 600;
+            }
+            .admin-flash-ok { background: #e8f8ee; color: #1a7a3e; border: 1px solid #6fcf97; }
+            .admin-flash-err { background: #fff0f0; color: #c0392b; border: 1px solid #f0b3b3; }
+        </style>
+    </body>
+    </html>
+}
+
+@if (jeAdminUView)
+{
+    @* Stilovi za admin pogled (koriste se sa _AdminLayout) *@
+    <style>
+        .profil-lista {
+            display: flex; flex-direction: column; gap: 8px; margin-top: 4px;
         }
-        else if (Model is EVrtic.Models.Odgajatelj odgajatelj)
-        {
-            <div class="admin-detail-row">
-                <p class="label">Broj grupa</p>
-                <p class="value">@(odgajatelj.Grupe?.Count ?? 0)</p>
-            </div>
-
-            <div class="admin-detail-row full">
-                <p class="label">Grupe koje vodi</p>
-                @if (odgajatelj.Grupe != null && odgajatelj.Grupe.Any())
-                {
-                    <div class="profil-lista">
-                        @foreach (var g in odgajatelj.Grupe.OrderBy(x => x.ImeGrupe))
-                        {
-                            var brojDjece = g.Djeca?.Count ?? 0;
-                            <a class="profil-stavka" asp-controller="Grupa" asp-action="Index">
-                                <span class="ps-ico">🏫</span>
-                                <span class="ps-info">
-                                    <strong>@g.ImeGrupe</strong>
-                                    <small>@brojDjece @(brojDjece == 1 ? "dijete" : "djece") u grupi</small>
-                                </span>
-                                <span class="ps-arrow">→</span>
-                            </a>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="value">Trenutno ne vodi nijednu grupu.</p>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="admin-detail-row full">
-                <p class="label">Napomena</p>
-                <p class="value">Administrator sistema — pristup svim funkcijama.</p>
-            </div>
-        }
-    </div>
-
-    <div class="admin-detail-foot">
-        @if (aktivan)
-        {
-            <form asp-action="Deaktiviraj" asp-route-id="@Model.Id" method="post"
-                  onsubmit="return confirm('Deaktivirati nalog ovog korisnika?');">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="admin-btn admin-btn-danger">🚫 Deaktiviraj profil</button>
-            </form>
-        }
-        else
-        {
-            <form asp-action="Aktiviraj" asp-route-id="@Model.Id" method="post"
-                  onsubmit="return confirm('Ponovo aktivirati nalog ovog korisnika?');">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="admin-btn admin-btn-success">✅ Aktiviraj profil</button>
-            </form>
-        }
-
-        <form asp-action="Obrisi" asp-route-id="@Model.Id" method="post"
-              onsubmit="return confirm('TRAJNO obrisati ovog korisnika? Ovo se ne može poništiti. Veze sa djecom/grupama biće raskinute.');">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="admin-btn admin-btn-danger">🗑️ Obriši profil</button>
-        </form>
-    </div>
-</div>
-
-<style>
-    .profil-lista {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 4px;
-    }
-
-    .profil-stavka {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        background: #fafbfd;
-        border: 1px solid #eef1f8;
-        border-radius: 12px;
-        padding: 12px 16px;
-        text-decoration: none;
-        color: #1c2538;
-        transition: transform .1s, background .12s;
-    }
-
-        .profil-stavka:hover {
-            background: #f1f5fb;
+        .profil-stavka {
+            display: flex; align-items: center; gap: 14px;
+            background: #fafbfd; border: 1px solid #eef1f8;
+            border-radius: 12px; padding: 12px 16px;
             color: #1c2538;
-            transform: translateY(-1px);
         }
-
-    .profil-stavka .ps-ico { font-size: 22px; flex-shrink: 0; }
-
-    .profil-stavka .ps-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-    .profil-stavka .ps-info strong { font-size: 14.5px; color: #1c2538; }
-    .profil-stavka .ps-info small { font-size: 12.5px; color: #64748b; margin-top: 2px; }
-
-    .profil-stavka .ps-arrow {
-        color: #2456db;
-        font-size: 18px;
-        font-weight: 700;
-        flex-shrink: 0;
-    }
-</style>
+        .profil-stavka .ps-ico { font-size: 22px; flex-shrink: 0; }
+        .profil-stavka .ps-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .profil-stavka .ps-info strong { font-size: 14.5px; color: #1c2538; }
+        .profil-stavka .ps-info small { font-size: 12.5px; color: #64748b; margin-top: 2px; }
+    </style>
+}

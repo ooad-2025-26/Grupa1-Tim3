@@ -1371,7 +1371,7 @@ body {
 }
 
 .educator-quick-card {
-    min-height: 112px;
+    min-height: 90px;
     background: white;
     border-radius: 14px;
     padding: 22px;
@@ -1412,7 +1412,7 @@ body {
     }
 
 .educator-quick-card h4 {
-    margin: 0 0 6px;
+    margin: 0;
     font-size: 17px;
     font-weight: 800;
 }

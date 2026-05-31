@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eVrticSistem.Controllers
 {
-    [Authorize(Roles = "ADMINISTRATOR")]
     public class KorisnikController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,6 +21,7 @@ namespace eVrticSistem.Controllers
         }
 
         // GET: /Korisnik
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
             var korisnici = await _context.Users
@@ -30,27 +30,43 @@ namespace eVrticSistem.Controllers
             return View(korisnici);
         }
 
-        // GET: /Korisnik/Profil/5
-        // Prikaz osnovnih podataka o korisniku. Za roditelja prikazuje i listu djece,
-        // za odgajatelja listu grupa.
-        public async Task<IActionResult> Profil(int id)
+        // GET: /Korisnik/Profil[/5]
+        // Prikaz osnovnih podataka o korisniku. Ako nije proslijeđen id, koristi se
+        // ID trenutno prijavljenog korisnika. Ne-administratori smiju vidjeti samo
+        // svoj profil.
+        [Authorize]
+        public async Task<IActionResult> Profil(int? id)
         {
-            // Najprije provjeri tip preko Uloge, pa loadaj sa povezanim entitetima
-            var bazni = await _context.Users.FindAsync(id);
+            var trenutni = await _userManager.GetUserAsync(User);
+            if (trenutni == null) return Challenge();
+
+            // Ako id nije proslijeđen, uzmi ID prijavljenog korisnika
+            int trazeniId = id ?? trenutni.Id;
+
+            // Ne-administratori smiju gledati samo svoj profil
+            bool jeAdmin = await _userManager.IsInRoleAsync(trenutni, "ADMINISTRATOR");
+            if (!jeAdmin && trazeniId != trenutni.Id)
+            {
+                trazeniId = trenutni.Id;
+            }
+
+            var bazni = await _context.Users.FindAsync(trazeniId);
             if (bazni == null) return NotFound();
+
+            ViewBag.JeVlastitiProfil = (trazeniId == trenutni.Id);
 
             if (bazni.Uloga == Uloga.RODITELJ)
             {
                 var roditelj = await _context.Roditelji
                     .Include(r => r.Djeca).ThenInclude(d => d.Grupa)
-                    .FirstOrDefaultAsync(r => r.Id == id);
+                    .FirstOrDefaultAsync(r => r.Id == trazeniId);
                 return View(roditelj);
             }
             if (bazni.Uloga == Uloga.ODGAJATELJ)
             {
                 var odgajatelj = await _context.Odgajatelji
                     .Include(o => o.Grupe).ThenInclude(g => g.Djeca)
-                    .FirstOrDefaultAsync(o => o.Id == id);
+                    .FirstOrDefaultAsync(o => o.Id == trazeniId);
                 return View(odgajatelj);
             }
             return View(bazni);
@@ -59,6 +75,7 @@ namespace eVrticSistem.Controllers
         // ─── Deaktivacija / aktivacija profila (scenarij 6.6) ────────────────
 
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Deaktiviraj(int id)
         {
             var korisnik = await _context.Users.FindAsync(id);
@@ -72,6 +89,7 @@ namespace eVrticSistem.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Aktiviraj(int id)
         {
             var korisnik = await _context.Users.FindAsync(id);
@@ -87,6 +105,7 @@ namespace eVrticSistem.Controllers
         // ─── Trajno brisanje korisnika ───────────────────────────────────────
 
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Obrisi(int id)
         {
             // Sigurnosna provjera: administrator ne smije obrisati vlastiti nalog

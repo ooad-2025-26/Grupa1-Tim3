@@ -300,6 +300,34 @@ namespace EVrtic.Controllers
             return View(dijete);
         }
 
+        // ─── ODGAJATELJ: Pregled jednog djeteta iz svoje grupe ──────────────
+
+        [Authorize(Roles = "ODGAJATELJ")]
+        public async Task<IActionResult> PodaciODjetetu(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null) return Challenge();
+
+            var odgajatelj = await _context.Odgajatelji
+                .FirstOrDefaultAsync(o => o.Id == korisnik.Id);
+
+            if (odgajatelj == null) return Forbid();
+
+            var dijete = await _context.Djeca
+                .Include(d => d.Grupa)
+                .Include(d => d.Roditelj)
+                .Include(d => d.Alergije)
+                .Include(d => d.Bolesti)
+                .FirstOrDefaultAsync(d => d.Id == id
+                    && d.Grupa != null
+                    && d.Grupa.OdgajateljId == odgajatelj.Id);
+
+            if (dijete == null) return Forbid();
+            return View(dijete);
+        }
+
         // ─── CRUD (admin) ────────────────────────────────────────────────────
 
         [Authorize(Roles = "ADMINISTRATOR")]

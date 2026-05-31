@@ -1,0 +1,296 @@
+@model EVrtic.Controllers.OdgajateljObavijestViewModel
+
+@{
+    ViewData["Title"] = "Obavijesti";
+}
+
+<div class="educator-page">
+    <div class="educator-card">
+
+        <aside class="educator-sidebar">
+            <h1 class="educator-logo">eVrtić</h1>
+
+            <nav class="educator-menu">
+                <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>🏠</span>
+                    Početna
+                </a>
+
+                <a class="educator-link active" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    <span>🔔</span>
+                    Obavijesti
+                </a>
+
+                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+                    <span>👤</span>
+                    Profil
+                </a>
+
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="educator-link educator-logout-button">
+                        <span>🚪</span>
+                        Odjava
+                    </button>
+                </form>
+            </nav>
+
+            <div class="educator-side-art">
+                <div class="side-cloud side-cloud-1"></div>
+                <div class="side-cloud side-cloud-2"></div>
+                <div class="side-kindergarten">
+                    <div class="side-roof"></div>
+                    <div class="side-building">
+                        <div class="side-window"></div>
+                        <div class="side-door"></div>
+                        <div class="side-window"></div>
+                    </div>
+                </div>
+                <div class="side-tree side-tree-left"></div>
+                <div class="side-tree side-tree-right"></div>
+            </div>
+        </aside>
+
+        <main class="educator-main educator-main-scroll">
+            <div class="edu-page-header">
+                <div class="edu-page-title-row">
+                    <h1 class="edu-page-title">Obavijesti</h1>
+                    <a class="edu-add-btn" asp-controller="Obavijest" asp-action="PosaljiObavijest">
+                        <span>+</span>
+                    </a>
+                </div>
+                <p class="edu-page-sub">Sve obavijesti za vašu grupu i sistem</p>
+            </div>
+
+            @if (TempData["Uspjeh"] != null)
+            {
+                <div class="edu-flash-ok">✅ @TempData["Uspjeh"]</div>
+            }
+
+            @if (!Model.Obavijesti.Any())
+            {
+                <div class="edu-empty-state">
+                    <span class="edu-empty-icon">🔔</span>
+                    <p>Nema obavijesti u sistemu.</p>
+                    <a class="edu-btn-primary" asp-controller="Obavijest" asp-action="PosaljiObavijest">
+                        Pošalji prvu obavijest
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="edu-obavijesti-list">
+                    @foreach (var o in Model.Obavijesti)
+                    {
+                        <div class="edu-obavijest-card">
+                            <div class="edu-obavijest-icon">🔔</div>
+                            <div class="edu-obavijest-content">
+                                <div class="edu-obavijest-header">
+                                    <span class="edu-obavijest-naslov">@o.Naslov</span>
+                                    <span class="edu-obavijest-datum">
+                                        @(o.DatumSlanja.HasValue
+                                            ? o.DatumSlanja.Value.ToString("dd.MM.yyyy. HH:mm")
+                                            : o.DatumKreiranja.ToString("dd.MM.yyyy. HH:mm"))
+                                    </span>
+                                </div>
+                                <p class="edu-obavijest-tekst">@o.Sadrzaj</p>
+                                <div class="edu-obavijest-meta">
+                                    @if (o.Odgajatelj != null)
+                                    {
+                                        <span class="edu-meta-tag">👤 @o.Odgajatelj.ImePrezime</span>
+                                    }
+                                    <span class="edu-meta-tag edu-status-@o.StatusObavijesti.ToString().ToLower()">
+                                        @(o.StatusObavijesti == StatusObavijesti.POSLANA ? "Poslana" :
+                                          o.StatusObavijesti == StatusObavijesti.KREIRANA ? "Kreirana" :
+                                          o.StatusObavijesti == StatusObavijesti.PROCITANA ? "Pročitana" : "Neuspjela")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </main>
+
+        <nav class="educator-bottom-nav">
+            <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome">
+                <span>🏠</span>
+                Početna
+            </a>
+            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+                <span>📝</span>
+                Aktivnosti
+            </a>
+            <a class="bottom-link active" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                <span>🔔</span>
+                Obavijesti
+            </a>
+            <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil">
+                <span>👤</span>
+                Profil
+            </a>
+        </nav>
+
+    </div>
+</div>
+
+<style>
+    .educator-main-scroll {
+        overflow-y: auto;
+        max-height: calc(100vh - 70px);
+    }
+
+    .edu-page-header {
+        margin-bottom: 30px;
+    }
+
+    .edu-page-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+
+    .edu-page-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #16233b;
+        margin: 0;
+    }
+
+    .edu-add-btn {
+        width: 48px;
+        height: 48px;
+        background: #7447d8;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(116, 71, 216, 0.3);
+        transition: background .15s;
+        line-height: 1;
+        padding-bottom: 2px;
+    }
+
+    .edu-add-btn:hover { background: #5f38b8; }
+
+    .edu-page-sub {
+        color: #6a768b;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .edu-flash-ok {
+        background: #e8f8ee;
+        border: 1px solid #6fcf97;
+        color: #1a7a3e;
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .edu-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8a96a8;
+    }
+
+    .edu-empty-icon { font-size: 56px; display: block; margin-bottom: 14px; }
+    .edu-empty-state p { font-size: 18px; margin-bottom: 22px; }
+
+    .edu-btn-primary {
+        display: inline-block;
+        background: #7447d8;
+        color: white;
+        border-radius: 12px;
+        padding: 14px 28px;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .edu-obavijesti-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .edu-obavijest-card {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .edu-obavijest-icon {
+        font-size: 30px;
+        width: 50px;
+        height: 50px;
+        background: #f0eaff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .edu-obavijest-content { flex: 1; min-width: 0; }
+
+    .edu-obavijest-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .edu-obavijest-naslov {
+        font-weight: 800;
+        color: #16233b;
+        font-size: 16px;
+    }
+
+    .edu-obavijest-datum {
+        color: #8a96a8;
+        font-size: 13px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .edu-obavijest-tekst {
+        color: #4a5568;
+        font-size: 15px;
+        line-height: 1.45;
+        margin: 0 0 10px;
+    }
+
+    .edu-obavijest-meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .edu-meta-tag {
+        background: #f4f1ff;
+        color: #7447d8;
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .edu-status-poslana { background: #e8f8ee; color: #1a7a3e; }
+    .edu-status-kreirana { background: #fff8e1; color: #856a00; }
+    .edu-status-procitana { background: #e9f2ff; color: #1a4db8; }
+    .edu-status-neuspjela { background: #fff0f0; color: #c0392b; }
+</style>

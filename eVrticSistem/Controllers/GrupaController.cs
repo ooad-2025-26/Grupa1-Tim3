@@ -9,20 +9,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EVrtic.Data;
 using EVrtic.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace EVrtic.Controllers
 {
-    [Authorize(Roles = "ADMINISTRATOR")]
     public class GrupaController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Korisnik> _userManager;
 
-        public GrupaController(ApplicationDbContext context)
+        public GrupaController(ApplicationDbContext context, UserManager<Korisnik> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Grupa  — prikaz svih grupa sa odgajateljem i djecom (za expandable kartice)
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
             var grupe = await _context.Grupe
@@ -37,6 +40,7 @@ namespace EVrtic.Controllers
         // ─── DODAVANJE NOVE GRUPE ────────────────────────────────────────────
 
         // GET: Grupa/Create
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Create()
         {
             var vm = new GrupaFormViewModel
@@ -49,6 +53,7 @@ namespace EVrtic.Controllers
 
         // POST: Grupa/Create
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Create(GrupaFormViewModel vm)
         {
             vm.OdabranaDjecaIds ??= new List<int>();
@@ -94,6 +99,7 @@ namespace EVrtic.Controllers
         // ─── UREĐIVANJE GRUPE ────────────────────────────────────────────────
 
         // GET: Grupa/Edit/5
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -119,6 +125,7 @@ namespace EVrtic.Controllers
 
         // POST: Grupa/Edit/5
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int id, GrupaFormViewModel vm)
         {
             if (id != vm.Id) return NotFound();
@@ -167,6 +174,7 @@ namespace EVrtic.Controllers
 
         // ─── BRISANJE GRUPE (zadržano iz scaffolda) ──────────────────────────
 
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -178,6 +186,7 @@ namespace EVrtic.Controllers
         }
 
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var grupa = await _context.Grupe.Include(g => g.Djeca).FirstOrDefaultAsync(g => g.Id == id);
@@ -190,6 +199,33 @@ namespace EVrtic.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        // ─── ODGAJATELJ: Moja grupa ──────────────────────────────────────────
+        // (scenarij — odgajatelj pregleda djecu iz svoje grupe)
+
+        [Authorize(Roles = "ODGAJATELJ")]
+        public async Task<IActionResult> MojaGrupa()
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null) return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+            var odgajatelj = await _context.Odgajatelji
+                .FirstOrDefaultAsync(o => o.Id == korisnik.Id);
+
+            if (odgajatelj == null) return RedirectToAction("OdgajateljHome", "Home");
+
+            var grupe = await _context.Grupe
+                .Include(g => g.Djeca)
+                    .ThenInclude(d => d.Alergije)
+                .Include(g => g.Djeca)
+                    .ThenInclude(d => d.Bolesti)
+                .Where(g => g.OdgajateljId == odgajatelj.Id)
+                .OrderBy(g => g.ImeGrupe)
+                .ToListAsync();
+
+            ViewBag.Odgajatelj = odgajatelj;
+            return View(grupe);
         }
 
         // ─── POMOĆNE METODE ──────────────────────────────────────────────────

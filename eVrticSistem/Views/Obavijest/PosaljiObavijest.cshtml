@@ -1,0 +1,284 @@
+@model EVrtic.Controllers.PosaljiObavijestViewModel
+
+@{
+    ViewData["Title"] = "Slanje obavijesti";
+}
+
+<div class="educator-page">
+    <div class="educator-card">
+
+        <aside class="educator-sidebar">
+            <h1 class="educator-logo">eVrtić</h1>
+            <nav class="educator-menu">
+                <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="educator-link active" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    <span>🔔</span> Obavijesti
+                </a>
+                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+                    <span>👤</span> Profil
+                </a>
+                <form asp-area="Identity" asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="educator-link educator-logout-button">
+                        <span>🚪</span> Odjava
+                    </button>
+                </form>
+            </nav>
+            <div class="educator-side-art">
+                <div class="side-cloud side-cloud-1"></div>
+                <div class="side-cloud side-cloud-2"></div>
+                <div class="side-kindergarten">
+                    <div class="side-roof"></div>
+                    <div class="side-building">
+                        <div class="side-window"></div>
+                        <div class="side-door"></div>
+                        <div class="side-window"></div>
+                    </div>
+                </div>
+                <div class="side-tree side-tree-left"></div>
+                <div class="side-tree side-tree-right"></div>
+            </div>
+        </aside>
+
+        <main class="educator-main educator-main-scroll">
+            <div class="posalji-header">
+                <a class="posalji-back" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">← Nazad</a>
+                <h1 class="edu-page-title">Slanje obavijesti</h1>
+            </div>
+
+            <form asp-action="PosaljiObavijest" method="post" class="posalji-form">
+                @Html.AntiForgeryToken()
+
+                <div class="posalji-field">
+                    <label class="posalji-label">Prima</label>
+                    <div class="posalji-select-wrap">
+                        <span class="posalji-select-icon">👥</span>
+                        <select name="Prima" class="posalji-select">
+                            @if (Model.Odgajatelj != null && Model.Odgajatelj.Grupe.Any())
+                            {
+                                foreach (var g in Model.Odgajatelj.Grupe.OrderBy(g => g.ImeGrupe))
+                                {
+                                    <option value="grupa:@g.Id">Roditelji — @g.ImeGrupe</option>
+                                }
+                            }
+                            <option value="svi">Svi</option>
+                            <option value="odgajatelji">Odgajatelji</option>
+                        </select>
+                        <span class="posalji-chevron">▾</span>
+                    </div>
+                </div>
+
+                <div class="posalji-field">
+                    <label class="posalji-label">Naslov</label>
+                    <input type="text" name="Naslov" class="posalji-input"
+                           placeholder="Npr. Važna napomena" required />
+                </div>
+
+                <div class="posalji-field">
+                    <label class="posalji-label">Poruka</label>
+                    <textarea name="Poruka" class="posalji-textarea" rows="5"
+                              placeholder="Unesite sadržaj obavijesti..." required></textarea>
+                </div>
+
+                <div class="posalji-field">
+                    <label class="posalji-label">Pošalji putem</label>
+                    <div class="posalji-checkboxes">
+                        <label class="posalji-check-label">
+                            <input type="checkbox" name="PutemAplikacije" value="true" class="posalji-check" checked />
+                            <span class="posalji-check-box"></span>
+                            Aplikacija
+                        </label>
+                        <label class="posalji-check-label">
+                            <input type="checkbox" name="PutemEmaila" value="true" class="posalji-check" />
+                            <span class="posalji-check-box"></span>
+                            Email
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="posalji-submit">
+                    📤 Pošalji obavijest
+                </button>
+            </form>
+        </main>
+
+        <nav class="educator-bottom-nav">
+            <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome">
+                <span>🏠</span> Početna
+            </a>
+            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+                <span>📝</span> Aktivnosti
+            </a>
+            <a class="bottom-link active" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                <span>🔔</span> Obavijesti
+            </a>
+            <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil">
+                <span>👤</span> Profil
+            </a>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .educator-main-scroll { overflow-y: auto; max-height: calc(100vh - 70px); }
+
+    .posalji-header {
+        margin-bottom: 30px;
+    }
+
+    .posalji-back {
+        color: #7447d8;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .posalji-back:hover { color: #5f38b8; }
+
+    .posalji-form {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        max-width: 620px;
+    }
+
+    .posalji-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .posalji-label {
+        font-weight: 800;
+        color: #16233b;
+        font-size: 16px;
+    }
+
+    .posalji-select-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 0 16px;
+        height: 52px;
+        gap: 12px;
+    }
+
+    .posalji-select-icon { font-size: 20px; }
+
+    .posalji-select {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        color: #16233b;
+        background: transparent;
+        font-family: inherit;
+        font-weight: 500;
+        appearance: none;
+    }
+
+    .posalji-chevron {
+        color: #8a96a8;
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .posalji-input {
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 16px;
+        color: #16233b;
+        font-family: inherit;
+        outline: none;
+        transition: border-color .15s;
+    }
+
+    .posalji-input:focus { border-color: #7447d8; }
+
+    .posalji-textarea {
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 15px;
+        color: #16233b;
+        font-family: inherit;
+        outline: none;
+        resize: vertical;
+        line-height: 1.5;
+        transition: border-color .15s;
+    }
+
+    .posalji-textarea:focus { border-color: #7447d8; }
+
+    .posalji-checkboxes {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .posalji-check-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        color: #16233b;
+    }
+
+    .posalji-check { display: none; }
+
+    .posalji-check-box {
+        width: 22px;
+        height: 22px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .15s;
+        flex-shrink: 0;
+    }
+
+    .posalji-check:checked + .posalji-check-box {
+        background: #7447d8;
+        border-color: #7447d8;
+    }
+
+    .posalji-check:checked + .posalji-check-box::after {
+        content: "✓";
+        color: white;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .posalji-submit {
+        background: #7447d8;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        padding: 18px;
+        font-size: 17px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background .15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .posalji-submit:hover { background: #5f38b8; }
+</style>

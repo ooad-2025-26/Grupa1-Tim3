@@ -1,0 +1,550 @@
+@model EVrtic.Controllers.EvidencijaAktivnostiViewModel
+@using EVrtic.Models
+
+@{
+    ViewData["Title"] = "Evidencija aktivnosti";
+    var obroci = Model.ObrociMap;
+    int GetObrok(string key) => obroci != null && obroci.TryGetValue(key, out int v) ? v : -1;
+
+    string SpavaStart = Model.PostojeciIzvjestaj?.VrijemeDolaska.HasValue == true
+        ? Model.PostojeciIzvjestaj.VrijemeDolaska!.Value.ToString(@"hh\:mm") : "";
+    string SpavaEnd = Model.PostojeciIzvjestaj?.VrijemeOdlaska.HasValue == true
+        ? Model.PostojeciIzvjestaj.VrijemeOdlaska!.Value.ToString(@"hh\:mm") : "";
+    string Napomena = Model.PostojeciIzvjestaj?.NapomenaAktivnosti ?? "";
+}
+
+<div class="educator-page">
+    <div class="educator-card">
+
+        <aside class="educator-sidebar">
+            <h1 class="educator-logo">eVrtić</h1>
+            <nav class="educator-menu">
+                <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="educator-link active" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+                    <span>📝</span> Aktivnosti
+                </a>
+                <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    <span>🔔</span> Obavijesti
+                </a>
+                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+                    <span>👤</span> Profil
+                </a>
+                <form asp-area="Identity" asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="educator-link educator-logout-button">
+                        <span>🚪</span> Odjava
+                    </button>
+                </form>
+            </nav>
+            <div class="educator-side-art">
+                <div class="side-cloud side-cloud-1"></div>
+                <div class="side-cloud side-cloud-2"></div>
+                <div class="side-kindergarten">
+                    <div class="side-roof"></div>
+                    <div class="side-building">
+                        <div class="side-window"></div>
+                        <div class="side-door"></div>
+                        <div class="side-window"></div>
+                    </div>
+                </div>
+                <div class="side-tree side-tree-left"></div>
+                <div class="side-tree side-tree-right"></div>
+            </div>
+        </aside>
+
+        <main class="educator-main educator-main-scroll">
+            <div class="ev-header">
+                <h1 class="edu-page-title">Evidencija aktivnosti</h1>
+                <span class="ev-calendar-icon">📅</span>
+            </div>
+
+            <form asp-action="SacuvajAktivnosti" method="post" class="ev-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Datum" value="@Model.Datum.ToString("yyyy-MM-dd")" />
+
+                @* ── Odabir djeteta ── *@
+                <div class="ev-field">
+                    <label class="ev-label">Dijete</label>
+                    <div class="ev-select-wrap">
+                        <div class="ev-select-avatar">👧</div>
+                        <select name="DijeteId" id="dijeteSelect" class="ev-select"
+                                onchange="updateDijete(this.value)">
+                            <option value="">— Odaberite dijete —</option>
+                            @{
+                                var grupeDjece = Model.Djeca
+                                    .GroupBy(d => d.Grupa?.ImeGrupe ?? "Bez grupe")
+                                    .OrderBy(g => g.Key)
+                                    .ToList();
+                            }
+                            @if (grupeDjece.Count <= 1)
+                            {
+                                foreach (var d in Model.Djeca)
+                                {
+                                    if (Model.OdabraniDijeteId == d.Id)
+                                    {
+                                        <option value="@d.Id" selected>@d.ImePrezime</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@d.Id">@d.ImePrezime</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var grupa in grupeDjece)
+                                {
+                                    <optgroup label="@grupa.Key">
+                                        @foreach (var d in grupa.OrderBy(x => x.ImePrezime))
+                                        {
+                                            if (Model.OdabraniDijeteId == d.Id)
+                                            {
+                                                <option value="@d.Id" selected>@d.ImePrezime</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@d.Id">@d.ImePrezime</option>
+                                            }
+                                        }
+                                    </optgroup>
+                                }
+                            }
+                        </select>
+                        <span class="ev-chevron">▾</span>
+                    </div>
+                </div>
+
+                @* ── Datum ── *@
+                <div class="ev-field">
+                    <label class="ev-label">Datum</label>
+                    <div class="ev-date-wrap">
+                        <input type="date" id="datumInput" class="ev-date-input"
+                               value="@Model.Datum.ToString("yyyy-MM-dd")"
+                               onchange="updateDatum(this.value)" />
+                        <span class="ev-date-icon">📅</span>
+                    </div>
+                </div>
+
+                @if (Model.OdabraniDijeteId.HasValue)
+                {
+                    @* ── Obroci ── *@
+                    <div class="ev-field">
+                        <label class="ev-label">Obroci</label>
+                        <div class="ev-obroci-grid">
+                            @{
+                                var obrociDef = new[]
+                                {
+                                    new { Key = "Dorucak", Input = "StatusDorucka", Naziv = "Doručak" },
+                                    new { Key = "Uzina",   Input = "StatusUzine",   Naziv = "Užina" },
+                                    new { Key = "Rucak",   Input = "StatusRucka",   Naziv = "Ručak" },
+                                    new { Key = "Uzina2",  Input = "StatusUzine2",  Naziv = "Užina 2" }
+                                };
+                            }
+                            @foreach (var obrok in obrociDef)
+                            {
+                                int savedVal = GetObrok(obrok.Key);
+                                <div class="ev-obrok-item">
+                                    <label class="ev-obrok-label">@obrok.Naziv</label>
+                                    <div class="ev-obrok-options">
+                                        <label class="ev-radio-label @(savedVal == (int)StatusObroka.NIJE_POJEDENO ? "ev-selected" : "")">
+                                            <input type="radio" name="@obrok.Input"
+                                                   value="@((int)StatusObroka.NIJE_POJEDENO)"
+                                                   @(savedVal == (int)StatusObroka.NIJE_POJEDENO ? "checked" : "")
+                                                   onchange="updateRadioStyle(this)" />
+                                            <span>Nije pojedeno</span>
+                                        </label>
+                                        <label class="ev-radio-label @(savedVal == (int)StatusObroka.DJELIMICNO_POJEDENO ? "ev-selected" : "")">
+                                            <input type="radio" name="@obrok.Input"
+                                                   value="@((int)StatusObroka.DJELIMICNO_POJEDENO)"
+                                                   @(savedVal == (int)StatusObroka.DJELIMICNO_POJEDENO ? "checked" : "")
+                                                   onchange="updateRadioStyle(this)" />
+                                            <span>Djelimično pojedeno</span>
+                                        </label>
+                                        <label class="ev-radio-label @(savedVal == (int)StatusObroka.POTPUNO_POJEDENO ? "ev-selected" : "")">
+                                            <input type="radio" name="@obrok.Input"
+                                                   value="@((int)StatusObroka.POTPUNO_POJEDENO)"
+                                                   @(savedVal == (int)StatusObroka.POTPUNO_POJEDENO ? "checked" : "")
+                                                   onchange="updateRadioStyle(this)" />
+                                            <span>Potpuno pojedeno</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @* ── Spavanje ── *@
+                    <div class="ev-field">
+                        <label class="ev-label">Spavanje</label>
+                        <div class="ev-spavanje-row">
+                            <div class="ev-time-group">
+                                <label class="ev-time-label">Od</label>
+                                <div class="ev-time-wrap">
+                                    <input type="time" name="SpavanjePocetakSati"
+                                           id="spavOd"
+                                           value="@SpavaStart"
+                                           class="ev-time-input"
+                                           placeholder="HH:MM" />
+                                    <span class="ev-time-icon">🕐</span>
+                                </div>
+                            </div>
+                            <div class="ev-time-group">
+                                <label class="ev-time-label">Do</label>
+                                <div class="ev-time-wrap">
+                                    <input type="time" name="SpavanjeKrajSati"
+                                           id="spavDo"
+                                           value="@SpavaEnd"
+                                           class="ev-time-input"
+                                           placeholder="HH:MM" />
+                                    <span class="ev-time-icon">🕐</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* ── Napomena ── *@
+                    <div class="ev-field">
+                        <label class="ev-label">Napomena</label>
+                        <textarea name="Napomena" class="ev-textarea" rows="3"
+                                  placeholder="Npr. Mirno spavao.">@Napomena</textarea>
+                    </div>
+
+                    <button type="submit" class="ev-submit" formnovalidate="formnovalidate"
+                            id="saveBtn">
+                        💾 Sačuvaj zapis
+                    </button>
+                }
+                else
+                {
+                    <p class="ev-placeholder-text">Odaberite dijete da biste unijeli aktivnosti.</p>
+                }
+            </form>
+        </main>
+
+        <nav class="educator-bottom-nav">
+            <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome">
+                <span>🏠</span> Početna
+            </a>
+            <a class="bottom-link active" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+                <span>📝</span> Aktivnosti
+            </a>
+            <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                <span>🔔</span> Obavijesti
+            </a>
+            <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil">
+                <span>👤</span> Profil
+            </a>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .educator-main-scroll { overflow-y: auto; }
+
+    .ev-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .edu-page-title { font-size: 28px; font-weight: 800; color: #16233b; margin: 0; }
+    .ev-calendar-icon { font-size: 26px; }
+
+    .edu-flash-ok {
+        background: #e8f8ee;
+        border: 1px solid #6fcf97;
+        color: #1a7a3e;
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 18px;
+        font-weight: 600;
+    }
+
+    .ev-update-note {
+        background: #f0eaff;
+        border: 1px solid #c4a8ff;
+        color: #7447d8;
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 18px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .ev-form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 680px;
+    }
+
+    .ev-field { display: flex; flex-direction: column; gap: 10px; }
+
+    .ev-label {
+        font-size: 16px;
+        font-weight: 800;
+        color: #16233b;
+    }
+
+    .ev-select-wrap {
+        background: white;
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 0 16px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ev-select-avatar { font-size: 24px; }
+
+    .ev-select {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        color: #16233b;
+        font-family: inherit;
+        font-weight: 600;
+        background: transparent;
+        appearance: none;
+    }
+
+    .ev-chevron { color: #8a96a8; font-size: 14px; }
+
+    .ev-date-wrap {
+        background: white;
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 0 16px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ev-date-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        color: #16233b;
+        font-family: inherit;
+        font-weight: 600;
+        background: transparent;
+    }
+
+    .ev-date-icon { font-size: 22px; }
+
+    .ev-obroci-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .ev-obrok-item {
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .ev-obrok-label {
+        display: block;
+        font-weight: 800;
+        color: #16233b;
+        font-size: 15px;
+        margin-bottom: 12px;
+    }
+
+    .ev-obrok-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ev-radio-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1.5px solid #e2e7f0;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a5568;
+        transition: all .15s;
+        background: #fafafa;
+    }
+
+    .ev-radio-label input[type="radio"] { display: none; }
+
+    .ev-radio-label.ev-selected,
+    .ev-radio-label:has(input:checked) {
+        background: #f0eaff;
+        border-color: #7447d8;
+        color: #7447d8;
+    }
+
+    .ev-spavanje-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .ev-time-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .ev-time-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #6a768b;
+    }
+
+    .ev-time-wrap {
+        background: white;
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 0 14px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ev-time-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 18px;
+        color: #16233b;
+        font-family: inherit;
+        font-weight: 700;
+        background: transparent;
+    }
+
+    .ev-time-icon { font-size: 18px; }
+
+    .ev-textarea {
+        border: 1.5px solid #e2e7f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 15px;
+        color: #16233b;
+        font-family: inherit;
+        outline: none;
+        resize: vertical;
+        line-height: 1.5;
+        transition: border-color .15s;
+        background: white;
+    }
+
+    .ev-textarea:focus { border-color: #7447d8; }
+
+    .ev-submit {
+        background: #7447d8;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        padding: 18px;
+        font-size: 17px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background .15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .ev-submit:hover { background: #5f38b8; }
+
+    .ev-placeholder-text {
+        color: #8a96a8;
+        font-size: 16px;
+        text-align: center;
+        padding: 40px 0;
+    }
+</style>
+
+@section Scripts {
+<script>
+    // When date changes, reload the page with new date + selected child
+    function updateDatum(val) {
+        var dijeteId = document.getElementById('dijeteSelect').value;
+        var url = '@Url.Action("EvidencijaAktivnosti", "DnevniIzvjestaj")';
+        url += '?datum=' + val;
+        if (dijeteId) url += '&dijeteId=' + dijeteId;
+        window.location.href = url;
+    }
+
+    // When child changes, navigate (don't submit the form) to load existing data
+    function updateDijete(val) {
+        var datum = document.getElementById('datumInput').value;
+        var url = '@Url.Action("EvidencijaAktivnosti", "DnevniIzvjestaj")';
+        if (val) {
+            url += '?dijeteId=' + val;
+            if (datum) url += '&datum=' + datum;
+        } else if (datum) {
+            url += '?datum=' + datum;
+        }
+        window.location.href = url;
+    }
+
+    // Highlight selected radio option
+    function updateRadioStyle(radio) {
+        var name = radio.name;
+        document.querySelectorAll('input[name="' + name + '"]').forEach(function(r) {
+            r.closest('.ev-radio-label').classList.remove('ev-selected');
+        });
+        radio.closest('.ev-radio-label').classList.add('ev-selected');
+    }
+
+    // Handle time input — split into hours and minutes hidden fields
+    document.addEventListener('DOMContentLoaded', function () {
+        var spavOd = document.getElementById('spavOd');
+        var spavDo = document.getElementById('spavDo');
+
+        function injectTimeParts(timeInput, hourName, minName) {
+            if (!timeInput) return;
+            timeInput.addEventListener('change', function () {
+                var parts = this.value.split(':');
+                var form = this.closest('form');
+                setHidden(form, hourName, parts[0] || '');
+                setHidden(form, minName, parts[1] || '');
+            });
+            // Trigger on load if already has value
+            if (timeInput.value) {
+                var parts = timeInput.value.split(':');
+                var form = timeInput.closest('form');
+                setHidden(form, hourName, parts[0] || '');
+                setHidden(form, minName, parts[1] || '');
+            }
+        }
+
+        function setHidden(form, name, val) {
+            var el = form.querySelector('input[name="' + name + '"]');
+            if (!el) {
+                el = document.createElement('input');
+                el.type = 'hidden';
+                el.name = name;
+                form.appendChild(el);
+            }
+            el.value = val;
+        }
+
+        injectTimeParts(spavOd, 'SpavanjePocetakSati', 'SpavanjePocetakMinuta');
+        injectTimeParts(spavDo, 'SpavanjeKrajSati', 'SpavanjeKrajMinuta');
+
+        // Initialize radio styles on load
+        document.querySelectorAll('.ev-radio-label input[type="radio"]:checked').forEach(function(r) {
+            r.closest('.ev-radio-label').classList.add('ev-selected');
+        });
+    });
+</script>
+}
