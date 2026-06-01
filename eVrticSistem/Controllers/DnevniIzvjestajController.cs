@@ -61,7 +61,7 @@ namespace EVrtic.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Datum,Obrok,StatusObroka,SpavanjeMinuta,VrijemeDolaska,VrijemeOdlaska,NapomenaAktivnosti,DatumKreiranja,DijeteId")] DnevniIzvjestaj dnevniIzvjestaj)
+        public async Task<IActionResult> Create([Bind("Id,Datum,Dorucak,StatusDorucka,Rucak,StatusRucka,SpavanjeMinuta,VrijemeDolaska,VrijemeOdlaska,NapomenaAktivnosti,DatumKreiranja,DijeteId")] DnevniIzvjestaj dnevniIzvjestaj)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace EVrtic.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Datum,Obrok,StatusObroka,SpavanjeMinuta,VrijemeDolaska,VrijemeOdlaska,NapomenaAktivnosti,DatumKreiranja,DijeteId")] DnevniIzvjestaj dnevniIzvjestaj)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Datum,Dorucak,StatusDorucka,Rucak,StatusRucka,SpavanjeMinuta,VrijemeDolaska,VrijemeOdlaska,NapomenaAktivnosti,DatumKreiranja,DijeteId")] DnevniIzvjestaj dnevniIzvjestaj)
         {
             if (id != dnevniIzvjestaj.Id)
             {
@@ -161,8 +161,8 @@ namespace EVrtic.Controllers
         }
 
         // ─── ODGAJATELJ: Evidencija aktivnosti djeteta ───────────────────────
-        // (scenarij — odgajatelj unosi obroke, spavanje i napomene; izvještaj se
-        //  može više puta ažurirati u toku istog dana)
+        // (scenarij — odgajatelj unosi obroke (Doručak i Ručak), spavanje i napomene;
+        //  izvještaj se može više puta ažurirati u toku istog dana)
 
         [Authorize(Roles = "ODGAJATELJ")]
         public async Task<IActionResult> EvidencijaAktivnosti(int? dijeteId, string? datum)
@@ -187,35 +187,50 @@ namespace EVrtic.Controllers
                 .OrderBy(dj => dj.ImePrezime)
                 .ToListAsync();
 
-            DnevniIzvjestaj? postojeciIzvjestaj = null;
-            Dictionary<string, int>? obrociMap = null;
-
-            if (dijeteId.HasValue)
-            {
-                postojeciIzvjestaj = await _context.DnevniIzvjestaji
-                    .FirstOrDefaultAsync(i => i.DijeteId == dijeteId.Value
-                        && i.Datum.Date == odabraniDatum);
-
-                if (postojeciIzvjestaj != null
-                    && !string.IsNullOrEmpty(postojeciIzvjestaj.Obrok))
-                {
-                    try
-                    {
-                        obrociMap = System.Text.Json.JsonSerializer
-                            .Deserialize<Dictionary<string, int>>(postojeciIzvjestaj.Obrok);
-                    }
-                    catch { /* nije JSON format */ }
-                }
-            }
-
             var vm = new EvidencijaAktivnostiViewModel
             {
                 Djeca = djeca,
                 OdabraniDijeteId = dijeteId,
-                Datum = odabraniDatum,
-                PostojeciIzvjestaj = postojeciIzvjestaj,
-                ObrociMap = obrociMap
+                Datum = odabraniDatum
             };
+
+            if (dijeteId.HasValue)
+            {
+                // Da li ovo dijete već ima sačuvan izvještaj za odabrani dan?
+                var postojeci = await _context.DnevniIzvjestaji
+                    .FirstOrDefaultAsync(i => i.DijeteId == dijeteId.Value
+                        && i.Datum.Date == odabraniDatum);
+
+                vm.PostojeciIzvjestaj = postojeci;
+
+                if (postojeci != null)
+                {
+                    // Prikaži djetetov vlastiti, već sačuvani unos
+                    vm.DorucakTekst = postojeci.Dorucak;
+                    vm.RucakTekst = postojeci.Rucak;
+                    vm.StatusDoruckaVal = (int)postojeci.StatusDorucka;
+                    vm.StatusRuckaVal = (int)postojeci.StatusRucka;
+                }
+                else
+                {
+                    // Prvi unos za OVO dijete danas → predloži tekst obroka na osnovu
+                    // zadnjeg unesenog izvještaja za TAJ dan (jelovnik je isti za svu djecu).
+                    // Status se NE predlaže — odgajatelj ga bira za svako dijete posebno.
+                    var danasnji = await _context.DnevniIzvjestaji
+                        .Where(i => i.Datum.Date == odabraniDatum)
+                        .OrderByDescending(i => i.DatumKreiranja)
+                        .ToListAsync();
+
+                    vm.DorucakTekst = danasnji
+                        .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i.Dorucak))?.Dorucak ?? string.Empty;
+                    vm.RucakTekst = danasnji
+                        .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i.Rucak))?.Rucak ?? string.Empty;
+
+                    vm.TekstJePrijedlog = !string.IsNullOrWhiteSpace(vm.DorucakTekst)
+                        || !string.IsNullOrWhiteSpace(vm.RucakTekst);
+                    // statusi ostaju -1 (ništa nije unaprijed odabrano)
+                }
+            }
 
             return View(vm);
         }
@@ -227,10 +242,10 @@ namespace EVrtic.Controllers
         public async Task<IActionResult> SacuvajAktivnosti(
             int DijeteId,
             string Datum,
+            string? DorucakTekst,
             string? StatusDorucka,
-            string? StatusUzine,
+            string? RucakTekst,
             string? StatusRucka,
-            string? StatusUzine2,
             string? SpavanjePocetakSati,
             string? SpavanjePocetakMinuta,
             string? SpavanjeKrajSati,
@@ -275,29 +290,19 @@ namespace EVrtic.Controllers
                 _context.DnevniIzvjestaji.Add(izvjestaj);
             }
 
-            // Parsiraj status obroka
+            // Parsiraj status obroka (vrijednost iz radio dugmadi je int)
             StatusObroka ParseStatus(string? val) =>
-                int.TryParse(val, out int i) ? (StatusObroka)i : StatusObroka.NIJE_POJEDENO;
+                int.TryParse(val, out int i) && Enum.IsDefined(typeof(StatusObroka), i)
+                    ? (StatusObroka)i
+                    : StatusObroka.NIJE_POJEDENO;
 
-            var statusDorucak = ParseStatus(StatusDorucka);
-            var statusUzina = ParseStatus(StatusUzine);
-            var statusRucak = ParseStatus(StatusRucka);
-            var statusUzina2 = ParseStatus(StatusUzine2);
+            // Obroci: tekst (šta se jelo) + status (koliko je dijete pojelo)
+            izvjestaj.Dorucak = (DorucakTekst ?? string.Empty).Trim();
+            izvjestaj.StatusDorucka = ParseStatus(StatusDorucka);
+            izvjestaj.Rucak = (RucakTekst ?? string.Empty).Trim();
+            izvjestaj.StatusRucka = ParseStatus(StatusRucka);
 
-            // Sačuvaj sve obroke kao JSON u polje Obrok
-            var obrociMap = new Dictionary<string, int>
-            {
-                { "Dorucak", (int)statusDorucak },
-                { "Uzina",   (int)statusUzina },
-                { "Rucak",   (int)statusRucak },
-                { "Uzina2",  (int)statusUzina2 }
-            };
-            izvjestaj.Obrok = System.Text.Json.JsonSerializer.Serialize(obrociMap);
-            izvjestaj.StatusObroka = statusRucak != StatusObroka.NIJE_POJEDENO ? statusRucak
-                : statusUzina != StatusObroka.NIJE_POJEDENO ? statusUzina
-                : statusDorucak;
-
-            // Parsiraj vrijeme spavanja
+            // Parsiraj vrijeme spavanja (od / do)
             if (int.TryParse(SpavanjePocetakSati, out int pocSati)
                 && int.TryParse(SpavanjePocetakMinuta, out int pocMin))
             {
@@ -341,6 +346,7 @@ namespace EVrtic.Controllers
             return _context.DnevniIzvjestaji.Any(e => e.Id == id);
         }
     }
+
     // ─── ViewModel za evidenciju aktivnosti ──────────────────────────────────
 
     public class EvidencijaAktivnostiViewModel
@@ -349,7 +355,21 @@ namespace EVrtic.Controllers
         public int? OdabraniDijeteId { get; set; }
         public DateTime Datum { get; set; } = DateTime.Today;
         public DnevniIzvjestaj? PostojeciIzvjestaj { get; set; }
+
+        // Tekst obroka za prikaz u formi (djetetov vlastiti unos ILI dnevni prijedlog)
+        public string DorucakTekst { get; set; } = string.Empty;
+        public string RucakTekst { get; set; } = string.Empty;
+
+        // true ako je prikazani tekst samo prijedlog (zadnji uneseni obrok tog dana),
+        // a ne vlastiti, već sačuvani unos za ovo dijete
+        public bool TekstJePrijedlog { get; set; }
+
+        // Status obroka: -1 = ništa nije odabrano (novi unos), inače 0/1/2
+        public int StatusDoruckaVal { get; set; } = -1;
+        public int StatusRuckaVal { get; set; } = -1;
+
+        // Zadržano radi kompatibilnosti sa starim (neaktivnim) pogledom
+        // Views/Odgajatelj/EvidencijaAktivnosti.cshtml
         public Dictionary<string, int>? ObrociMap { get; set; }
     }
-
 }

@@ -3,14 +3,33 @@
 
 @{
     ViewData["Title"] = "Evidencija aktivnosti";
-    var obroci = Model.ObrociMap;
-    int GetObrok(string key) => obroci != null && obroci.TryGetValue(key, out int v) ? v : -1;
 
     string SpavaStart = Model.PostojeciIzvjestaj?.VrijemeDolaska.HasValue == true
         ? Model.PostojeciIzvjestaj.VrijemeDolaska!.Value.ToString(@"hh\:mm") : "";
     string SpavaEnd = Model.PostojeciIzvjestaj?.VrijemeOdlaska.HasValue == true
         ? Model.PostojeciIzvjestaj.VrijemeOdlaska!.Value.ToString(@"hh\:mm") : "";
     string Napomena = Model.PostojeciIzvjestaj?.NapomenaAktivnosti ?? "";
+
+    var statusi = new[]
+    {
+        new { Val = (int)StatusObroka.NIJE_POJEDENO,       Tekst = "Nije pojedeno" },
+        new { Val = (int)StatusObroka.DJELIMICNO_POJEDENO, Tekst = "Djelimično pojedeno" },
+        new { Val = (int)StatusObroka.POTPUNO_POJEDENO,    Tekst = "Potpuno pojedeno" }
+    };
+
+    var obrociDef = new[]
+    {
+        new {
+            Naziv = "🥣 Doručak", TekstName = "DorucakTekst", StatusName = "StatusDorucka",
+            Tekst = Model.DorucakTekst, StatusVal = Model.StatusDoruckaVal,
+            Placeholder = "Šta se jelo za doručak?"
+        },
+        new {
+            Naziv = "🍲 Ručak", TekstName = "RucakTekst", StatusName = "StatusRucka",
+            Tekst = Model.RucakTekst, StatusVal = Model.StatusRuckaVal,
+            Placeholder = "Šta se jelo za ručak?"
+        }
+    };
 }
 
 <div class="educator-page">
@@ -59,6 +78,11 @@
                 <h1 class="edu-page-title">Evidencija aktivnosti</h1>
                 <span class="ev-calendar-icon">📅</span>
             </div>
+
+            @if (TempData["Uspjeh"] != null)
+            {
+                <div class="edu-flash-ok">✅ @TempData["Uspjeh"]</div>
+            }
 
             <form asp-action="SacuvajAktivnosti" method="post" class="ev-form">
                 @Html.AntiForgeryToken()
@@ -129,46 +153,35 @@
 
                 @if (Model.OdabraniDijeteId.HasValue)
                 {
-                    @* ── Obroci ── *@
+                    @* ── Obroci (Doručak i Ručak): tekst + status ── *@
                     <div class="ev-field">
                         <label class="ev-label">Obroci</label>
+                        @if (Model.TekstJePrijedlog)
+                        {
+                            <p class="ev-prijedlog-hint">
+                                💡 Tekst obroka je predložen na osnovu prethodnog unosa za ovaj dan. Možete ga izmijeniti.
+                            </p>
+                        }
                         <div class="ev-obroci-grid">
-                            @{
-                                var obrociDef = new[]
-                                {
-                                    new { Key = "Dorucak", Input = "StatusDorucka", Naziv = "Doručak" },
-                                    new { Key = "Uzina",   Input = "StatusUzine",   Naziv = "Užina" },
-                                    new { Key = "Rucak",   Input = "StatusRucka",   Naziv = "Ručak" },
-                                    new { Key = "Uzina2",  Input = "StatusUzine2",  Naziv = "Užina 2" }
-                                };
-                            }
                             @foreach (var obrok in obrociDef)
                             {
-                                int savedVal = GetObrok(obrok.Key);
                                 <div class="ev-obrok-item">
                                     <label class="ev-obrok-label">@obrok.Naziv</label>
+
+                                    <input type="text" name="@obrok.TekstName" class="ev-obrok-tekst"
+                                           value="@obrok.Tekst" placeholder="@obrok.Placeholder" />
+
                                     <div class="ev-obrok-options">
-                                        <label class="ev-radio-label @(savedVal == (int)StatusObroka.NIJE_POJEDENO ? "ev-selected" : "")">
-                                            <input type="radio" name="@obrok.Input"
-                                                   value="@((int)StatusObroka.NIJE_POJEDENO)"
-                                                   @(savedVal == (int)StatusObroka.NIJE_POJEDENO ? "checked" : "")
-                                                   onchange="updateRadioStyle(this)" />
-                                            <span>Nije pojedeno</span>
-                                        </label>
-                                        <label class="ev-radio-label @(savedVal == (int)StatusObroka.DJELIMICNO_POJEDENO ? "ev-selected" : "")">
-                                            <input type="radio" name="@obrok.Input"
-                                                   value="@((int)StatusObroka.DJELIMICNO_POJEDENO)"
-                                                   @(savedVal == (int)StatusObroka.DJELIMICNO_POJEDENO ? "checked" : "")
-                                                   onchange="updateRadioStyle(this)" />
-                                            <span>Djelimično pojedeno</span>
-                                        </label>
-                                        <label class="ev-radio-label @(savedVal == (int)StatusObroka.POTPUNO_POJEDENO ? "ev-selected" : "")">
-                                            <input type="radio" name="@obrok.Input"
-                                                   value="@((int)StatusObroka.POTPUNO_POJEDENO)"
-                                                   @(savedVal == (int)StatusObroka.POTPUNO_POJEDENO ? "checked" : "")
-                                                   onchange="updateRadioStyle(this)" />
-                                            <span>Potpuno pojedeno</span>
-                                        </label>
+                                        @foreach (var s in statusi)
+                                        {
+                                            <label class="ev-radio-label @(obrok.StatusVal == s.Val ? "ev-selected" : "")">
+                                                <input type="radio" name="@obrok.StatusName"
+                                                       value="@s.Val"
+                                                       @(obrok.StatusVal == s.Val ? "checked" : "")
+                                                       onchange="updateRadioStyle(this)" />
+                                                <span>@s.Tekst</span>
+                                            </label>
+                                        }
                                     </div>
                                 </div>
                             }
@@ -182,7 +195,7 @@
                             <div class="ev-time-group">
                                 <label class="ev-time-label">Od</label>
                                 <div class="ev-time-wrap">
-                                    <input type="time" name="SpavanjePocetakSati"
+                                    <input type="time"
                                            id="spavOd"
                                            value="@SpavaStart"
                                            class="ev-time-input"
@@ -193,7 +206,7 @@
                             <div class="ev-time-group">
                                 <label class="ev-time-label">Do</label>
                                 <div class="ev-time-wrap">
-                                    <input type="time" name="SpavanjeKrajSati"
+                                    <input type="time"
                                            id="spavDo"
                                            value="@SpavaEnd"
                                            class="ev-time-input"
@@ -361,6 +374,36 @@
         margin-bottom: 12px;
     }
 
+    .ev-obrok-tekst {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1.5px solid #e2e7f0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        color: #16233b;
+        font-family: inherit;
+        outline: none;
+        margin-bottom: 14px;
+        background: #fafafa;
+        transition: border-color .15s, background .15s;
+    }
+
+    .ev-obrok-tekst:focus { border-color: #7447d8; background: #fff; }
+
+    .ev-obrok-tekst::placeholder { color: #a7b0c0; font-weight: 500; }
+
+    .ev-prijedlog-hint {
+        background: #fff7e6;
+        border: 1px solid #ffd98a;
+        color: #8a5a00;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+    }
+
     .ev-obrok-options {
         display: flex;
         flex-direction: column;
@@ -469,6 +512,10 @@
         font-size: 16px;
         text-align: center;
         padding: 40px 0;
+    }
+
+    @@media (max-width: 520px) {
+        .ev-obroci-grid { grid-template-columns: 1fr; }
     }
 </style>
 
