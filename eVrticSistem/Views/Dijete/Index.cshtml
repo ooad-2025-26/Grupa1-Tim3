@@ -1,65 +1,89 @@
 @model IEnumerable<EVrtic.Models.Dijete>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Djeca";
+    ViewData["ActiveNav"] = "djeca";
+    Layout = "_AdminLayout";
 }
 
-<h1>Index</h1>
+<div class="admin-page-head">
+    <h1>👧 Djeca</h1>
+</div>
+<p class="admin-page-sub">Pregled sve djece upisane u sistem. Kliknite na dijete za prikaz osnovnih podataka.</p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ImePrezime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdentifikacioniKod)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DodatnaNapomena)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Aktivno)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Grupa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Roditelj)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImePrezime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdentifikacioniKod)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DodatnaNapomena)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Aktivno)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Grupa.ImeGrupe)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Roditelj.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (TempData["Uspjeh"] != null)
+{
+    <div class="admin-flash admin-flash-ok">@TempData["Uspjeh"]</div>
 }
-    </tbody>
-</table>
+
+<div class="admin-search">
+    <span class="admin-search-ico">🔍</span>
+    <input type="text" id="pretragaDjece" placeholder="Pretraži po imenu djeteta ili imenu roditelja..." autocomplete="off" />
+</div>
+
+@if (!Model.Any())
+{
+    <div class="admin-empty">
+        <span class="ico">👶</span>
+        Trenutno nema unesene djece u sistemu.
+    </div>
+}
+else
+{
+    <div class="admin-list" id="listaDjece">
+        @foreach (var d in Model.OrderBy(x => x.ImePrezime))
+        {
+            var ime = string.IsNullOrWhiteSpace(d.ImePrezime) ? "(ime još nije uneseno)" : d.ImePrezime;
+            var roditelj = d.Roditelj != null ? d.Roditelj.ImePrezime : "Roditelj nije povezan";
+            var kljuc = ($"{ime} {roditelj}").ToLower();
+
+            <a class="admin-list-item is-link @(d.Aktivno ? "" : "is-deaktiviran")"
+               data-search="@kljuc"
+               asp-action="Details" asp-route-id="@d.Id">
+                <div class="admin-list-avatar">👧</div>
+                <div class="admin-list-main">
+                    <p class="name">@ime</p>
+                    <p class="sub">Roditelj: @roditelj</p>
+                </div>
+                <div class="admin-list-actions">
+                    @if (d.Aktivno)
+                    {
+                        <span class="admin-badge admin-badge-on">Aktivno</span>
+                    }
+                    else
+                    {
+                        <span class="admin-badge admin-badge-off">Deaktivirano</span>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+
+    <div class="admin-empty" id="nemaRezultata" style="display:none;">
+        <span class="ico">🔎</span>
+        Nema djece koja odgovaraju pretrazi.
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.getElementById('pretragaDjece');
+            var lista = document.getElementById('listaDjece');
+            var prazno = document.getElementById('nemaRezultata');
+            if (!input || !lista) return;
+
+            input.addEventListener('input', function () {
+                var q = this.value.trim().toLowerCase();
+                var stavke = lista.querySelectorAll('.admin-list-item');
+                var vidljivih = 0;
+                stavke.forEach(function (el) {
+                    var match = el.getAttribute('data-search').indexOf(q) !== -1;
+                    el.style.display = match ? '' : 'none';
+                    if (match) vidljivih++;
+                });
+                if (prazno) prazno.style.display = (vidljivih === 0) ? '' : 'none';
+            });
+        })();
+    </script>
+}

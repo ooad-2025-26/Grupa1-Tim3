@@ -11,10 +11,21 @@ namespace EVrtic.Models
 
         public DateTime Datum { get; set; }
 
-        [StringLength(100)]
-        public string Obrok { get; set; } = string.Empty;
+        // ── Doručak ──
+        [StringLength(200)]
+        [Display(Name = "Doručak")]
+        public string Dorucak { get; set; } = string.Empty;
 
-        public StatusObroka StatusObroka { get; set; }
+        [Display(Name = "Status doručka")]
+        public StatusObroka StatusDorucka { get; set; }
+
+        // ── Ručak ──
+        [StringLength(200)]
+        [Display(Name = "Ručak")]
+        public string Rucak { get; set; } = string.Empty;
+
+        [Display(Name = "Status ručka")]
+        public StatusObroka StatusRucka { get; set; }
 
         public int SpavanjeMinuta { get; set; }
 

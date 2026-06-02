@@ -1,0 +1,82 @@
+# =========================
+# ASP.NET Core / Visual Studio
+# =========================
+
+# Build output
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio local files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Logs
+*.log
+logs/
+Log/
+LogFiles/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+project.lock.json
+project.assets.json
+
+# Test results / coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+coverage.opencover.xml
+coverage.cobertura.xml
+
+# Publish output
+publish/
+Publish/
+wwwroot/dist/
+wwwroot/build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+# Local environment / secrets
+.env
+.env.*
+*.env
+
+# ASP.NET Core config files with secrets
+appsettings.json
+appsettings.*.json
+
+# Allow safe example config
+!appsettings.example.json
+
+# EF temporary files
+efpt.config.json

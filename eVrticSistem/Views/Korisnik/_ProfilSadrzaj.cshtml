@@ -1,0 +1,170 @@
+@model EVrtic.Models.Korisnik
+@{
+    bool jeAdminUView = User.IsInRole("ADMINISTRATOR");
+    bool jeVlastiti = (ViewBag.JeVlastitiProfil as bool?) ?? false;
+
+    string UlogaTekst(EVrtic.Models.Uloga u) => u switch
+    {
+        EVrtic.Models.Uloga.RODITELJ => "Roditelj",
+        EVrtic.Models.Uloga.ODGAJATELJ => "Odgajatelj",
+        EVrtic.Models.Uloga.ADMINISTRATOR => "Administrator",
+        _ => "Korisnik"
+    };
+
+    string AvatarEmoji(EVrtic.Models.Uloga u) => u switch
+    {
+        EVrtic.Models.Uloga.RODITELJ => "🧑",
+        EVrtic.Models.Uloga.ODGAJATELJ => "🧑‍🏫",
+        EVrtic.Models.Uloga.ADMINISTRATOR => "🛡️",
+        _ => "👤"
+    };
+
+    var aktivan = Model.StatusNaloga == EVrtic.Models.StatusNaloga.AKTIVAN;
+}
+
+@if (TempData["Uspjeh"] != null)
+{
+    <div class="admin-flash admin-flash-ok">@TempData["Uspjeh"]</div>
+}
+@if (TempData["Greska"] != null)
+{
+    <div class="admin-flash admin-flash-err">@TempData["Greska"]</div>
+}
+
+<div class="admin-detail-card @(aktivan ? "" : "is-deaktiviran")">
+    <div class="admin-detail-head">
+        <div class="big-avatar">@AvatarEmoji(Model.Uloga)</div>
+        <div>
+            <h2>@Model.ImePrezime</h2>
+            <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+                <span class="admin-chip">@UlogaTekst(Model.Uloga)</span>
+                @if (aktivan)
+                {
+                    <span class="admin-badge admin-badge-on">Aktivan profil</span>
+                }
+                else
+                {
+                    <span class="admin-badge admin-badge-off">Deaktiviran profil</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-detail-grid">
+        <div class="admin-detail-row">
+            <p class="label">Ime i prezime</p>
+            <p class="value">@Model.ImePrezime</p>
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Email</p>
+            <p class="value">@Model.Email</p>
+        </div>
+
+        @if (Model is EVrtic.Models.Roditelj roditelj)
+        {
+            <div class="admin-detail-row">
+                <p class="label">Kontakt telefon</p>
+                <p class="value">
+                    @(string.IsNullOrWhiteSpace(roditelj.KontaktTelefon) ? "—" : roditelj.KontaktTelefon)
+                </p>
+            </div>
+
+            <div class="admin-detail-row">
+                <p class="label">Broj djece u sistemu</p>
+                <p class="value">@(roditelj.Djeca?.Count ?? 0)</p>
+            </div>
+
+            <div class="admin-detail-row full">
+                <p class="label">Djeca</p>
+                @if (roditelj.Djeca != null && roditelj.Djeca.Any())
+                {
+                    <div class="profil-lista">
+                        @foreach (var d in roditelj.Djeca.OrderBy(x => x.ImePrezime))
+                        {
+                            var ime = string.IsNullOrWhiteSpace(d.ImePrezime) ? $"(kod: {d.IdentifikacioniKod})" : d.ImePrezime;
+                            <div class="profil-stavka">
+                                <span class="ps-ico">👧</span>
+                                <span class="ps-info">
+                                    <strong>@ime</strong>
+                                    <small>Grupa: @(d.Grupa != null ? d.Grupa.ImeGrupe : "nije dodijeljena")</small>
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="value">Nema povezane djece.</p>
+                }
+            </div>
+        }
+        else if (Model is EVrtic.Models.Odgajatelj odgajatelj)
+        {
+            <div class="admin-detail-row">
+                <p class="label">Broj grupa</p>
+                <p class="value">@(odgajatelj.Grupe?.Count ?? 0)</p>
+            </div>
+
+            <div class="admin-detail-row full">
+                <p class="label">Grupe koje vodi</p>
+                @if (odgajatelj.Grupe != null && odgajatelj.Grupe.Any())
+                {
+                    <div class="profil-lista">
+                        @foreach (var g in odgajatelj.Grupe.OrderBy(x => x.ImeGrupe))
+                        {
+                            var brojDjece = g.Djeca?.Count ?? 0;
+                            <div class="profil-stavka">
+                                <span class="ps-ico">🏫</span>
+                                <span class="ps-info">
+                                    <strong>@g.ImeGrupe</strong>
+                                    <small>@brojDjece @(brojDjece == 1 ? "dijete" : "djece") u grupi</small>
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="value">Trenutno ne vodi nijednu grupu.</p>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="admin-detail-row full">
+                <p class="label">Napomena</p>
+                <p class="value">Administrator sistema — pristup svim funkcijama.</p>
+            </div>
+        }
+    </div>
+
+    @* Admin akcije: prikazuju se SAMO adminu i SAMO kad gleda tuđi profil *@
+    @if (jeAdminUView && !jeVlastiti)
+    {
+        <div class="admin-detail-foot">
+            @if (aktivan)
+            {
+                <form asp-action="Deaktiviraj" asp-route-id="@Model.Id" method="post"
+                      onsubmit="return confirm('Deaktivirati nalog ovog korisnika?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="admin-btn admin-btn-danger">🚫 Deaktiviraj profil</button>
+                </form>
+            }
+            else
+            {
+                <form asp-action="Aktiviraj" asp-route-id="@Model.Id" method="post"
+                      onsubmit="return confirm('Ponovo aktivirati nalog ovog korisnika?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="admin-btn admin-btn-success">✅ Aktiviraj profil</button>
+                </form>
+            }
+
+            <form asp-action="Obrisi" asp-route-id="@Model.Id" method="post"
+                  onsubmit="return confirm('TRAJNO obrisati ovog korisnika? Ovo se ne može poništiti. Veze sa djecom/grupama biće raskinute.');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="admin-btn admin-btn-danger">🗑️ Obriši profil</button>
+            </form>
+        </div>
+    }
+</div>

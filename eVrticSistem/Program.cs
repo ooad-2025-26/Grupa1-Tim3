@@ -1,4 +1,5 @@
 using EVrtic.Data;
+using EVrtic.Services;
 using EVrtic.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,9 @@ builder.Services.AddDefaultIdentity<Korisnik>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// Email service za slanje notifikacija putem SMTP
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

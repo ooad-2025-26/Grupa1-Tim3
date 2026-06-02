@@ -1,197 +1,79 @@
+@model EVrtic.Controllers.AdministratorHomeViewModel
+
 @{
     ViewData["Title"] = "Administrator početna";
+    ViewData["ActiveNav"] = "pocetna";
+    Layout = "_AdminLayout";
 }
 
-<div class="admin-page">
-    <div class="admin-card">
-
-        <aside class="admin-sidebar">
-            <h1 class="admin-logo">eVrtić</h1>
-
-            <nav class="admin-menu">
-                <a class="admin-link active" asp-controller="Home" asp-action="AdministratorHome">
-                    <span>🏠</span>
-                    Početna
-                </a>
-
-                <a class="admin-link" asp-controller="Dijete" asp-action="Index">
-                    <span>👧</span>
-                    Djeca
-                </a>
-
-                <a class="admin-link" asp-controller="Korisnik" asp-action="Index">
-                    <span>👥</span>
-                    Users
-                </a>
-
-                <a class="admin-link" asp-controller="Grupa" asp-action="Index">
-                    <span>🏫</span>
-                    Grupe
-                </a>
-
-                <form asp-area="Identity"
-                      asp-page="/Account/Logout"
-                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
-                      method="post">
-                    <button type="submit" class="admin-link admin-logout-button">
-                        <span>🚪</span>
-                        Odjava
-                    </button>
-                </form>
-            </nav>
-
-            <div class="admin-side-art">
-                <div class="admin-cloud admin-cloud-1"></div>
-                <div class="admin-cloud admin-cloud-2"></div>
-
-                <div class="admin-mini-building">
-                    <div class="admin-mini-roof"></div>
-                    <div class="admin-mini-body">
-                        <div class="admin-mini-window"></div>
-                        <div class="admin-mini-door"></div>
-                        <div class="admin-mini-window"></div>
-                    </div>
-                </div>
-
-                <div class="admin-side-tree admin-tree-left"></div>
-                <div class="admin-side-tree admin-tree-right"></div>
-            </div>
-        </aside>
-
-        <main class="admin-main">
-            <div class="admin-top">
-                <div>
-                    <h2>Pozdrav,</h2>
-                    <h1>Administratoru! <span>🛡️</span></h1>
-                </div>
-
-                <a class="admin-bell" asp-controller="Korisnik" asp-action="Index">
-                    ⚙️
-                </a>
-            </div>
-
-            <section class="admin-hero">
-                <div class="admin-profile-card">
-                    <h3>Administracija sistema</h3>
-
-                    <div class="admin-profile-info">
-                        <div class="admin-avatar">🛡️</div>
-
-                        <div>
-                            <h4>Admin panel</h4>
-                            <p>Upravljanje korisnicima, djecom i grupama</p>
-                        </div>
-
-                        <a class="admin-arrow" asp-controller="Korisnik" asp-action="Index">→</a>
-                    </div>
-                </div>
-
-                <div class="admin-illustration">
-                    <div class="admin-big-cloud admin-big-cloud-1"></div>
-                    <div class="admin-big-cloud admin-big-cloud-2"></div>
-
-                    <div class="admin-dashboard-art">
-                        <div class="admin-screen">
-                            <div class="screen-line long"></div>
-                            <div class="screen-line medium"></div>
-                            <div class="screen-boxes">
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                            </div>
-                        </div>
-
-                        <div class="admin-person">
-                            <div class="admin-person-head"></div>
-                            <div class="admin-person-body"></div>
-                        </div>
-                    </div>
-
-                    <div class="admin-ground"></div>
-                </div>
-            </section>
-
-            <h3 class="admin-section-title">Brzi pristup</h3>
-
-            <section class="admin-grid">
-                <a class="admin-quick-card" asp-controller="Korisnik" asp-action="Index">
-                    <div class="admin-quick-icon teal">👥</div>
-                    <div>
-                        <h4>Upravljanje korisnicima</h4>
-                        <p>Pregled, dodavanje i izmjena korisničkih naloga.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="admin-quick-card" asp-controller="Dijete" asp-action="Index">
-                    <div class="admin-quick-icon orange">👧</div>
-                    <div>
-                        <h4>Upravljanje djecom</h4>
-                        <p>Pregled i uređivanje profila djece u sistemu.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="admin-quick-card" asp-controller="Roditelj" asp-action="Index">
-                    <div class="admin-quick-icon pink">👨‍👩‍👧</div>
-                    <div>
-                        <h4>Roditelji</h4>
-                        <p>Pregled i upravljanje profilima roditelja.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="admin-quick-card" asp-controller="Odgajatelj" asp-action="Index">
-                    <div class="admin-quick-icon blue">👩‍🏫</div>
-                    <div>
-                        <h4>Odgajatelji</h4>
-                        <p>Pregled i upravljanje profilima odgajatelja.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                <a class="admin-quick-card" asp-controller="Grupa" asp-action="Index">
-                    <div class="admin-quick-icon green">🏫</div>
-                    <div>
-                        <h4>Grupe</h4>
-                        <p>Organizacija djece i odgajatelja po grupama.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-
-                @* ► Nova kartica za dodavanje identifikacionog koda ◄ *@
-                <a class="admin-quick-card" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
-                    <div class="admin-quick-icon purple">🔑</div>
-                    <div>
-                        <h4>Novo dijete (kod)</h4>
-                        <p>Unesi identifikacioni kod za novo dijete koje će se upisati u vrtić.</p>
-                    </div>
-                    <span>→</span>
-                </a>
-            </section>
-        </main>
-
-        <nav class="admin-bottom-nav">
-            <a class="admin-bottom-link active" asp-controller="Home" asp-action="AdministratorHome">
-                <span>🏠</span>
-                Početna
-            </a>
-
-            <a class="admin-bottom-link" asp-controller="Korisnik" asp-action="Index">
-                <span>👥</span>
-                Users
-            </a>
-
-            <a class="admin-bottom-link" asp-controller="Dijete" asp-action="Index">
-                <span>👧</span>
-                Djeca
-            </a>
-
-            <a class="admin-bottom-link" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
-                <span>🔑</span>
-                Novi kod
-            </a>
-        </nav>
-
+<div class="admin-top">
+    <div>
+        <h2>Pozdrav,</h2>
+        <h1>Administratore! <span class="title-gear">⚙️</span></h1>
     </div>
+    <span class="admin-bell">🔔</span>
 </div>
+
+<h3 class="admin-section-title">Pregled sistema</h3>
+
+<section class="admin-stats">
+    <div class="admin-stat-card">
+        <div class="admin-stat-ico ico-blue">👩‍🏫</div>
+        <div>
+            <p class="admin-stat-label">Odgajatelji</p>
+            <p class="admin-stat-value">@Model.BrojOdgajatelja</p>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-ico ico-pink">👨‍👩‍👧</div>
+        <div>
+            <p class="admin-stat-label">Roditelji</p>
+            <p class="admin-stat-value">@Model.BrojRoditelja</p>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-ico ico-teal">👧</div>
+        <div>
+            <p class="admin-stat-label">Djeca</p>
+            <p class="admin-stat-value">@Model.BrojDjece</p>
+        </div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-ico ico-yellow">🏫</div>
+        <div>
+            <p class="admin-stat-label">Grupe</p>
+            <p class="admin-stat-value">@Model.BrojGrupa</p>
+        </div>
+    </div>
+</section>
+
+<h3 class="admin-section-title">Brzi pristup</h3>
+
+<section class="admin-grid">
+    <a class="admin-quick-card" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
+        <div class="admin-quick-icon"><span>🔑</span></div>
+        <div><h4>Dodavanje koda</h4></div>
+        <span class="admin-quick-arrow">→</span>
+    </a>
+
+    <a class="admin-quick-card" asp-controller="Grupa" asp-action="Index">
+        <div class="admin-quick-icon"><span>🏫</span></div>
+        <div><h4>Grupe</h4></div>
+        <span class="admin-quick-arrow">→</span>
+    </a>
+
+    <a class="admin-quick-card" asp-controller="Dijete" asp-action="Index">
+        <div class="admin-quick-icon"><span>👧</span></div>
+        <div><h4>Djeca</h4></div>
+        <span class="admin-quick-arrow">→</span>
+    </a>
+
+    <a class="admin-quick-card" asp-controller="Korisnik" asp-action="Index">
+        <div class="admin-quick-icon"><span>👥</span></div>
+        <div><h4>Korisnici</h4></div>
+        <span class="admin-quick-arrow">→</span>
+    </a>
+</section>

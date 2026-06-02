@@ -1,0 +1,230 @@
+@model List<EVrtic.Models.Grupa>
+
+@{
+    ViewData["Title"] = "Moja grupa";
+}
+
+<div class="educator-page">
+    <div class="educator-card">
+
+        <aside class="educator-sidebar">
+            <h1 class="educator-logo">eVrtić</h1>
+            <nav class="educator-menu">
+                <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="educator-link active" asp-controller="Grupa" asp-action="MojaGrupa">
+                    <span>👧</span> Moja grupa
+                </a>
+                <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    <span>🔔</span> Obavijesti
+                </a>
+                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+                    <span>👤</span> Profil
+                </a>
+                <form asp-area="Identity" asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="educator-link educator-logout-button">
+                        <span>🚪</span> Odjava
+                    </button>
+                </form>
+            </nav>
+            <div class="educator-side-art">
+                <div class="side-cloud side-cloud-1"></div>
+                <div class="side-cloud side-cloud-2"></div>
+                <div class="side-kindergarten">
+                    <div class="side-roof"></div>
+                    <div class="side-building">
+                        <div class="side-window"></div>
+                        <div class="side-door"></div>
+                        <div class="side-window"></div>
+                    </div>
+                </div>
+                <div class="side-tree side-tree-left"></div>
+                <div class="side-tree side-tree-right"></div>
+            </div>
+        </aside>
+
+        <main class="educator-main educator-main-scroll">
+            <div class="edu-page-header">
+                <a class="posalji-back" asp-controller="Home" asp-action="OdgajateljHome">← Nazad</a>
+                <h1 class="edu-page-title">Moja grupa</h1>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="edu-empty-state">
+                    <span class="edu-empty-icon">👧</span>
+                    <p>Niste dodjeljeni nijednoj grupi.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var grupa in Model)
+                {
+                    <div class="grupa-section">
+                        <div class="grupa-section-header">
+                            <span class="grupa-section-icon">🦋</span>
+                            <h2 class="grupa-section-name">@grupa.ImeGrupe</h2>
+                            <span class="grupa-section-count">@grupa.Djeca.Count djece</span>
+                        </div>
+
+                        <div class="djeca-grid">
+                            @foreach (var dijete in grupa.Djeca.Where(d => d.Aktivno).OrderBy(d => d.ImePrezime))
+                            {
+                                <a class="dijete-card" asp-controller="Dijete"
+                                   asp-action="PodaciODjetetu" asp-route-id="@dijete.Id">
+                                    <div class="dijete-avatar">👧</div>
+                                    <div class="dijete-info">
+                                        <span class="dijete-ime">@dijete.ImePrezime</span>
+                                        <div class="dijete-badges">
+                                            @if (dijete.Alergije != null && dijete.Alergije.Any())
+                                            {
+                                                <span class="dijete-badge badge-alergija" title="Ima alergije">⚠️</span>
+                                            }
+                                            @if (dijete.Bolesti != null && dijete.Bolesti.Any())
+                                            {
+                                                <span class="dijete-badge badge-bolest" title="Ima bolesti">🔴</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <span class="dijete-arrow">→</span>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </main>
+
+        <nav class="educator-bottom-nav">
+            <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome">
+                <span>🏠</span> Početna
+            </a>
+            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+                <span>📝</span> Aktivnosti
+            </a>
+            <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                <span>🔔</span> Obavijesti
+            </a>
+            <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil">
+                <span>👤</span> Profil
+            </a>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .educator-main-scroll { overflow-y: auto; }
+
+    .edu-page-header { margin-bottom: 24px; }
+    .posalji-back {
+        color: #7447d8; text-decoration: none; font-weight: 700;
+        font-size: 16px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px;
+    }
+    .posalji-back:hover { color: #5f38b8; }
+
+    .edu-page-title { font-size: 28px; font-weight: 800; color: #16233b; margin: 0; }
+
+    .edu-empty-state {
+        text-align: center; padding: 60px 20px; color: #8a96a8;
+    }
+    .edu-empty-icon { font-size: 56px; display: block; margin-bottom: 14px; }
+    .edu-empty-state p { font-size: 18px; }
+
+    .grupa-section { margin-bottom: 32px; }
+
+    .grupa-section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .grupa-section-icon { font-size: 26px; }
+
+    .grupa-section-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: #16233b;
+        margin: 0;
+    }
+
+    .grupa-section-count {
+        background: #f0eaff;
+        color: #7447d8;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-left: auto;
+    }
+
+    .djeca-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+    }
+
+    .dijete-card {
+        background: white;
+        border-radius: 14px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+        color: #16233b;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .dijete-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(116,71,216,0.14);
+    }
+
+    .dijete-avatar {
+        font-size: 36px;
+        width: 52px;
+        height: 52px;
+        background: #f0eaff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .dijete-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dijete-ime {
+        display: block;
+        font-weight: 700;
+        font-size: 15px;
+        color: #16233b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .dijete-badges {
+        display: flex;
+        gap: 4px;
+        margin-top: 4px;
+    }
+
+    .dijete-badge {
+        font-size: 16px;
+    }
+
+    .dijete-arrow {
+        color: #7447d8;
+        font-size: 20px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+</style>

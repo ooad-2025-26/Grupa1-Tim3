@@ -1,5 +1,8 @@
-﻿@{
+@model EVrtic.Controllers.OdgajateljHomeViewModel
+
+@{
     ViewData["Title"] = "Odgajatelj početna";
+    var brojNovih = Model.BrojNovihObavijesti;
 }
 
 <div class="educator-page">
@@ -14,24 +17,16 @@
                     Početna
                 </a>
 
-                <a class="educator-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
-                    <span>📝</span>
-                    Aktivnosti
-                </a>
-
-                <a class="educator-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
-                    <span>🚪</span>
-                    Dolazak/Odlazak
-                </a>
-
-                <a class="educator-link" asp-controller="Obavijest" asp-action="Index">
-                    <span class="badge-icon">🔔<b>3</b></span>
+                <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    <span class="badge-icon">
+                        🔔@if (brojNovih > 0) { <b>@brojNovih</b> }
+                    </span>
                     Obavijesti
                 </a>
 
-                <a class="educator-link" asp-controller="SazetakAktivnosti" asp-action="Index">
-                    <span>📊</span>
-                    Sažeci
+                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+                    <span>👤</span>
+                    Profil
                 </a>
 
                 <form asp-area="Identity"
@@ -48,7 +43,6 @@
             <div class="educator-side-art">
                 <div class="side-cloud side-cloud-1"></div>
                 <div class="side-cloud side-cloud-2"></div>
-
                 <div class="side-kindergarten">
                     <div class="side-roof"></div>
                     <div class="side-building">
@@ -57,7 +51,6 @@
                         <div class="side-window"></div>
                     </div>
                 </div>
-
                 <div class="side-tree side-tree-left"></div>
                 <div class="side-tree side-tree-right"></div>
             </div>
@@ -67,56 +60,82 @@
             <div class="educator-top">
                 <div>
                     <h2>Pozdrav,</h2>
-                    <h1>Odgajatelju! <span>☀️</span></h1>
+                    <h1>@Model.Ime! <span>☀️</span></h1>
                 </div>
 
-                <a class="educator-bell" asp-controller="Obavijest" asp-action="Index">
-                    🔔
+                <a class="educator-bell" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    🔔@if (brojNovih > 0) { <b class="bell-badge">@brojNovih</b> }
                 </a>
             </div>
 
             <section class="educator-hero">
-                <div class="group-card">
-                    <h3>Moja grupa</h3>
-
-                    <div class="group-info">
-                        <div class="group-avatar">🦋</div>
-
-                        <div>
-                            <h4>Leptirići</h4>
-                            <p>Pregled djece i dnevnih aktivnosti grupe.</p>
+                @if (!Model.Grupe.Any())
+                {
+                    <div class="group-card">
+                        <h3>Moja grupa</h3>
+                        <div class="group-info">
+                            <div class="group-avatar">🦋</div>
+                            <div>
+                                <h4>Niste dodjeljeni grupi</h4>
+                                <p>Kontaktirajte administratora</p>
+                            </div>
                         </div>
-
-                        <a class="group-arrow" asp-controller="Grupa" asp-action="Index">→</a>
                     </div>
-                </div>
+                }
+                else if (Model.Grupe.Count == 1)
+                {
+                    var grupa = Model.Grupe.First();
+                    <div class="group-card">
+                        <h3>Moja grupa</h3>
+                        <div class="group-info">
+                            <div class="group-avatar">🦋</div>
+                            <div>
+                                <h4>@grupa.ImeGrupe</h4>
+                                <p>@grupa.Djeca.Count(d => d.Aktivno) djece</p>
+                            </div>
+                            <a class="group-arrow" asp-controller="Grupa" asp-action="MojaGrupa">→</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="group-card">
+                        <h3>Moje grupe</h3>
+                        @foreach (var grupa in Model.Grupe)
+                        {
+                            <div class="group-info">
+                                <div class="group-avatar">🦋</div>
+                                <div>
+                                    <h4>@grupa.ImeGrupe</h4>
+                                    <p>@grupa.Djeca.Count(d => d.Aktivno) djece</p>
+                                </div>
+                                <a class="group-arrow" asp-controller="Grupa" asp-action="MojaGrupa">→</a>
+                            </div>
+                        }
+                    </div>
+                }
 
                 <div class="teacher-illustration">
                     <div class="teacher-cloud teacher-cloud-1"></div>
                     <div class="teacher-cloud teacher-cloud-2"></div>
-
                     <div class="teacher-scene">
                         <div class="cartoon-child child-one">
                             <div class="child-head"></div>
                             <div class="child-body"></div>
                         </div>
-
                         <div class="cartoon-teacher">
                             <div class="teacher-head"></div>
                             <div class="teacher-body"></div>
                         </div>
-
                         <div class="cartoon-child child-two">
                             <div class="child-head"></div>
                             <div class="child-body"></div>
                         </div>
-
                         <div class="cartoon-child child-three">
                             <div class="child-head"></div>
                             <div class="child-body"></div>
                         </div>
                     </div>
-
                     <div class="teacher-ground"></div>
                 </div>
             </section>
@@ -124,39 +143,27 @@
             <h3 class="educator-section-title">Brzi pristup</h3>
 
             <section class="educator-grid">
-                <a class="educator-quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                <a class="educator-quick-card" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
                     <div class="educator-quick-icon purple">📝</div>
-                    <div>
-                        <h4>Evidencija aktivnosti</h4>
-                        <p>Bilježite i pregledajte obroke, spavanje i aktivnosti djece.</p>
-                    </div>
+                    <h4>Evidencija aktivnosti</h4>
                     <span>→</span>
                 </a>
 
                 <a class="educator-quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
                     <div class="educator-quick-icon blue">☑️</div>
-                    <div>
-                        <h4>Dolazak/Odlazak</h4>
-                        <p>Pratite dolaske i odlaske djece u vrtiću.</p>
-                    </div>
+                    <h4>Dolazak/Odlazak</h4>
                     <span>→</span>
                 </a>
 
-                <a class="educator-quick-card" asp-controller="Obavijest" asp-action="Index">
+                <a class="educator-quick-card" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
                     <div class="educator-quick-icon pink">🔔</div>
-                    <div>
-                        <h4>Obavijesti</h4>
-                        <p>Pošaljite ili pregledajte obavijesti za roditelje.</p>
-                    </div>
+                    <h4>Obavijesti</h4>
                     <span>→</span>
                 </a>
 
                 <a class="educator-quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
                     <div class="educator-quick-icon purple">📊</div>
-                    <div>
-                        <h4>Sažeci</h4>
-                        <p>Generišite i pregledajte sažetke aktivnosti djece.</p>
-                    </div>
+                    <h4>Sažeci</h4>
                     <span>→</span>
                 </a>
             </section>
@@ -167,20 +174,17 @@
                 <span>🏠</span>
                 Početna
             </a>
-
-            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
+            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
                 <span>📝</span>
                 Aktivnosti
             </a>
-
-            <a class="bottom-link bottom-badge" asp-controller="Obavijest" asp-action="Index">
-                <span>🔔<b>3</b></span>
+            <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                <span>🔔@if (brojNovih > 0) { <b class="bell-badge">@brojNovih</b> }</span>
                 Obavijesti
             </a>
-
-            <a class="bottom-link" asp-controller="SazetakAktivnosti" asp-action="Index">
-                <span>📊</span>
-                Sažeci
+            <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil">
+                <span>👤</span>
+                Profil
             </a>
         </nav>
 

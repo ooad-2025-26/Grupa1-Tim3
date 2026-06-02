@@ -40,7 +40,91 @@ namespace EVrtic.Controllers
                 .Include(d => d.Alergije).Include(d => d.Bolesti)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (dijete == null) return NotFound();
+            ViewBag.SveGrupe = await _context.Grupe.OrderBy(g => g.ImeGrupe).ToListAsync();
             return View(dijete);
+        }
+
+        // ─── ADMINISTRATOR: Deaktivacija / aktivacija profila djeteta ────────
+        // (scenarij 6.6 - administrator deaktivira profil djeteta)
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Deaktiviraj(int id)
+        {
+            var dijete = await _context.Djeca.FindAsync(id);
+            if (dijete == null) return NotFound();
+
+            dijete.Aktivno = false;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil djeteta \"{dijete.ImePrezime}\" je deaktiviran.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Aktiviraj(int id)
+        {
+            var dijete = await _context.Djeca.FindAsync(id);
+            if (dijete == null) return NotFound();
+
+            dijete.Aktivno = true;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil djeteta \"{dijete.ImePrezime}\" je ponovo aktiviran.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // ─── ADMINISTRATOR: Promjena grupe djeteta (s Details ekrana) ──────
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> PromijeniGrupu(int id, int? grupaId)
+        {
+            var dijete = await _context.Djeca.FindAsync(id);
+            if (dijete == null) return NotFound();
+
+            // grupaId može biti null (= ukloni iz grupe)
+            dijete.GrupaId = grupaId;
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = grupaId.HasValue
+                ? "Grupa djeteta je uspješno ažurirana."
+                : "Dijete je uklonjeno iz grupe.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // ─── ADMINISTRATOR: Trajno brisanje profila djeteta ─────────────────
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Obrisi(int id)
+        {
+            var dijete = await _context.Djeca
+                .Include(d => d.Alergije)
+                .Include(d => d.Bolesti)
+                .Include(d => d.DnevniIzvjestaji)
+                .Include(d => d.EvidencijeDolaskaOdlaska)
+                .Include(d => d.SazeciAktivnosti)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dijete == null) return NotFound();
+
+            var ime = string.IsNullOrWhiteSpace(dijete.ImePrezime)
+                ? $"(kod: {dijete.IdentifikacioniKod})"
+                : dijete.ImePrezime;
+
+            // Eksplicitno ukloni povezane zapise (sigurnije od oslanjanja na cascade)
+            _context.AlergijeDjece.RemoveRange(dijete.Alergije);
+            _context.BolestiDjece.RemoveRange(dijete.Bolesti);
+            _context.DnevniIzvjestaji.RemoveRange(dijete.DnevniIzvjestaji);
+            _context.EvidencijeDolaskaOdlaska.RemoveRange(dijete.EvidencijeDolaskaOdlaska);
+            _context.SazeciAktivnosti.RemoveRange(dijete.SazeciAktivnosti);
+            _context.Djeca.Remove(dijete);
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = $"Profil djeteta \"{ime}\" je trajno obrisan iz sistema.";
+            return RedirectToAction(nameof(Index));
         }
 
         // ─── ADMINISTRATOR: Unos identifikacionog koda ───────────────────────
@@ -211,6 +295,34 @@ namespace EVrtic.Controllers
             var dijete = await _context.Djeca
                 .Include(d => d.Alergije).Include(d => d.Bolesti).Include(d => d.Grupa)
                 .FirstOrDefaultAsync(d => d.Id == id && d.RoditeljId == korisnik.Id);
+
+            if (dijete == null) return Forbid();
+            return View(dijete);
+        }
+
+        // ─── ODGAJATELJ: Pregled jednog djeteta iz svoje grupe ──────────────
+
+        [Authorize(Roles = "ODGAJATELJ")]
+        public async Task<IActionResult> PodaciODjetetu(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null) return Challenge();
+
+            var odgajatelj = await _context.Odgajatelji
+                .FirstOrDefaultAsync(o => o.Id == korisnik.Id);
+
+            if (odgajatelj == null) return Forbid();
+
+            var dijete = await _context.Djeca
+                .Include(d => d.Grupa)
+                .Include(d => d.Roditelj)
+                .Include(d => d.Alergije)
+                .Include(d => d.Bolesti)
+                .FirstOrDefaultAsync(d => d.Id == id
+                    && d.Grupa != null
+                    && d.Grupa.OdgajateljId == odgajatelj.Id);
 
             if (dijete == null) return Forbid();
             return View(dijete);

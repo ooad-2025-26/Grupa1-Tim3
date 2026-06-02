@@ -1,54 +1,194 @@
 @model EVrtic.Models.Dijete
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Podaci o djetetu";
+    ViewData["ActiveNav"] = "djeca";
+    Layout = "_AdminLayout";
+
+    var ime = string.IsNullOrWhiteSpace(Model.ImePrezime) ? "(ime još nije uneseno)" : Model.ImePrezime;
 }
 
-<h1>Details</h1>
+<a class="admin-back" asp-action="Index">← Nazad na listu djece</a>
 
-<div>
-    <h4>Dijete</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImePrezime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImePrezime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdentifikacioniKod)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdentifikacioniKod)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DodatnaNapomena)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DodatnaNapomena)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Aktivno)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Aktivno)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Grupa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Grupa.ImeGrupe)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Roditelj)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Roditelj.Email)
-        </dd>
-    </dl>
+@if (TempData["Uspjeh"] != null)
+{
+    <div class="admin-flash admin-flash-ok">@TempData["Uspjeh"]</div>
+}
+
+<div class="admin-detail-card @(Model.Aktivno ? "" : "is-deaktiviran")">
+    <div class="admin-detail-head">
+        <div class="big-avatar">👧</div>
+        <div>
+            <h2>@ime</h2>
+            @if (Model.Aktivno)
+            {
+                <span class="admin-badge admin-badge-on">Aktivan profil</span>
+            }
+            else
+            {
+                <span class="admin-badge admin-badge-off">Deaktiviran profil</span>
+            }
+        </div>
+    </div>
+
+    <div class="admin-detail-grid">
+        <div class="admin-detail-row">
+            <p class="label">Ime i prezime</p>
+            <p class="value">@ime</p>
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Roditelj</p>
+            <p class="value">@(Model.Roditelj != null ? Model.Roditelj.ImePrezime : "Nije povezan")</p>
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Kontakt telefon roditelja</p>
+            <p class="value">
+                @(Model.Roditelj != null && !string.IsNullOrWhiteSpace(Model.Roditelj.KontaktTelefon)
+                    ? Model.Roditelj.KontaktTelefon
+                    : "—")
+            </p>
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Datum rođenja</p>
+            <p class="value">
+                @(Model.DatumRodjenja == default ? "—" : Model.DatumRodjenja.ToString("dd.MM.yyyy."))
+            </p>
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Grupa</p>
+            <form asp-action="PromijeniGrupu" asp-route-id="@Model.Id" method="post" class="grupa-promjena">
+                @Html.AntiForgeryToken()
+                <select name="grupaId" class="grupa-select">
+                    <option value="">— Bez grupe —</option>
+                    @{
+                        var sveGrupe = ViewBag.SveGrupe as List<EVrtic.Models.Grupa> ?? new List<EVrtic.Models.Grupa>();
+                    }
+                    @foreach (var g in sveGrupe)
+                    {
+                        if (Model.GrupaId == g.Id)
+                        {
+                            <option value="@g.Id" selected>@g.ImeGrupe</option>
+                        }
+                        else
+                        {
+                            <option value="@g.Id">@g.ImeGrupe</option>
+                        }
+                    }
+                </select>
+                <button type="submit" class="grupa-save-btn" title="Sačuvaj grupu">💾</button>
+            </form>
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Alergije</p>
+            @if (Model.Alergije != null && Model.Alergije.Any())
+            {
+                <div class="admin-chips">
+                    @foreach (var a in Model.Alergije)
+                    {
+                        <span class="admin-chip warn">@a.Naziv</span>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="value">Nema unesenih alergija</p>
+            }
+        </div>
+
+        <div class="admin-detail-row">
+            <p class="label">Bolesti</p>
+            @if (Model.Bolesti != null && Model.Bolesti.Any())
+            {
+                <div class="admin-chips">
+                    @foreach (var b in Model.Bolesti)
+                    {
+                        <span class="admin-chip">@b.Naziv</span>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="value">Nema unesenih bolesti</p>
+            }
+        </div>
+
+        <div class="admin-detail-row full">
+            <p class="label">Dodatna napomena</p>
+            <p class="value">
+                @(string.IsNullOrWhiteSpace(Model.DodatnaNapomena) ? "—" : Model.DodatnaNapomena)
+            </p>
+        </div>
+    </div>
+
+    <div class="admin-detail-foot">
+        @if (Model.Aktivno)
+        {
+            <form asp-action="Deaktiviraj" asp-route-id="@Model.Id" method="post"
+                  onsubmit="return confirm('Deaktivirati profil ovog djeteta?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="admin-btn admin-btn-danger">🚫 Deaktiviraj profil</button>
+            </form>
+        }
+        else
+        {
+            <form asp-action="Aktiviraj" asp-route-id="@Model.Id" method="post"
+                  onsubmit="return confirm('Ponovo aktivirati profil ovog djeteta?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="admin-btn admin-btn-success">✅ Aktiviraj profil</button>
+            </form>
+        }
+
+        <form asp-action="Obrisi" asp-route-id="@Model.Id" method="post"
+              onsubmit="return confirm('TRAJNO obrisati profil ovog djeteta? Obrisat će se i svi vezani podaci (alergije, bolesti, evidencije, izvještaji, sažeci). Ovo se NE može poništiti.');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="admin-btn admin-btn-danger">🗑️ Obriši profil</button>
+        </form>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    .grupa-promjena {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    .grupa-select {
+        flex: 1;
+        max-width: 260px;
+        height: 38px;
+        border: 1px solid #e2e7f0;
+        border-radius: 8px;
+        padding: 0 12px;
+        font-size: 14px;
+        color: #1c2538;
+        background: #fff;
+        outline: none;
+        font-family: inherit;
+    }
+
+        .grupa-select:focus { border-color: #2456db; }
+
+    .grupa-save-btn {
+        height: 38px;
+        width: 38px;
+        border-radius: 8px;
+        background: #e4ecff;
+        color: #2456db;
+        border: none;
+        font-size: 17px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .12s;
+    }
+
+        .grupa-save-btn:hover { background: #d3def8; }
+</style>
