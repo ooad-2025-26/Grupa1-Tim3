@@ -141,6 +141,72 @@ namespace EVrtic.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════════════
+        // RODITELJ — Pregled obavijesti
+        // ═══════════════════════════════════════════════════════════════════
+
+        [Authorize(Roles = "RODITELJ")]
+        public async Task<IActionResult> RoditeljPregled()
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+
+            if (korisnik == null)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
+            var obavijesti = await _context.Obavijesti
+                .Include(o => o.Odgajatelj)
+                .Include(o => o.Roditelj)
+                .Where(o => o.RoditeljId == korisnik.Id)
+                .OrderByDescending(o => o.DatumSlanja ?? o.DatumKreiranja)
+                .ToListAsync();
+
+            var vm = new RoditeljObavijestiViewModel
+            {
+                Obavijesti = obavijesti,
+                BrojNovih = obavijesti.Count(o =>
+                    o.StatusObavijesti == StatusObavijesti.POSLANA ||
+                    o.StatusObavijesti == StatusObavijesti.KREIRANA)
+            };
+
+            return View(vm);
+        }
+
+        [Authorize(Roles = "RODITELJ")]
+        public async Task<IActionResult> RoditeljDetalji(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var korisnik = await _userManager.GetUserAsync(User);
+
+            if (korisnik == null)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
+            var obavijest = await _context.Obavijesti
+                .Include(o => o.Odgajatelj)
+                .Include(o => o.Roditelj)
+                .FirstOrDefaultAsync(o => o.Id == id && o.RoditeljId == korisnik.Id);
+
+            if (obavijest == null)
+            {
+                return NotFound();
+            }
+
+            if (obavijest.StatusObavijesti != StatusObavijesti.PROCITANA)
+            {
+                obavijest.StatusObavijesti = StatusObavijesti.PROCITANA;
+                await _context.SaveChangesAsync();
+            }
+
+            return View(obavijest);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
         // ODGAJATELJ — Pregled i slanje obavijesti
         // ═══════════════════════════════════════════════════════════════════
 
@@ -172,20 +238,7 @@ namespace EVrtic.Controllers
                 .OrderByDescending(o => o.DatumKreiranja)
                 .ToList();
 
-            // Označi sve nepročitane obavijesti kao pročitane — kad odgajatelj otvori
-            // listu, brojač novih ide na 0
-            var nepročitane = await _context.Obavijesti
-                .Where(o => o.StatusObavijesti == StatusObavijesti.POSLANA
-                         || o.StatusObavijesti == StatusObavijesti.KREIRANA)
-                .ToListAsync();
-            foreach (var o in nepročitane)
-            {
-                o.StatusObavijesti = StatusObavijesti.PROCITANA;
-            }
-            if (nepročitane.Any())
-            {
-                await _context.SaveChangesAsync();
-            }
+           
 
             var vm = new OdgajateljObavijestViewModel
             {
@@ -394,5 +447,11 @@ namespace EVrtic.Controllers
         public string Prima { get; set; } = "roditelji";
         public bool PutemAplikacije { get; set; } = true;
         public bool PutemEmaila { get; set; }
+    }
+
+    public class RoditeljObavijestiViewModel
+    {
+        public List<Obavijest> Obavijesti { get; set; } = new();
+        public int BrojNovih { get; set; }
     }
 }

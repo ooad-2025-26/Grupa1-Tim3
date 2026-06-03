@@ -1,18 +1,40 @@
 @using EVrtic.Models
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @inject UserManager<Korisnik> UserManager
 @inject EVrtic.Data.ApplicationDbContext DbContext
-@using Microsoft.EntityFrameworkCore
 
 @{
     ViewData["Title"] = "Roditelj početna";
+
     var korisnik = await UserManager.GetUserAsync(User);
-    var roditelj = korisnik as Roditelj;
-    var djeca = roditelj != null
-        ? await DbContext.Djeca
-            .Where(d => d.RoditeljId == korisnik.Id && d.ImePrezime != string.Empty)
-            .ToListAsync()
-        : new List<Dijete>();
+
+    Roditelj? roditelj = null;
+    List<Dijete> djeca = new List<Dijete>();
+
+    if (korisnik != null)
+    {
+        roditelj = await DbContext.Roditelji
+            .FirstOrDefaultAsync(r => r.Id == korisnik.Id);
+
+        if (roditelj != null)
+        {
+            djeca = await DbContext.Djeca
+                .Where(d => d.RoditeljId == roditelj.Id && d.ImePrezime != string.Empty && d.Aktivno)
+                .OrderBy(d => d.ImePrezime)
+                .ToListAsync();
+        }
+    }
+
+    int brojNovihObavijesti = 0;
+
+if (korisnik != null)
+{
+    brojNovihObavijesti = await DbContext.Obavijesti
+        .CountAsync(o => o.RoditeljId == korisnik.Id &&
+            (o.StatusObavijesti == StatusObavijesti.POSLANA ||
+             o.StatusObavijesti == StatusObavijesti.KREIRANA));
+}
 }
 
 <div class="parent-page">
@@ -25,12 +47,23 @@
                 <a class="sidebar-link active" asp-controller="Home" asp-action="RoditeljHome">
                     <span>🏠</span> Početna
                 </a>
-                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
+
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
                     <span>📋</span> Izvještaji
                 </a>
-                <a class="sidebar-link" asp-controller="Obavijest" asp-action="Index">
+
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>📅</span> Dolazak/Odlazak
+                </a>
+
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="RoditeljPregled">
                     <span>🔔</span> Obavijesti
                 </a>
+
                 <a class="sidebar-link" asp-controller="Roditelj" asp-action="MojProfil">
                     <span>👤</span> Profil
                 </a>
@@ -39,6 +72,7 @@
             <div class="sidebar-illustration">
                 <div class="mini-cloud mini-cloud-1"></div>
                 <div class="mini-cloud mini-cloud-2"></div>
+
                 <div class="mini-school">
                     <div class="mini-roof"></div>
                     <div class="mini-building">
@@ -47,6 +81,7 @@
                         <div class="mini-window"></div>
                     </div>
                 </div>
+
                 <div class="mini-tree tree-one"></div>
                 <div class="mini-tree tree-two"></div>
                 <div class="mini-tree tree-three"></div>
@@ -59,78 +94,150 @@
                     <h2>Pozdrav,</h2>
                     <h1>@(roditelj?.ImePrezime?.Split(' ')[0] ?? "Roditelju")! <span>👋</span></h1>
                 </div>
-                <a class="notification-icon" asp-controller="Obavijest" asp-action="Index">🔔</a>
-            </div>
 
-            @* ── Djeca kartice ── *@
+<a class="notification-icon notification-top-icon" asp-controller="Obavijest" asp-action="RoditeljPregled">
+    🔔
+
+    @if (brojNovihObavijesti > 0)
+    {
+        <span class="notification-top-badge">@brojNovihObavijesti</span>
+    }
+</a>        
+</div>
+
             <h3 class="section-title" style="margin-bottom:14px;">Moja djeca</h3>
-            <section class="djeca-grid">
 
+            <section class="djeca-grid">
                 @foreach (var dijete in djeca)
                 {
                     <a class="dijete-card" asp-controller="Dijete" asp-action="MojeDijete" asp-route-id="@dijete.Id">
                         <div class="dijete-avatar">🧒</div>
+
                         <div class="dijete-info">
                             <h4>@dijete.ImePrezime</h4>
                         </div>
+
                         <span class="dijete-arrow">→</span>
                     </a>
                 }
 
-                @* Kartica za dodavanje novog djeteta *@
                 <a class="dijete-card dijete-card-add" asp-controller="Dijete" asp-action="DodajDijete">
                     <div class="dijete-add-icon">＋</div>
+
                     <div class="dijete-info">
                         <h4>Dodaj dijete</h4>
                         <p>Unesi identifikacioni kod</p>
                     </div>
+
                     <span class="dijete-arrow">→</span>
                 </a>
-
             </section>
 
             <h3 class="section-title">Brzi pristup</h3>
 
             <section class="quick-grid">
-    <a class="quick-card" asp-controller="DnevniIzvjestaj" asp-action="Index">
-        <div class="quick-icon green">📋</div>
-        <div>
-            <h4>Dnevni izvještaji</h4>
-            <p>Pregledajte dnevne aktivnosti i izvještaje vašeg djeteta.</p>
-        </div>
-        <span>→</span>
-    </a>
-    <a class="quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
-        <div class="quick-icon blue">📊</div>
-        <div>
-            <h4>Sažeci aktivnosti</h4>
-            <p>Pregledajte sedmične i mjesečne sažetke aktivnosti.</p>
-        </div>
-        <span>→</span>
-    </a>
-    <a class="quick-card" asp-controller="Obavijest" asp-action="Index">
-        <div class="quick-icon pink">🔔</div>
-        <div>
-            <h4>Obavijesti</h4>
-            <p>Pogledajte najnovije obavijesti i važne informacije.</p>
-        </div>
-        <span>→</span>
-    </a>
-    <a class="quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
-        <div class="quick-icon cyan">🚪</div>
-        <div>
-            <h4>Dolazak/Odlazak</h4>
-            <p>Evidentirajte ili pregledajte dolazak i odlazak djeteta.</p>
-        </div>
-        <span>→</span>
-    </a>
-</section>
+                <a class="quick-card" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <div class="quick-icon green">📋</div>
+
+                    <div>
+                        <h4>Dnevni izvještaji</h4>
+                        <p>Pregledajte dnevne aktivnosti i izvještaje vašeg djeteta.</p>
+                    </div>
+
+                    <span>→</span>
+                </a>
+
+                <a class="quick-card" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <div class="quick-icon blue">📊</div>
+
+                    <div>
+                        <h4>Sažeci aktivnosti</h4>
+                        <p>Pregledajte sedmične i mjesečne sažetke aktivnosti.</p>
+                    </div>
+
+                    <span>→</span>
+                </a>
+
+                <a class="quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <div class="quick-icon cyan">🚪</div>
+
+                    <div>
+                        <h4>Dolazak/Odlazak</h4>
+                        <p>Evidentirajte dolazak ili odlazak djeteta unosom koda.</p>
+                    </div>
+
+                    <span>→</span>
+                </a>
+
+         <a class="quick-card notification-quick-card" asp-controller="Obavijest" asp-action="RoditeljPregled">
+    <div class="quick-icon pink">🔔</div>
+
+    <div class="quick-text">
+        <h4>
+            Obavijesti
+
+            @if (brojNovihObavijesti > 0)
+            {
+                <span class="notification-badge">@brojNovihObavijesti</span>
+            }
+        </h4>
+
+        <p>Pogledajte najnovije obavijesti i važne informacije.</p>
+    </div>
+
+    <span>→</span>
+</a>
+            </section>
         </main>
 
     </div>
 </div>
 
 <style>
+    .notification-top-icon {
+    position: relative;
+}
+
+.notification-top-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    .notification-quick-card {
+    position: relative;
+}
+
+.quick-text h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-badge {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
     .djeca-grid {
         display: flex;
         flex-wrap: wrap;
@@ -172,9 +279,22 @@
         flex-shrink: 0;
     }
 
-    .dijete-info { flex: 1; }
-    .dijete-info h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #1e293b; }
-    .dijete-info p  { margin: 4px 0 0; font-size: 0.82rem; color: #94a3b8; }
+    .dijete-info {
+        flex: 1;
+    }
+
+    .dijete-info h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .dijete-info p {
+        margin: 4px 0 0;
+        font-size: 0.82rem;
+        color: #94a3b8;
+    }
 
     .dijete-arrow {
         color: #3b82f6;

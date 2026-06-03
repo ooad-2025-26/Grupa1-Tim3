@@ -340,11 +340,67 @@ namespace EVrtic.Controllers
                 datum = odabraniDatum.ToString("yyyy-MM-dd")
             });
         }
+        [Authorize(Roles = "RODITELJ")]
+        public async Task<IActionResult> RoditeljPregled(DateTime? datum, int? dijeteId)
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null)
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+            var odabraniDatum = datum?.Date ?? DateTime.Today;
+
+            var djeca = await _context.Djeca
+                .Include(d => d.Grupa)
+                .Where(d => d.RoditeljId == korisnik.Id && d.Aktivno)
+                .OrderBy(d => d.ImePrezime)
+                .ToListAsync();
+
+            if (!djeca.Any())
+            {
+                return View(new RoditeljDnevniIzvjestajViewModel
+                {
+                    Datum = odabraniDatum,
+                    Djeca = djeca
+                });
+            }
+
+            var odabranoDijete = dijeteId.HasValue
+                ? djeca.FirstOrDefault(d => d.Id == dijeteId.Value)
+                : djeca.First();
+
+            if (odabranoDijete == null)
+                return Forbid();
+
+            var izvjestaj = await _context.DnevniIzvjestaji
+                .Include(i => i.Dijete)
+                    .ThenInclude(d => d.Grupa)
+                .FirstOrDefaultAsync(i =>
+                    i.DijeteId == odabranoDijete.Id &&
+                    i.Datum.Date == odabraniDatum);
+
+            return View(new RoditeljDnevniIzvjestajViewModel
+            {
+                Datum = odabraniDatum,
+                Djeca = djeca,
+                OdabraniDijeteId = odabranoDijete.Id,
+                Dijete = odabranoDijete,
+                Izvjestaj = izvjestaj
+            });
+        }
 
         private bool DnevniIzvjestajExists(int id)
         {
             return _context.DnevniIzvjestaji.Any(e => e.Id == id);
         }
+    }
+
+    public class RoditeljDnevniIzvjestajViewModel
+    {
+        public DateTime Datum { get; set; } = DateTime.Today;
+        public List<Dijete> Djeca { get; set; } = new();
+        public int? OdabraniDijeteId { get; set; }
+        public Dijete? Dijete { get; set; }
+        public DnevniIzvjestaj? Izvjestaj { get; set; }
     }
 
     // ─── ViewModel za evidenciju aktivnosti ──────────────────────────────────

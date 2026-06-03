@@ -1,0 +1,792 @@
+@model EVrtic.Controllers.RoditeljDnevniIzvjestajViewModel
+
+@{
+    ViewData["Title"] = "Dnevni izvještaj";
+}
+
+@functions {
+    string StatusTekst(EVrtic.Models.StatusObroka status)
+    {
+        return status.ToString()
+            .Replace("_", " ")
+            .ToLower();
+    }
+
+    string FormatirajMinute(int minute)
+    {
+        if (minute <= 0) return "Nije evidentirano";
+
+        int sati = minute / 60;
+        int min = minute % 60;
+
+        if (sati > 0)
+            return $"{sati}h {min}min";
+
+        return $"{min}min";
+    }
+}
+
+<div class="daily-page">
+    <div class="daily-card-layout">
+
+        <aside class="daily-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
+
+            <nav class="sidebar-menu">
+                <a class="sidebar-link" asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+
+                <a class="sidebar-link active" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>🗓️</span> Dolazak/Odlazak
+                </a>
+
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="RoditeljPregled">
+                    <span>🔔</span> Obavijesti
+                </a>
+
+                <a class="sidebar-link" asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
+
+            <div class="ev-sidebar-illustration">
+                <div class="ev-cloud ev-cloud-left"></div>
+                <div class="ev-cloud ev-cloud-right"></div>
+
+                <div class="ev-yard">
+                    <div class="ev-tree ev-tree-left"></div>
+                    <div class="ev-tree ev-tree-right"></div>
+
+                    <div class="ev-house">
+                        <div class="ev-house-roof"></div>
+                        <div class="ev-house-body">
+                            <div class="ev-house-window"></div>
+                            <div class="ev-house-door"></div>
+                            <div class="ev-house-window"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="daily-main">
+            <div class="daily-top">
+                <div class="title-row">
+                    <a asp-controller="Home" asp-action="RoditeljHome" class="back-link">←</a>
+                    <h1>Dnevni izvještaj</h1>
+                </div>
+
+                <form method="get" asp-action="RoditeljPregled" class="date-filter">
+                    @if (Model.OdabraniDijeteId.HasValue)
+                    {
+                        <input type="hidden" name="dijeteId" value="@Model.OdabraniDijeteId" />
+                    }
+
+                    <label>Datum</label>
+
+                    <div class="date-box">
+                        <span>@Model.Datum.ToString("dd.MM.yyyy.")</span>
+                        <span class="calendar-icon">📅</span>
+                        <input type="date" name="datum" value="@Model.Datum.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <button type="submit">Prikaži</button>
+                </form>
+            </div>
+
+            @if (!Model.Djeca.Any())
+            {
+                <section class="empty-box">
+                    <p>Trenutno nemate povezano dijete.</p>
+                </section>
+            }
+            else
+            {
+                @if (Model.Djeca.Count > 1)
+                {
+                    <form method="get" asp-action="RoditeljPregled" class="child-filter">
+                        <input type="hidden" name="datum" value="@Model.Datum.ToString("yyyy-MM-dd")" />
+
+                        <label>Dijete</label>
+
+                        <select name="dijeteId" onchange="this.form.submit()">
+                            @foreach (var dijete in Model.Djeca)
+                            {
+                                <option value="@dijete.Id" selected="@(dijete.Id == Model.OdabraniDijeteId ? "selected" : null)">
+                                    @dijete.ImePrezime
+                                </option>
+                            }
+                        </select>
+                    </form>
+                }
+
+                <section class="child-box">
+                    <div class="child-avatar">🧒</div>
+
+                    <div>
+                        <h2>@Model.Dijete?.ImePrezime</h2>
+                        <p>Grupa: @(Model.Dijete?.Grupa?.ImeGrupe ?? "Nije dodijeljena")</p>
+                    </div>
+                </section>
+
+                @if (Model.Izvjestaj == null)
+                {
+                    <section class="empty-box">
+                        <h3>Za odabrani datum nema dnevnog izvještaja.</h3>
+                        <p>Datum: @Model.Datum.ToString("dd.MM.yyyy.")</p>
+                    </section>
+                }
+                else
+                {
+                    <section class="info-box">
+                        <div class="round-icon green-round">✓</div>
+
+                        <div class="info-title">
+                            <h3>Prisustvo</h3>
+                        </div>
+
+                        <div class="info-value presence-value">
+                            Prisutan
+                        </div>
+                    </section>
+
+                    <section class="info-box">
+                        <div class="round-icon blue-round">🍴</div>
+
+                        <div class="info-title">
+                            <h3>Obroci</h3>
+                        </div>
+
+                        <div class="info-value">
+                            @if (!string.IsNullOrWhiteSpace(Model.Izvjestaj.Dorucak))
+                            {
+                                <div>Doručak: @Model.Izvjestaj.Dorucak (@StatusTekst(Model.Izvjestaj.StatusDorucka))</div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(Model.Izvjestaj.Rucak))
+                            {
+                                <div>Ručak: @Model.Izvjestaj.Rucak (@StatusTekst(Model.Izvjestaj.StatusRucka))</div>
+                            }
+
+                            @if (string.IsNullOrWhiteSpace(Model.Izvjestaj.Dorucak) &&
+                                                    string.IsNullOrWhiteSpace(Model.Izvjestaj.Rucak))
+                            {
+                                <div>Nema evidentiranih obroka.</div>
+                            }
+                        </div>
+                    </section>
+
+                    <section class="info-box">
+                        <div class="round-icon blue-round">🌙</div>
+
+                        <div class="info-title">
+                            <h3>Spavanje</h3>
+                        </div>
+
+                        <div class="info-value sleep-value">
+                            @if (Model.Izvjestaj.VrijemeDolaska.HasValue && Model.Izvjestaj.VrijemeOdlaska.HasValue)
+                            {
+                                <div>
+                                    @Model.Izvjestaj.VrijemeDolaska.Value.ToString(@"hh\:mm")
+                                    -
+                                    @Model.Izvjestaj.VrijemeOdlaska.Value.ToString(@"hh\:mm")
+                                </div>
+                            }
+
+                            <span>@FormatirajMinute(Model.Izvjestaj.SpavanjeMinuta)</span>
+                        </div>
+                    </section>
+
+                    <section class="note-box">
+                        <div class="round-icon note-round">💬</div>
+
+                        <div class="note-content">
+                            <h3>Napomena</h3>
+
+                            <p>
+                                @(string.IsNullOrWhiteSpace(Model.Izvjestaj.NapomenaAktivnosti)
+                                                        ? "Nema dodatne napomene."
+                                                        : Model.Izvjestaj.NapomenaAktivnosti)
+                            </p>
+                        </div>
+                    </section>
+                }
+            }
+
+            <nav class="bottom-menu">
+                <a asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+
+                <a class="active" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+
+                <a asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+
+                <a asp-controller="Obavijest" asp-action="RoditeljPregled">
+                    <span>🔔</span> Obavijesti
+                </a>
+
+                <a asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
+        </main>
+
+    </div>
+</div>
+
+<style>
+    body {
+        background: #eaf6ff;
+    }
+
+    .daily-page {
+        min-height: 100vh;
+        padding: 22px 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .daily-card-layout {
+        width: 100%;
+        max-width: 1250px;
+        min-height: 760px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        overflow: hidden;
+    }
+
+    .daily-sidebar {
+        position: relative;
+        border-right: 1px solid #eef2f7;
+        padding: 28px 22px 0;
+        overflow: hidden;
+    }
+
+    .sidebar-logo {
+        margin: 0 0 34px;
+        color: #15913a;
+        font-size: 2.65rem;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #0f172a;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .sidebar-link span {
+        width: 24px;
+        text-align: center;
+        font-size: 1.25rem;
+    }
+
+    .sidebar-link.active {
+        color: #15803d;
+        background: #edf8e9;
+    }
+
+
+    .ev-sidebar-illustration {
+        margin-top: auto;
+        position: relative;
+        width: calc(100% + 44px);
+        margin-left: -22px;
+        height: 230px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .ev-cloud {
+        position: absolute;
+        background: #dff1ff;
+        border-radius: 999px;
+        z-index: 1;
+    }
+
+    .ev-cloud::before,
+    .ev-cloud::after {
+        content: "";
+        position: absolute;
+        background: #dff1ff;
+        border-radius: 50%;
+    }
+
+    .ev-cloud-left {
+        width: 52px;
+        height: 14px;
+        left: 60px;
+        top: 50px;
+    }
+
+    .ev-cloud-left::before {
+        width: 22px;
+        height: 22px;
+        left: 7px;
+        top: -12px;
+    }
+
+    .ev-cloud-left::after {
+        width: 20px;
+        height: 20px;
+        right: 7px;
+        top: -10px;
+    }
+
+    .ev-cloud-right {
+        width: 58px;
+        height: 15px;
+        right: 42px;
+        top: 25px;
+    }
+
+    .ev-cloud-right::before {
+        width: 24px;
+        height: 24px;
+        left: 12px;
+        top: -14px;
+    }
+
+    .ev-cloud-right::after {
+        width: 20px;
+        height: 20px;
+        right: 7px;
+        top: -10px;
+    }
+
+    .ev-yard {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 145px;
+        background: #96d93a;
+        border-top-left-radius: 52px;
+        border-top-right-radius: 52px;
+        z-index: 2;
+    }
+
+    .ev-house {
+        position: absolute;
+        left: 50%;
+        bottom: 38px;
+        transform: translateX(-50%);
+        width: 126px;
+        height: 108px;
+        z-index: 5;
+    }
+
+    .ev-house-roof {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-bottom: 48px solid #ff7d2b;
+        z-index: 7;
+    }
+
+    .ev-house-body {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 108px;
+        height: 66px;
+        background: #ffd166;
+        border-radius: 7px 7px 0 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        padding: 0 10px 11px;
+        box-sizing: border-box;
+        z-index: 6;
+    }
+
+    .ev-house-window {
+        width: 18px;
+        height: 24px;
+        background: #5fc0ef;
+        border-radius: 5px;
+        margin-bottom: 3px;
+    }
+
+    .ev-house-door {
+        width: 24px;
+        height: 40px;
+        background: #29a34a;
+        border-radius: 9px 9px 0 0;
+    }
+
+    .ev-tree {
+        position: absolute;
+        bottom: 16px;
+        width: 36px;
+        height: 68px;
+        background: #82bf3a;
+        border-radius: 999px;
+        z-index: 4;
+    }
+
+    .ev-tree::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -43px;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 58px;
+        background: #9b5f2f;
+        border-radius: 999px;
+    }
+
+    .ev-tree-left {
+        left: 38px;
+    }
+
+    .ev-tree-right {
+        right: 38px;
+    }
+
+    .daily-main {
+        padding: 34px 48px 0;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .daily-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .title-row h1 {
+        margin: 0;
+        color: #15803d;
+        font-size: 2.05rem;
+        font-weight: 800;
+    }
+
+    .back-link {
+        color: #15803d;
+        text-decoration: none;
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .date-filter {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .date-filter label {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .date-box {
+        position: relative;
+        width: 260px;
+        height: 56px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .date-box input[type="date"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .calendar-icon {
+        font-size: 1.2rem;
+    }
+
+    .date-filter button {
+        height: 56px;
+        border: none;
+        border-radius: 12px;
+        padding: 0 24px;
+        background: #15803d;
+        color: white;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .child-filter {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .child-filter label {
+        font-weight: 700;
+    }
+
+    .child-filter select {
+        height: 46px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 0 14px;
+        font-size: 1rem;
+        background: white;
+    }
+
+    .child-box,
+    .info-box,
+    .note-box,
+    .empty-box {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+    }
+
+    .child-box {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 20px 26px;
+        margin-bottom: 18px;
+    }
+
+    .child-avatar {
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        background: #dbeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    .child-box h2 {
+        margin: 0 0 8px;
+        font-size: 1.5rem;
+        color: #0f172a;
+        font-weight: 800;
+    }
+
+    .child-box p {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1rem;
+    }
+
+    .info-box {
+        min-height: 92px;
+        padding: 18px 26px;
+        margin-bottom: 16px;
+        display: grid;
+        grid-template-columns: 70px 1fr auto;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .round-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.45rem;
+        flex-shrink: 0;
+    }
+
+    .green-round {
+        background: #dcfce7;
+        color: #15803d;
+        font-weight: 900;
+    }
+
+    .blue-round {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .note-round {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .info-title h3 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1.1rem;
+        font-weight: 800;
+    }
+
+    .info-value {
+        color: #0f172a;
+        font-size: 1rem;
+        text-align: right;
+        line-height: 1.4;
+    }
+
+    .presence-value {
+        color: #15803d;
+        font-weight: 700;
+    }
+
+    .sleep-value span {
+        color: #475569;
+    }
+
+    .note-box {
+        display: flex;
+        gap: 22px;
+        padding: 20px 26px;
+        margin-bottom: 20px;
+    }
+
+    .note-content h3 {
+        margin: 0 0 10px;
+        color: #0f172a;
+        font-size: 1.1rem;
+        font-weight: 800;
+    }
+
+    .note-content p,
+    .empty-box p {
+        margin: 0;
+        color: #0f172a;
+        line-height: 1.5;
+        white-space: pre-line;
+    }
+
+    .empty-box {
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+
+    .empty-box h3 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+    }
+
+    .bottom-menu {
+        margin-top: auto;
+        min-height: 74px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 54px;
+    }
+
+    .bottom-menu a {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.98rem;
+    }
+
+    .bottom-menu a.active {
+        color: #15803d;
+    }
+
+    @@media (max-width: 1200px) {
+        .daily-card-layout {
+            max-width: 100%;
+            border-radius: 0;
+            grid-template-columns: 220px 1fr;
+        }
+
+        .daily-main {
+            padding: 32px 34px 0;
+        }
+
+        .daily-top {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .bottom-menu {
+            gap: 26px;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .daily-card-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .daily-sidebar {
+            display: none;
+        }
+
+        .info-box {
+            grid-template-columns: 60px 1fr;
+        }
+
+        .info-value {
+            grid-column: 2;
+            text-align: left;
+        }
+
+        .date-filter {
+            flex-wrap: wrap;
+        }
+    }
+</style>

@@ -1,0 +1,765 @@
+@model EVrtic.Controllers.RoditeljEvidencijaDolaskaOdlaskaViewModel
+
+@{
+    ViewData["Title"] = "Dolazak / Odlazak";
+}
+
+<div class="arrival-page">
+    <div class="arrival-card-layout">
+
+        <aside class="arrival-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
+
+            <nav class="sidebar-menu">
+                <a class="sidebar-link" asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+
+                <a class="sidebar-link active" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>🗓️</span> Dolazak/Odlazak
+                </a>
+
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="Index">
+                    <span>🔔</span> Obavijesti
+                </a>
+
+                <a class="sidebar-link" asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
+
+            <div class="ev-sidebar-illustration">
+                <div class="ev-cloud ev-cloud-left"></div>
+                <div class="ev-cloud ev-cloud-right"></div>
+
+                <div class="ev-yard">
+                    <div class="ev-tree ev-tree-left"></div>
+                    <div class="ev-tree ev-tree-right"></div>
+
+                    <div class="ev-house">
+                        <div class="ev-house-roof"></div>
+                        <div class="ev-house-body">
+                            <div class="ev-house-window"></div>
+                            <div class="ev-house-door"></div>
+                            <div class="ev-house-window"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="arrival-main">
+            <div class="arrival-top">
+                <div class="title-row">
+                    <a asp-controller="Home" asp-action="RoditeljHome" class="back-link">←</a>
+                    <h1>Dolazak / Odlazak</h1>
+                </div>
+
+                <div class="qr-mini-icon">▦</div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.UspjesnaPoruka))
+            {
+                <div class="success-message">
+                    @Model.UspjesnaPoruka
+                </div>
+            }
+
+            <section class="step-card qr-step-card">
+                <div class="step-title">
+                    <span>1.</span>
+                    <strong>Skenirajte dnevni QR kod</strong>
+                </div>
+
+                <div class="qr-content">
+                    @if (Model.DnevniQRCode == null)
+                    {
+                        <div class="qr-placeholder">
+                            <div class="qr-empty-icon">▦</div>
+                        </div>
+
+                        <p class="qr-info text-muted">
+                            Trenutno nema aktivnog dnevnog QR koda.
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="fake-qr">
+                            <div class="qr-square top-left"></div>
+                            <div class="qr-square top-right"></div>
+                            <div class="qr-square bottom-left"></div>
+
+                            <div class="qr-dot d1"></div>
+                            <div class="qr-dot d2"></div>
+                            <div class="qr-dot d3"></div>
+                            <div class="qr-dot d4"></div>
+                            <div class="qr-dot d5"></div>
+                            <div class="qr-dot d6"></div>
+                            <div class="qr-dot d7"></div>
+                            <div class="qr-dot d8"></div>
+                            <div class="qr-dot d9"></div>
+                            <div class="qr-dot d10"></div>
+                        </div>
+
+                        <p class="scan-link">Skeniraj kod kamerom</p>
+                        <p class="qr-info">
+                            QR kod važi do: @Model.DnevniQRCode.VrijemeIsteka.ToString("dd.MM.yyyy. HH:mm")
+                        </p>
+                    }
+                </div>
+            </section>
+
+            <div class="arrow-down">↓</div>
+
+            <section class="step-card input-step-card">
+                <div class="step-title">
+                    <span>2.</span>
+                    <strong>Unesite kod djeteta</strong>
+                </div>
+
+                <form asp-action="RoditeljEvidencija" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+
+                    <div class="type-toggle">
+                        <label class="toggle-option @(Model.TipDogadjaja == "DOLAZAK" ? "selected" : "")">
+                            <input type="radio" name="TipDogadjaja" value="DOLAZAK" checked="@(Model.TipDogadjaja == "DOLAZAK")" />
+                            Dolazak
+                        </label>
+
+                        <label class="toggle-option @(Model.TipDogadjaja == "ODLAZAK" ? "selected" : "")">
+                            <input type="radio" name="TipDogadjaja" value="ODLAZAK" checked="@(Model.TipDogadjaja == "ODLAZAK")" />
+                            Odlazak
+                        </label>
+                    </div>
+
+                    <label class="input-label" asp-for="UneseniKodDjeteta">Kod djeteta</label>
+
+                    <div class="code-input-wrap">
+                        <span class="lock-icon">🔒</span>
+                        <input asp-for="UneseniKodDjeteta" class="code-input" placeholder="Unesite kod" />
+                    </div>
+
+                    <span asp-validation-for="UneseniKodDjeteta" class="text-danger"></span>
+
+                    <button type="submit" class="confirm-button">Potvrdi</button>
+                </form>
+
+                <p class="helper-text">Kod djeteta znaju samo roditelji.</p>
+            </section>
+
+            <nav class="bottom-menu">
+                <a asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+
+                <a asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+
+                <a class="active" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>🗓️</span> Dolazak/Odlazak
+                </a>
+
+                <a asp-controller="Obavijest" asp-action="Index">
+                    <span>🔔</span> Obavijesti
+                </a>
+
+                <a asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
+        </main>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    body {
+        background: #eaf6ff;
+    }
+
+    .arrival-page {
+        min-height: 100vh;
+        padding: 22px 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .arrival-card-layout {
+        width: 100%;
+        max-width: 1250px;
+        min-height: 760px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        overflow: hidden;
+    }
+
+    .arrival-sidebar {
+        position: relative;
+        border-right: 1px solid #eef2f7;
+        padding: 28px 22px 0;
+        overflow: hidden;
+    }
+
+    .sidebar-logo {
+        margin: 0 0 34px;
+        color: #15913a;
+        font-size: 2.65rem;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #0f172a;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .sidebar-link span {
+        width: 24px;
+        text-align: center;
+        font-size: 1.25rem;
+    }
+
+    .sidebar-link.active {
+        color: #15803d;
+        background: #edf8e9;
+    }
+
+
+    .ev-sidebar-illustration {
+        margin-top: auto;
+        position: relative;
+        width: calc(100% + 44px);
+        margin-left: -22px;
+        height: 230px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .ev-cloud {
+        position: absolute;
+        background: #dff1ff;
+        border-radius: 999px;
+        z-index: 1;
+    }
+
+    .ev-cloud::before,
+    .ev-cloud::after {
+        content: "";
+        position: absolute;
+        background: #dff1ff;
+        border-radius: 50%;
+    }
+
+    .ev-cloud-left {
+        width: 52px;
+        height: 14px;
+        left: 60px;
+        top: 50px;
+    }
+
+    .ev-cloud-left::before {
+        width: 22px;
+        height: 22px;
+        left: 7px;
+        top: -12px;
+    }
+
+    .ev-cloud-left::after {
+        width: 20px;
+        height: 20px;
+        right: 7px;
+        top: -10px;
+    }
+
+    .ev-cloud-right {
+        width: 58px;
+        height: 15px;
+        right: 42px;
+        top: 25px;
+    }
+
+    .ev-cloud-right::before {
+        width: 24px;
+        height: 24px;
+        left: 12px;
+        top: -14px;
+    }
+
+    .ev-cloud-right::after {
+        width: 20px;
+        height: 20px;
+        right: 7px;
+        top: -10px;
+    }
+
+    .ev-yard {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 145px;
+        background: #96d93a;
+        border-top-left-radius: 52px;
+        border-top-right-radius: 52px;
+        z-index: 2;
+    }
+
+    .ev-house {
+        position: absolute;
+        left: 50%;
+        bottom: 38px;
+        transform: translateX(-50%);
+        width: 126px;
+        height: 108px;
+        z-index: 5;
+    }
+
+    .ev-house-roof {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-bottom: 48px solid #ff7d2b;
+        z-index: 7;
+    }
+
+    .ev-house-body {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 108px;
+        height: 66px;
+        background: #ffd166;
+        border-radius: 7px 7px 0 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        padding: 0 10px 11px;
+        box-sizing: border-box;
+        z-index: 6;
+    }
+
+    .ev-house-window {
+        width: 18px;
+        height: 24px;
+        background: #5fc0ef;
+        border-radius: 5px;
+        margin-bottom: 3px;
+    }
+
+    .ev-house-door {
+        width: 24px;
+        height: 40px;
+        background: #29a34a;
+        border-radius: 9px 9px 0 0;
+    }
+
+    .ev-tree {
+        position: absolute;
+        bottom: 16px;
+        width: 36px;
+        height: 68px;
+        background: #82bf3a;
+        border-radius: 999px;
+        z-index: 4;
+    }
+
+    .ev-tree::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -43px;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 58px;
+        background: #9b5f2f;
+        border-radius: 999px;
+    }
+
+    .ev-tree-left {
+        left: 38px;
+    }
+
+    .ev-tree-right {
+        right: 38px;
+    }
+
+    .arrival-main {
+        padding: 34px 48px 0;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .arrival-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .title-row h1 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 2.05rem;
+        font-weight: 800;
+    }
+
+    .back-link {
+        color: #15803d;
+        text-decoration: none;
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .qr-mini-icon {
+        color: #15803d;
+        font-size: 2rem;
+        font-weight: 900;
+    }
+
+    .success-message {
+        background: #dcfce7;
+        color: #166534;
+        padding: 14px 18px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+        font-weight: 800;
+    }
+
+    .step-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+        padding: 24px 26px;
+    }
+
+    .qr-step-card {
+        min-height: 235px;
+        margin-bottom: 0;
+    }
+
+    .input-step-card {
+        margin-top: 0;
+        margin-bottom: 22px;
+    }
+
+    .step-title {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #0f172a;
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+
+    .step-title span {
+        width: 44px;
+        height: 44px;
+        background: #dcfce7;
+        color: #15803d;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+    }
+
+    .qr-content {
+        text-align: center;
+        margin-top: 6px;
+    }
+
+    .qr-placeholder,
+    .fake-qr {
+        width: 150px;
+        height: 150px;
+        border: 2px solid #e5e7eb;
+        border-radius: 14px;
+        margin: 0 auto 14px;
+        background: white;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qr-empty-icon {
+        color: #94a3b8;
+        font-size: 4.5rem;
+    }
+
+    .fake-qr {
+        background:
+            linear-gradient(90deg, #111 10px, transparent 10px) 0 0 / 20px 20px,
+            linear-gradient(#111 10px, transparent 10px) 0 0 / 20px 20px,
+            #fff;
+    }
+
+    .qr-square {
+        position: absolute;
+        width: 42px;
+        height: 42px;
+        border: 8px solid #000;
+        background: white;
+    }
+
+    .qr-square::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        background: #000;
+    }
+
+    .top-left {
+        top: 14px;
+        left: 14px;
+    }
+
+    .top-right {
+        top: 14px;
+        right: 14px;
+    }
+
+    .bottom-left {
+        bottom: 14px;
+        left: 14px;
+    }
+
+    .qr-dot {
+        position: absolute;
+        background: #000;
+        width: 12px;
+        height: 12px;
+    }
+
+    .d1 { top: 72px; left: 75px; }
+    .d2 { top: 92px; left: 96px; }
+    .d3 { top: 70px; left: 112px; }
+    .d4 { top: 112px; left: 74px; }
+    .d5 { top: 122px; left: 115px; }
+    .d6 { top: 88px; left: 58px; }
+    .d7 { top: 56px; left: 96px; }
+    .d8 { top: 112px; right: 22px; }
+    .d9 { bottom: 42px; right: 50px; }
+    .d10 { bottom: 20px; right: 22px; }
+
+    .scan-link {
+        color: #2563eb;
+        font-size: 1.05rem;
+        margin: 6px 0 4px;
+        font-weight: 500;
+    }
+
+    .qr-info {
+        color: #475569;
+        font-size: 0.92rem;
+        margin: 0;
+    }
+
+    .text-muted {
+        color: #64748b;
+        margin-top: 12px;
+    }
+
+    .arrow-down {
+        text-align: center;
+        color: #15803d;
+        font-size: 3rem;
+        line-height: 1.1;
+        margin: 8px 0;
+    }
+
+    .type-toggle {
+        display: flex;
+        gap: 12px;
+        margin: 20px 0 18px;
+    }
+
+    .toggle-option {
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 800;
+        color: #334155;
+        cursor: pointer;
+        background: #fff;
+    }
+
+    .toggle-option.selected {
+        background: #edf8e9;
+        color: #15803d;
+        border-color: #a7e3b4;
+    }
+
+    .toggle-option input {
+        margin-right: 8px;
+    }
+
+    .input-label {
+        display: block;
+        color: #334155;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .code-input-wrap {
+        position: relative;
+        margin-bottom: 12px;
+    }
+
+    .lock-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1.2rem;
+        z-index: 1;
+    }
+
+    .code-input {
+        width: 100%;
+        height: 56px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 0 18px 0 58px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .code-input:focus {
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147, 197, 253, .25);
+    }
+
+    .confirm-button {
+        width: 100%;
+        height: 58px;
+        border: none;
+        border-radius: 12px;
+        background: #2f993f;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 900;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .helper-text {
+        text-align: center;
+        color: #15803d;
+        margin: 18px 0 0;
+        font-size: 1rem;
+    }
+
+    .validation-summary {
+        margin-top: 14px;
+    }
+
+    .bottom-menu {
+        margin-top: auto;
+        min-height: 74px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 50px;
+    }
+
+    .bottom-menu a {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.98rem;
+    }
+
+    .bottom-menu a.active {
+        color: #15803d;
+    }
+
+    @@media (max-width: 1200px) {
+        .arrival-card-layout {
+            max-width: 100%;
+            border-radius: 0;
+            grid-template-columns: 220px 1fr;
+        }
+
+        .arrival-main {
+            padding: 32px 34px 0;
+        }
+
+        .bottom-menu {
+            gap: 24px;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .arrival-card-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .arrival-sidebar {
+            display: none;
+        }
+
+        .arrival-top {
+            align-items: flex-start;
+        }
+
+        .bottom-menu {
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+    }
+</style>
