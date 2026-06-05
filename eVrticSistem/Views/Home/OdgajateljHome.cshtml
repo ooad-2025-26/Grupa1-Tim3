@@ -12,33 +12,47 @@
             <h1 class="educator-logo">eVrtić</h1>
 
             <nav class="educator-menu">
-                <a class="educator-link active" asp-controller="Home" asp-action="OdgajateljHome">
-                    <span>🏠</span>
-                    Početna
-                </a>
+    <a class="educator-link active" asp-controller="Home" asp-action="OdgajateljHome">
+        <span>🏠</span>
+        Početna
+    </a>
 
-                <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
-                    <span class="badge-icon">
-                        🔔@if (brojNovih > 0) { <b>@brojNovih</b> }
-                    </span>
-                    Obavijesti
-                </a>
+    <a class="educator-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+        <span>📝</span>
+        Aktivnosti
+    </a>
 
-                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
-                    <span>👤</span>
-                    Profil
-                </a>
+    <a class="educator-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="OdgajateljPregled">
+        <span>☑️</span>
+        Dolazak/Odlazak
+    </a>
 
-                <form asp-area="Identity"
-                      asp-page="/Account/Logout"
-                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
-                      method="post">
-                    <button type="submit" class="educator-link educator-logout-button">
-                        <span>🚪</span>
-                        Odjava
-                    </button>
-                </form>
-            </nav>
+    <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+        <span class="badge-icon">🔔@if (brojNovih > 0) { <b>@brojNovih</b> }</span>
+        Obavijesti
+    </a>
+
+    <a class="educator-link" asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
+        <span>📊</span>
+        Sažeci
+    </a>
+
+    <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+        <span>👤</span>
+        Profil
+    </a>
+
+    <form class="educator-logout-form"
+          asp-area="Identity"
+          asp-page="/Account/Logout"
+          asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+          method="post">
+        <button type="submit" class="educator-logout-button">
+            <span class="logout-icon">🚪</span>
+            <span class="logout-text">Odjava</span>
+        </button>
+    </form>
+</nav>
 
             <div class="educator-side-art">
                 <div class="side-cloud side-cloud-1"></div>
@@ -149,7 +163,7 @@
                     <span>→</span>
                 </a>
 
-                <a class="educator-quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="Index">
+<a class="educator-quick-card" asp-controller="EvidencijaDolaskaOdlaska" asp-action="OdgajateljPregled">
                     <div class="educator-quick-icon blue">☑️</div>
                     <h4>Dolazak/Odlazak</h4>
                     <span>→</span>
@@ -161,7 +175,7 @@
                     <span>→</span>
                 </a>
 
-                <a class="educator-quick-card" asp-controller="SazetakAktivnosti" asp-action="Index">
+<a class="educator-quick-card" asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
                     <div class="educator-quick-icon purple">📊</div>
                     <h4>Sažeci</h4>
                     <span>→</span>
@@ -170,23 +184,365 @@
         </main>
 
         <nav class="educator-bottom-nav">
-            <a class="bottom-link active" asp-controller="Home" asp-action="OdgajateljHome">
-                <span>🏠</span>
-                Početna
-            </a>
-            <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
-                <span>📝</span>
-                Aktivnosti
-            </a>
-            <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
-                <span>🔔@if (brojNovih > 0) { <b class="bell-badge">@brojNovih</b> }</span>
-                Obavijesti
-            </a>
-            <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil">
-                <span>👤</span>
-                Profil
-            </a>
-        </nav>
+    <a class="bottom-link active" asp-controller="Home" asp-action="OdgajateljHome"><span>🏠</span> Početna</a>
+    <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti"><span>📝</span> Aktivnosti</a>
+    <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti"><span>🔔@if (brojNovih > 0) { <b class="bell-badge">@brojNovih</b> }</span> Obavijesti</a>
+    <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil"><span>👤</span> Profil</a>
+</nav>
 
     </div>
 </div>
+
+
+<style>
+    /* === ODGAJATELJ UI STANDARDIZACIJA === */
+    body {
+        background: #eef3ff !important;
+    }
+
+    .educator-page,
+    .educator-attendance-page,
+    .educator-summary-page {
+        min-height: 100vh;
+        padding: 22px 0;
+        font-family: Arial, sans-serif;
+        color: #071733;
+    }
+
+    .educator-card,
+    .educator-attendance-card,
+    .educator-summary-card {
+        width: 100%;
+        max-width: 1250px;
+        min-height: 760px;
+        margin: 0 auto;
+        background: #fbfaff;
+        border-radius: 22px;
+        box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        overflow: hidden;
+    }
+
+    .educator-sidebar {
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
+        padding: 28px 22px 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .educator-logo {
+        margin: 0 0 34px;
+        color: #6d42db;
+        font-size: 2.7rem;
+        line-height: 1;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    .educator-menu {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .educator-link {
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 18px;
+        border-radius: 12px;
+        color: #071733;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 800;
+        box-sizing: border-box;
+    }
+
+    .educator-link:hover {
+        color: #6d42db;
+        background: #f3efff;
+        text-decoration: none;
+    }
+
+    .educator-link span {
+        width: 24px;
+        text-align: center;
+        font-size: 1.25rem;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .educator-link.active {
+        color: #7447d8;
+        background: #ece6ff;
+    }
+
+    .badge-icon { position: relative; }
+    .badge-icon b,
+    .bell-badge {
+        position: absolute;
+        top: -9px;
+        right: -11px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.68rem;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .educator-logout-form {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 18px 0 0;
+        position: relative;
+        z-index: 20;
+    }
+
+    .educator-logout-button {
+        width: 190px;
+        height: 58px;
+        border: 2px solid #111827;
+        border-radius: 12px;
+        background: #ffffff !important;
+        color: #071733;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        cursor: pointer;
+        padding: 0;
+        box-shadow: none;
+        line-height: 1;
+    }
+
+    .educator-logout-button .logout-icon,
+    .educator-logout-button span:first-child {
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .educator-logout-button .logout-text,
+    .educator-logout-button span:last-child {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .educator-logout-button:hover {
+        background: #f8fafc !important;
+    }
+
+    .educator-side-art {
+        margin-top: auto;
+        position: relative;
+        height: 210px;
+        flex-shrink: 0;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .side-cloud {
+        position: absolute;
+        background: #dbeafe;
+        border-radius: 999px;
+    }
+
+    .side-cloud::before,
+    .side-cloud::after {
+        content: "";
+        position: absolute;
+        background: #dbeafe;
+        border-radius: 50%;
+    }
+
+    .side-cloud-1 {
+        width: 56px;
+        height: 18px;
+        left: 42px;
+        top: 18px;
+    }
+
+    .side-cloud-1::before { width: 22px; height: 22px; left: 8px; top: -10px; }
+    .side-cloud-1::after { width: 26px; height: 26px; left: 26px; top: -13px; }
+
+    .side-cloud-2 {
+        width: 64px;
+        height: 20px;
+        right: 38px;
+        top: 4px;
+    }
+
+    .side-cloud-2::before { width: 24px; height: 24px; left: 9px; top: -11px; }
+    .side-cloud-2::after { width: 28px; height: 28px; left: 30px; top: -14px; }
+
+    .side-kindergarten {
+        position: absolute;
+        left: 50%;
+        bottom: 28px;
+        width: 120px;
+        height: 105px;
+        transform: translateX(-50%);
+        z-index: 4;
+    }
+
+    .side-roof {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 104px;
+        height: 44px;
+        transform: translateX(-50%);
+        background: #6d42db;
+        clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        z-index: 5;
+    }
+
+    .side-building {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 104px;
+        height: 62px;
+        transform: translateX(-50%);
+        background: #ffd35c;
+        border-radius: 7px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        padding-bottom: 12px;
+        box-sizing: border-box;
+        z-index: 4;
+    }
+
+    .side-window {
+        width: 16px;
+        height: 24px;
+        background: #55bce8;
+        border-radius: 5px;
+    }
+
+    .side-door {
+        width: 22px;
+        height: 34px;
+        background: #2bb3a3;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .side-tree {
+        position: absolute;
+        bottom: 42px;
+        width: 38px;
+        height: 84px;
+        background: #7ed832;
+        border-radius: 22px;
+        z-index: 3;
+    }
+
+    .side-tree::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -42px;
+        width: 4px;
+        height: 58px;
+        transform: translateX(-50%);
+        background: #9c5c2f;
+        border-radius: 3px;
+    }
+
+    .side-tree-left { left: 32px; }
+    .side-tree-right { right: 32px; }
+
+    .educator-main,
+    .attendance-main,
+    .summary-main {
+        grid-column: 2;
+        padding: 34px 48px 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .educator-main-scroll {
+        overflow-y: auto;
+    }
+
+    .educator-bottom-nav {
+        grid-column: 2;
+        margin-top: auto;
+        min-height: 74px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 54px;
+        background: #ffffff;
+        align-self: end;
+    }
+
+    .bottom-link {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 800;
+        font-size: 0.98rem;
+    }
+
+    .bottom-link:hover {
+        color: #7447d8;
+        text-decoration: none;
+    }
+
+    .bottom-link.active {
+        color: #7447d8;
+    }
+
+    .bottom-link span {
+        position: relative;
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+
+    @@media (max-width: 1000px) {
+        .educator-card,
+        .educator-attendance-card,
+        .educator-summary-card {
+            grid-template-columns: 1fr;
+            border-radius: 0;
+        }
+
+        .educator-sidebar {
+            display: none;
+        }
+
+        .educator-main,
+        .attendance-main,
+        .summary-main,
+        .educator-bottom-nav {
+            grid-column: 1;
+        }
+    }
+</style>
+

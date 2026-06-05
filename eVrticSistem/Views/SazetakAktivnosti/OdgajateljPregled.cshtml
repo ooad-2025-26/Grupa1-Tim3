@@ -1,0 +1,1077 @@
+@model EVrtic.Controllers.OdgajateljSazetakPregledViewModel
+
+@{
+    ViewData["Title"] = "Generisanje sažetka";
+
+    int sati = Model.UkupnoSpavanjeMinuta / 60;
+    int minute = Model.UkupnoSpavanjeMinuta % 60;
+    string spavanje = Model.UkupnoSpavanjeMinuta > 0
+        ? $"{sati}h {minute}min"
+        : "Nije evidentirano";
+}
+
+<div class="educator-summary-page">
+    <div class="educator-summary-card">
+
+        <aside class="educator-sidebar">
+            <h1 class="educator-logo">eVrtić</h1>
+<nav class="educator-menu">
+    <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
+        <span>🏠</span>
+        Početna
+    </a>
+
+    <a class="educator-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+        <span>📝</span>
+        Aktivnosti
+    </a>
+
+    <a class="educator-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="OdgajateljPregled">
+        <span>☑️</span>
+        Dolazak/Odlazak
+    </a>
+
+    <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+        <span>🔔</span>
+        Obavijesti
+    </a>
+
+    <a class="educator-link active" asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
+        <span>📊</span>
+        Sažeci
+    </a>
+
+    <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+        <span>👤</span>
+        Profil
+    </a>
+
+    <form class="educator-logout-form"
+          asp-area="Identity"
+          asp-page="/Account/Logout"
+          asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+          method="post">
+        <button type="submit" class="educator-logout-button">
+            <span class="logout-icon">🚪</span>
+            <span class="logout-text">Odjava</span>
+        </button>
+    </form>
+</nav>
+
+            <div class="sidebar-decoration">
+                <div class="cloud cloud-left"></div>
+                <div class="cloud cloud-right"></div>
+
+                <div class="ground-illustration">
+                    <div class="tree tree-left"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+                    <div class="tree tree-right"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+
+                    <div class="house-illustration">
+                        <div class="house-roof"></div>
+                        <div class="house-body">
+                            <div class="house-window"></div>
+                            <div class="house-door"></div>
+                            <div class="house-window"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="educator-main">
+            <div class="page-top">
+                <a asp-controller="Home" asp-action="OdgajateljHome" class="back-link">←</a>
+                <h1>Generisanje sažetka</h1>
+            </div>
+
+            <section class="hero-illustration" aria-hidden="true">
+                <div class="paper paper-left">
+                    <div class="small-line line-1"></div>
+                    <div class="small-line line-2"></div>
+                    <div class="pie-chart"></div>
+                </div>
+
+                <div class="paper paper-right">
+                    <div class="chart-line"></div>
+                    <div class="chart-line short"></div>
+                    <div class="bars">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+            </section>
+
+            <form class="summary-form" method="get" asp-action="OdgajateljPregled">
+                <label class="section-label">Period</label>
+
+                <div class="period-options">
+                    <label class="period-option @(Model.Period == "Sedmica" ? "selected" : "")">
+                        <input type="radio" name="period" value="Sedmica" checked="@(Model.Period == "Sedmica")" />
+                        Sedmica
+                    </label>
+
+                    <label class="period-option @(Model.Period == "Mjesec" ? "selected" : "")">
+                        <input type="radio" name="period" value="Mjesec" checked="@(Model.Period == "Mjesec")" />
+                        Mjesec
+                    </label>
+                </div>
+
+                <div class="filter-grid">
+                    <div class="field-block wide-date">
+                        <label>Datum / period</label>
+                        <div class="date-display">
+                            <span>@Model.DatumPocetka.ToString("dd.MM.yyyy.")</span>
+                            <span>-</span>
+                            <span>@Model.DatumKraja.ToString("dd.MM.yyyy.")</span>
+                            <span class="calendar-symbol">▣</span>
+                            <input type="date" name="pocetak" value="@Model.DatumPocetka.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Grupa</label>
+                        <select name="grupaId">
+                            <option value="">Sve grupe</option>
+                            @foreach (var grupa in Model.Grupe)
+                            {
+                                <option value="@grupa.Id" selected="@(grupa.Id == Model.OdabranaGrupaId ? "selected" : null)">
+                                    @grupa.ImeGrupe
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Dijete</label>
+                        <select name="dijeteId">
+                            <option value="">Prvo dijete</option>
+                            @foreach (var dijete in Model.Djeca)
+                            {
+                                <option value="@dijete.Id" selected="@(dijete.Id == Model.OdabraniDijeteId ? "selected" : null)">
+                                    @dijete.ImePrezime
+                                </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-button">
+                    <span>▣</span> Generiši sažetak
+                </button>
+            </form>
+
+            @if (Model.Dijete == null)
+            {
+                <section class="empty-card">
+                    <h3>Nema djece za prikaz.</h3>
+                    <p>Dodijeljena grupa trenutno nema aktivnu djecu ili odaberite drugu grupu.</p>
+                </section>
+            }
+            else
+            {
+                <section class="child-card">
+                    <div class="child-avatar">🧒</div>
+                    <div>
+                        <h2>@Model.Dijete.ImePrezime</h2>
+                        <p>Grupa: @(Model.Dijete.Grupa?.ImeGrupe ?? "Nije dodijeljena")</p>
+                    </div>
+                </section>
+
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title"><span>▥</span> Broj dolazaka</div>
+                        <strong>@Model.BrojDolazaka</strong>
+                        <p>u odabranom periodu</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-title"><span>♨</span> Obroci</div>
+                        <strong>@Model.BrojObroka</strong>
+                        <p>evidentiranih obroka</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-title"><span>☾</span> Spavanje</div>
+                        <strong class="sleep-text">@spavanje</strong>
+                        <p>ukupno spavanja</p>
+                    </div>
+                </section>
+
+                <section class="note-card">
+                    <h3>Napomena</h3>
+                    @if (string.IsNullOrWhiteSpace(Model.Napomene))
+                    {
+                        <p>Nema napomena za odabrani period.</p>
+                    }
+                    else
+                    {
+                        <p>@Model.Napomene</p>
+                    }
+                </section>
+            }
+
+            <nav class="educator-bottom-nav">
+    <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome"><span>🏠</span> Početna</a>
+    <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti"><span>📝</span> Aktivnosti</a>
+    <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti"><span>🔔</span> Obavijesti</a>
+    <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil"><span>👤</span> Profil</a>
+</nav>
+        </main>
+    </div>
+</div>
+
+<style>
+    body { background: #eef3ff; }
+
+    .educator-summary-page {
+        min-height: 100vh;
+        padding: 22px 0;
+        font-family: Arial, sans-serif;
+        color: #111827;
+    }
+
+    .educator-summary-card {
+        width: 100%;
+        max-width: 1250px;
+        min-height: 760px;
+        margin: 0 auto;
+        background: #f7f8ff;
+        border-radius: 22px;
+        box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        overflow: hidden;
+    }
+
+    .educator-sidebar {
+        background: #fff;
+        border-right: 1px solid #e5e7eb;
+        padding: 28px 22px 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .educator-logo {
+        margin: 0 0 34px;
+        color: #6243db;
+        font-size: 2.7rem;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    .educator-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 5;
+    }
+
+    .educator-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #111827;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .educator-link span {
+        width: 24px;
+        color: #334155;
+        text-align: center;
+        font-size: 1.25rem;
+    }
+
+    .educator-link.active {
+        color: #6243db;
+        background: #ece9ff;
+    }
+
+    .educator-link.active span { color: #6243db; }
+
+    .sidebar-decoration {
+        margin-top: auto;
+        position: relative;
+        width: calc(100% + 44px);
+        margin-left: -22px;
+        height: 230px;
+        overflow: hidden;
+    }
+
+    .cloud {
+        position: absolute;
+        background: #dbeafe;
+        border-radius: 50px;
+        z-index: 1;
+    }
+
+    .cloud::before, .cloud::after {
+        content: "";
+        position: absolute;
+        background: #dbeafe;
+        border-radius: 50%;
+    }
+
+    .cloud-left { width: 56px; height: 18px; left: 48px; top: 22px; }
+    .cloud-left::before { width: 20px; height: 20px; left: 8px; top: -10px; }
+    .cloud-left::after { width: 24px; height: 24px; left: 26px; top: -12px; }
+    .cloud-right { width: 62px; height: 20px; right: 48px; top: 8px; }
+    .cloud-right::before { width: 22px; height: 22px; left: 8px; top: -10px; }
+    .cloud-right::after { width: 26px; height: 26px; left: 28px; top: -13px; }
+
+    .ground-illustration {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 150px;
+        background: #98c943;
+        border-top-left-radius: 42px;
+        border-top-right-radius: 42px;
+        z-index: 2;
+    }
+
+    .house-illustration {
+        position: absolute;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%);
+        width: 132px;
+        height: 105px;
+        z-index: 4;
+    }
+
+    .house-roof {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: 112px;
+        height: 42px;
+        background: #6243db;
+        clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        z-index: 5;
+    }
+
+    .house-body {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 104px;
+        height: 62px;
+        background: #ffd166;
+        border-radius: 6px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        padding-bottom: 12px;
+        z-index: 4;
+    }
+
+    .house-window { width: 16px; height: 24px; background: #5fc0ef; border-radius: 4px; margin-bottom: 2px; }
+    .house-door { width: 20px; height: 34px; background: #6243db; border-radius: 8px 8px 0 0; }
+    .tree { position: absolute; bottom: 16px; z-index: 3; }
+    .tree-left { left: 42px; }
+    .tree-right { right: 42px; }
+    .tree-top { width: 30px; height: 64px; background: #8ac53a; border-radius: 20px; margin: 0 auto; }
+    .tree-trunk { width: 4px; height: 62px; background: #9c5c2f; margin: -2px auto 0; border-radius: 3px; }
+
+    .educator-main {
+        padding: 34px 48px 0;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .page-top {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 18px;
+    }
+
+    .back-link {
+        color: #6243db;
+        text-decoration: none;
+        font-size: 2.2rem;
+        line-height: 1;
+    }
+
+    .page-top h1 {
+        margin: 0;
+        font-size: 2.1rem;
+        font-weight: 900;
+        color: #111827;
+    }
+
+    .hero-illustration {
+        width: 430px;
+        height: 230px;
+        margin: 0 auto 8px;
+        position: relative;
+    }
+
+    .paper {
+        position: absolute;
+        border-radius: 12px;
+        background: #dbeafe;
+        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.18);
+    }
+
+    .paper-left {
+        left: 30px;
+        bottom: 24px;
+        width: 190px;
+        height: 145px;
+        transform: rotate(-8deg);
+    }
+
+    .paper-right {
+        right: 35px;
+        bottom: 36px;
+        width: 165px;
+        height: 190px;
+        background: #f8fbff;
+        border: 6px solid #c7d9ff;
+    }
+
+    .small-line, .chart-line {
+        height: 10px;
+        background: #bfdbfe;
+        border-radius: 999px;
+        position: absolute;
+    }
+
+    .line-1 { width: 48px; left: 28px; top: 26px; }
+    .line-2 { width: 76px; left: 60px; top: 70px; }
+    .chart-line { width: 110px; left: 26px; top: 30px; }
+    .chart-line.short { width: 70px; top: 58px; }
+
+    .pie-chart {
+        position: absolute;
+        width: 92px;
+        height: 92px;
+        left: 55px;
+        bottom: 28px;
+        border-radius: 50%;
+        background: conic-gradient(#fb553c 0 62%, #3b82f6 62% 74%, #33c56a 74% 88%, #facc15 88%);
+    }
+
+    .bars {
+        position: absolute;
+        left: 34px;
+        bottom: 36px;
+        height: 100px;
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .bars span { width: 24px; border-radius: 3px 3px 0 0; }
+    .bars span:nth-child(1) { height: 38px; background: #53c767; }
+    .bars span:nth-child(2) { height: 66px; background: #fb553c; }
+    .bars span:nth-child(3) { height: 76px; background: #60a5fa; }
+    .bars span:nth-child(4) { height: 112px; background: #2563eb; }
+
+    .summary-form {
+        max-width: 860px;
+        margin: 0 auto 22px;
+        width: 100%;
+    }
+
+    .section-label, .field-block label {
+        display: block;
+        font-size: 1.05rem;
+        color: #111827;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .period-options {
+        display: flex;
+        gap: 36px;
+        margin: 8px 0 24px;
+    }
+
+    .period-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #111827;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    .period-option input {
+        accent-color: #6243db;
+        width: 22px;
+        height: 22px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .field-block select,
+    .date-display {
+        width: 100%;
+        height: 58px;
+        border: 1px solid #d8def0;
+        border-radius: 12px;
+        background: #fff;
+        padding: 0 16px;
+        font-size: 1rem;
+        color: #111827;
+        box-sizing: border-box;
+    }
+
+    .date-display {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        font-size: 1.1rem;
+    }
+
+    .date-display input[type="date"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .calendar-symbol {
+        margin-left: auto;
+        color: #6243db;
+        font-weight: 900;
+    }
+
+    .generate-button {
+        width: 100%;
+        height: 62px;
+        border: none;
+        border-radius: 12px;
+        background: #6243db;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 10px 22px rgba(99, 67, 219, 0.22);
+    }
+
+    .generate-button span { margin-right: 12px; }
+
+    .child-card, .stat-card, .note-card, .empty-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+    }
+
+    .child-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 18px 24px;
+        margin-bottom: 18px;
+    }
+
+    .child-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.25rem;
+        flex-shrink: 0;
+    }
+
+    .child-card h2 { margin: 0 0 6px; font-size: 1.5rem; font-weight: 900; }
+    .child-card p { margin: 0; color: #475569; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        min-height: 145px;
+        padding: 20px 24px;
+    }
+
+    .stat-title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-weight: 900;
+        color: #111827;
+    }
+
+    .stat-title span { color: #6243db; }
+
+    .stat-card strong {
+        display: block;
+        text-align: center;
+        font-size: 3.2rem;
+        line-height: 1;
+        margin: 26px 0 6px;
+        color: #0f172a;
+    }
+
+    .stat-card .sleep-text { font-size: 2rem; }
+    .stat-card p { margin: 0; text-align: center; color: #64748b; }
+
+    .note-card, .empty-card {
+        padding: 22px 26px;
+        margin-bottom: 22px;
+    }
+
+    .note-card h3 { margin: 0 0 12px; color: #b45309; font-weight: 900; }
+    .note-card p, .empty-card p { margin: 0; white-space: pre-line; line-height: 1.55; }
+    .empty-card h3 { margin: 0 0 8px; }
+
+
+.educator-bottom-nav {
+    margin-top: auto;
+    min-height: 74px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 54px;
+    background: #fff;
+}
+
+.bottom-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    color: #475569;
+    font-weight: 800;
+    font-size: 0.98rem;
+}
+
+.bottom-link.active {
+    color: #7447d8;
+}
+
+.bottom-link span {
+    position: relative;
+    font-size: 1.25rem;
+}
+
+    @@media (max-width: 800px) {
+        .educator-summary-card { grid-template-columns: 1fr; }
+        .educator-sidebar { display: none; }
+        .bottom-nav { gap: 22px; flex-wrap: wrap; }
+    }
+    .educator-logout-form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 18px 0 0 0;
+    position: relative;
+    z-index: 20;
+}
+
+.educator-logout-button {
+    width: 220px;
+    height: 58px;
+    border: 2px solid #111827;
+    border-radius: 12px;
+    background: #ffffff !important;
+    color: #071733;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none;
+    line-height: 1;
+}
+
+.educator-logout-button .logout-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.educator-logout-button .logout-text {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.educator-logout-button:hover {
+    background: #f8fafc !important;
+}
+</style>
+
+
+<style>
+    /* === ODGAJATELJ UI STANDARDIZACIJA === */
+    body {
+        background: #eef3ff !important;
+    }
+
+    .educator-page,
+    .educator-attendance-page,
+    .educator-summary-page {
+        min-height: 100vh;
+        padding: 22px 0;
+        font-family: Arial, sans-serif;
+        color: #071733;
+    }
+
+    .educator-card,
+    .educator-attendance-card,
+    .educator-summary-card {
+        width: 100%;
+        max-width: 1250px;
+        min-height: 760px;
+        margin: 0 auto;
+        background: #fbfaff;
+        border-radius: 22px;
+        box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        overflow: hidden;
+    }
+
+    .educator-sidebar {
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
+        padding: 28px 22px 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .educator-logo {
+        margin: 0 0 34px;
+        color: #6d42db;
+        font-size: 2.7rem;
+        line-height: 1;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    .educator-menu {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .educator-link {
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 18px;
+        border-radius: 12px;
+        color: #071733;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 800;
+        box-sizing: border-box;
+    }
+
+    .educator-link:hover {
+        color: #6d42db;
+        background: #f3efff;
+        text-decoration: none;
+    }
+
+    .educator-link span {
+        width: 24px;
+        text-align: center;
+        font-size: 1.25rem;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .educator-link.active {
+        color: #7447d8;
+        background: #ece6ff;
+    }
+
+    .badge-icon { position: relative; }
+    .badge-icon b,
+    .bell-badge {
+        position: absolute;
+        top: -9px;
+        right: -11px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.68rem;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .educator-logout-form {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 18px 0 0;
+        position: relative;
+        z-index: 20;
+    }
+
+    .educator-logout-button {
+        width: 190px;
+        height: 58px;
+        border: 2px solid #111827;
+        border-radius: 12px;
+        background: #ffffff !important;
+        color: #071733;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        cursor: pointer;
+        padding: 0;
+        box-shadow: none;
+        line-height: 1;
+    }
+
+    .educator-logout-button .logout-icon,
+    .educator-logout-button span:first-child {
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .educator-logout-button .logout-text,
+    .educator-logout-button span:last-child {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .educator-logout-button:hover {
+        background: #f8fafc !important;
+    }
+
+    .educator-side-art {
+        margin-top: auto;
+        position: relative;
+        height: 210px;
+        flex-shrink: 0;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .side-cloud {
+        position: absolute;
+        background: #dbeafe;
+        border-radius: 999px;
+    }
+
+    .side-cloud::before,
+    .side-cloud::after {
+        content: "";
+        position: absolute;
+        background: #dbeafe;
+        border-radius: 50%;
+    }
+
+    .side-cloud-1 {
+        width: 56px;
+        height: 18px;
+        left: 42px;
+        top: 18px;
+    }
+
+    .side-cloud-1::before { width: 22px; height: 22px; left: 8px; top: -10px; }
+    .side-cloud-1::after { width: 26px; height: 26px; left: 26px; top: -13px; }
+
+    .side-cloud-2 {
+        width: 64px;
+        height: 20px;
+        right: 38px;
+        top: 4px;
+    }
+
+    .side-cloud-2::before { width: 24px; height: 24px; left: 9px; top: -11px; }
+    .side-cloud-2::after { width: 28px; height: 28px; left: 30px; top: -14px; }
+
+    .side-kindergarten {
+        position: absolute;
+        left: 50%;
+        bottom: 28px;
+        width: 120px;
+        height: 105px;
+        transform: translateX(-50%);
+        z-index: 4;
+    }
+
+    .side-roof {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 104px;
+        height: 44px;
+        transform: translateX(-50%);
+        background: #6d42db;
+        clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        z-index: 5;
+    }
+
+    .side-building {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 104px;
+        height: 62px;
+        transform: translateX(-50%);
+        background: #ffd35c;
+        border-radius: 7px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        padding-bottom: 12px;
+        box-sizing: border-box;
+        z-index: 4;
+    }
+
+    .side-window {
+        width: 16px;
+        height: 24px;
+        background: #55bce8;
+        border-radius: 5px;
+    }
+
+    .side-door {
+        width: 22px;
+        height: 34px;
+        background: #2bb3a3;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .side-tree {
+        position: absolute;
+        bottom: 42px;
+        width: 38px;
+        height: 84px;
+        background: #7ed832;
+        border-radius: 22px;
+        z-index: 3;
+    }
+
+    .side-tree::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -42px;
+        width: 4px;
+        height: 58px;
+        transform: translateX(-50%);
+        background: #9c5c2f;
+        border-radius: 3px;
+    }
+
+    .side-tree-left { left: 32px; }
+    .side-tree-right { right: 32px; }
+
+    .educator-main,
+    .attendance-main,
+    .summary-main {
+        grid-column: 2;
+        padding: 34px 48px 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .educator-main-scroll {
+        overflow-y: auto;
+    }
+
+    .educator-bottom-nav {
+        grid-column: 2;
+        margin-top: auto;
+        min-height: 74px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 54px;
+        background: #ffffff;
+        align-self: end;
+    }
+
+    .bottom-link {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 800;
+        font-size: 0.98rem;
+    }
+
+    .bottom-link:hover {
+        color: #7447d8;
+        text-decoration: none;
+    }
+
+    .bottom-link.active {
+        color: #7447d8;
+    }
+
+    .bottom-link span {
+        position: relative;
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+
+    @@media (max-width: 1000px) {
+        .educator-card,
+        .educator-attendance-card,
+        .educator-summary-card {
+            grid-template-columns: 1fr;
+            border-radius: 0;
+        }
+
+        .educator-sidebar {
+            display: none;
+        }
+
+        .educator-main,
+        .attendance-main,
+        .summary-main,
+        .educator-bottom-nav {
+            grid-column: 1;
+        }
+    }
+</style>
+

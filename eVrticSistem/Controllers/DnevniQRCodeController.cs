@@ -1,15 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EVrtic.Data;
 using EVrtic.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EVrtic.Controllers
 {
+    [Authorize(Roles = "ODGAJATELJ,ADMINISTRATOR")]
     public class DnevniQRCodeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,136 +22,91 @@ namespace EVrtic.Controllers
         // GET: DnevniQRCode
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DnevniQRCodovi.ToListAsync());
-        }
+            var danas = DateTime.Today;
+            var sada = DateTime.Now;
 
-        // GET: DnevniQRCode/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            var aktivniKod = await _context.DnevniQRCodovi
+                .Where(q => q.Aktivan
+                    && q.DatumVazenja.Date == danas
+                    && q.VrijemeIsteka >= sada)
+                .OrderByDescending(q => q.VrijemeIsteka)
+                .FirstOrDefaultAsync();
+
+            var historija = await _context.DnevniQRCodovi
+                .OrderByDescending(q => q.DatumVazenja)
+                .ThenByDescending(q => q.VrijemeIsteka)
+                .Take(10)
+                .ToListAsync();
+
+            var vm = new DnevniQRCodePregledViewModel
             {
-                return NotFound();
-            }
+                AktivniKod = aktivniKod,
+                HistorijaKodova = historija
+            };
 
-            var dnevniQRCode = await _context.DnevniQRCodovi
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dnevniQRCode == null)
-            {
-                return NotFound();
-            }
-
-            return View(dnevniQRCode);
+            return View(vm);
         }
 
-        // GET: DnevniQRCode/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: DnevniQRCode/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: DnevniQRCode/GenerisiDanas
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VrijednostKoda,DatumVazenja,VrijemeIsteka,Aktivan")] DnevniQRCode dnevniQRCode)
+        public async Task<IActionResult> GenerisiDanas()
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(dnevniQRCode);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(dnevniQRCode);
-        }
+            var danas = DateTime.Today;
 
-        // GET: DnevniQRCode/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            var aktivniDanas = await _context.DnevniQRCodovi
+                .Where(q => q.Aktivan && q.DatumVazenja.Date == danas)
+                .ToListAsync();
+
+            foreach (var kod in aktivniDanas)
             {
-                return NotFound();
+                kod.Aktivan = false;
             }
 
-            var dnevniQRCode = await _context.DnevniQRCodovi.FindAsync(id);
-            if (dnevniQRCode == null)
+            var noviKod = new DnevniQRCode
             {
-                return NotFound();
-            }
-            return View(dnevniQRCode);
-        }
+                VrijednostKoda = GenerisiVrijednostKoda(),
+                DatumVazenja = danas,
+                VrijemeIsteka = danas.AddDays(1).AddSeconds(-1),
+                Aktivan = true
+            };
 
-        // POST: DnevniQRCode/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VrijednostKoda,DatumVazenja,VrijemeIsteka,Aktivan")] DnevniQRCode dnevniQRCode)
-        {
-            if (id != dnevniQRCode.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(dnevniQRCode);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DnevniQRCodeExists(dnevniQRCode.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(dnevniQRCode);
-        }
-
-        // GET: DnevniQRCode/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dnevniQRCode = await _context.DnevniQRCodovi
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dnevniQRCode == null)
-            {
-                return NotFound();
-            }
-
-            return View(dnevniQRCode);
-        }
-
-        // POST: DnevniQRCode/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var dnevniQRCode = await _context.DnevniQRCodovi.FindAsync(id);
-            if (dnevniQRCode != null)
-            {
-                _context.DnevniQRCodovi.Remove(dnevniQRCode);
-            }
-
+            _context.DnevniQRCodovi.Add(noviKod);
             await _context.SaveChangesAsync();
+
+            TempData["Poruka"] = "Novi dnevni QR kod je uspješno generisan.";
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DnevniQRCodeExists(int id)
+        // POST: DnevniQRCode/Deaktiviraj/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deaktiviraj(int id)
         {
-            return _context.DnevniQRCodovi.Any(e => e.Id == id);
+            var kod = await _context.DnevniQRCodovi.FindAsync(id);
+
+            if (kod == null)
+            {
+                return NotFound();
+            }
+
+            kod.Aktivan = false;
+            await _context.SaveChangesAsync();
+
+            TempData["Poruka"] = "QR kod je deaktiviran.";
+            return RedirectToAction(nameof(Index));
         }
+
+        private static string GenerisiVrijednostKoda()
+        {
+            var token = Guid.NewGuid().ToString("N")[..10].ToUpper();
+            return $"EVRTIC-{DateTime.Today:yyyyMMdd}-{token}";
+        }
+    }
+
+    public class DnevniQRCodePregledViewModel
+    {
+        public DnevniQRCode? AktivniKod { get; set; }
+        public List<DnevniQRCode> HistorijaKodova { get; set; } = new();
     }
 }

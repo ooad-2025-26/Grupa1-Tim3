@@ -1,53 +1,747 @@
-@model IEnumerable<EVrtic.Models.DnevniQRCode>
+@model EVrtic.Controllers.DnevniQRCodePregledViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Dnevni QR kod";
 }
 
-<h1>Index</h1>
+<div class="qr-page">
+    <div class="qr-layout">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VrijednostKoda)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DatumVazenja)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VrijemeIsteka)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Aktivan)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.VrijednostKoda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DatumVazenja)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VrijemeIsteka)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Aktivan)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <aside class="qr-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
+
+            <nav class="sidebar-menu">
+                <a class="sidebar-link" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>⌂</span> Početna
+                </a>
+
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="Index">
+                    <span>▣</span> Aktivnosti
+                </a>
+
+                <a class="sidebar-link active" asp-controller="DnevniQRCode" asp-action="Index">
+                    <span>▦</span> QR kod
+                </a>
+
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="OdgajateljPregled">
+                    <span>▤</span> Dolazak/Odlazak
+                </a>
+
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+                    <span>♢</span> Obavijesti
+                </a>
+
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
+                    <span>▥</span> Sažeci
+                </a>
+
+                <a class="sidebar-link" asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>♙</span> Profil
+                </a>
+            </nav>
+
+            <div class="sidebar-decoration">
+                <div class="cloud cloud-left"></div>
+                <div class="cloud cloud-right"></div>
+
+                <div class="ground-illustration">
+                    <div class="tree tree-left">
+                        <div class="tree-top"></div>
+                        <div class="tree-trunk"></div>
+                    </div>
+
+                    <div class="tree tree-right">
+                        <div class="tree-top"></div>
+                        <div class="tree-trunk"></div>
+                    </div>
+
+                    <div class="house-illustration">
+                        <div class="house-roof"></div>
+                        <div class="house-body">
+                            <div class="house-window"></div>
+                            <div class="house-door"></div>
+                            <div class="house-window"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="qr-main">
+            <div class="qr-top">
+                <div class="title-row">
+                    <a asp-controller="Home" asp-action="OdgajateljHome" class="back-link">←</a>
+                    <h1>Dnevni QR kod</h1>
+                </div>
+            </div>
+
+            @if (TempData["Poruka"] != null)
+            {
+                <div class="success-message">
+                    @TempData["Poruka"]
+                </div>
+            }
+
+            <section class="hero-card">
+                <div class="hero-text">
+                    <h2>Generisanje dnevnog QR koda</h2>
+                    <p>
+                        QR kod se generiše za današnji dan i koristi se pri evidenciji dolaska i odlaska djece.
+                        Kada se generiše novi kod, prethodni aktivni kod za danas se deaktivira.
+                    </p>
+                </div>
+
+                <form asp-action="GenerisiDanas" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="primary-button">Generiši novi QR kod</button>
+                </form>
+            </section>
+
+            <section class="active-card">
+                <div class="section-heading">
+                    <h2>Aktivni QR kod za danas</h2>
+                </div>
+
+                @if (Model.AktivniKod == null)
+                {
+                    <div class="empty-box">
+                        <div class="empty-icon">▦</div>
+                        <h3>Trenutno nema aktivnog dnevnog QR koda.</h3>
+                        <p>Generišite novi QR kod kako bi roditelji mogli evidentirati dolazak i odlazak.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="active-qr-content">
+                        <div class="visual-qr" title="@Model.AktivniKod.VrijednostKoda">
+                            <div class="qr-square top-left"></div>
+                            <div class="qr-square top-right"></div>
+                            <div class="qr-square bottom-left"></div>
+
+                            <div class="qr-dot d1"></div>
+                            <div class="qr-dot d2"></div>
+                            <div class="qr-dot d3"></div>
+                            <div class="qr-dot d4"></div>
+                            <div class="qr-dot d5"></div>
+                            <div class="qr-dot d6"></div>
+                            <div class="qr-dot d7"></div>
+                            <div class="qr-dot d8"></div>
+                            <div class="qr-dot d9"></div>
+                            <div class="qr-dot d10"></div>
+                        </div>
+
+                        <div class="qr-info-box">
+                            <div>
+                                <span class="label">Vrijednost koda</span>
+                                <strong>@Model.AktivniKod.VrijednostKoda</strong>
+                            </div>
+
+                            <div>
+                                <span class="label">Datum važenja</span>
+                                <strong>@Model.AktivniKod.DatumVazenja.ToString("dd.MM.yyyy.")</strong>
+                            </div>
+
+                            <div>
+                                <span class="label">Vrijeme isteka</span>
+                                <strong>@Model.AktivniKod.VrijemeIsteka.ToString("dd.MM.yyyy. HH:mm")</strong>
+                            </div>
+
+                            <form asp-action="Deaktiviraj" asp-route-id="@Model.AktivniKod.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="danger-button">Deaktiviraj kod</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </section>
+
+            <section class="history-card">
+                <div class="section-heading">
+                    <h2>Historija QR kodova</h2>
+                </div>
+
+                @if (!Model.HistorijaKodova.Any())
+                {
+                    <p class="muted">Još nije generisan nijedan QR kod.</p>
+                }
+                else
+                {
+                    <div class="history-list">
+                        @foreach (var kod in Model.HistorijaKodova)
+                        {
+                            <div class="history-row @(kod.Aktivan ? "active" : "")">
+                                <div>
+                                    <strong>@kod.VrijednostKoda</strong>
+                                    <p>@kod.DatumVazenja.ToString("dd.MM.yyyy.") — važi do @kod.VrijemeIsteka.ToString("HH:mm")</p>
+                                </div>
+
+                                @if (kod.Aktivan && kod.VrijemeIsteka >= DateTime.Now)
+                                {
+                                    <span class="status active-status">Aktivan</span>
+                                }
+                                else
+                                {
+                                    <span class="status inactive-status">Neaktivan</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+
+            <nav class="bottom-menu">
+                <a asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>⌂</span> Početna
+                </a>
+
+                <a asp-controller="DnevniIzvjestaj" asp-action="Index">
+                    <span>▣</span> Aktivnosti
+                </a>
+
+                <a class="active" asp-controller="DnevniQRCode" asp-action="Index">
+                    <span>▦</span> QR kod
+                </a>
+
+                <a asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
+                    <span>▥</span> Sažeci
+                </a>
+
+                <a asp-controller="Home" asp-action="OdgajateljHome">
+                    <span>♙</span> Profil
+                </a>
+            </nav>
+        </main>
+    </div>
+</div>
+
+<style>
+    body {
+        background: #eef2ff;
+    }
+
+    .qr-page {
+        min-height: 100vh;
+        padding: 22px 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .qr-layout {
+        width: 100%;
+        max-width: 1250px;
+        min-height: 760px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        overflow: hidden;
+    }
+
+    .qr-sidebar {
+        position: relative;
+        border-right: 1px solid #e5e7eb;
+        padding: 28px 22px 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-logo {
+        margin: 0 0 34px;
+        color: #5f3bd8;
+        font-size: 2.65rem;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: #1f2937;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .sidebar-link span {
+        width: 24px;
+        text-align: center;
+        font-size: 1.3rem;
+    }
+
+    .sidebar-link.active {
+        color: #5f3bd8;
+        background: #ebe7ff;
+    }
+
+    .sidebar-decoration {
+        margin-top: auto;
+        position: relative;
+        width: calc(100% + 44px);
+        margin-left: -22px;
+        height: 230px;
+        overflow: hidden;
+    }
+
+    .cloud {
+        position: absolute;
+        background: #d7e8f7;
+        border-radius: 50px;
+        z-index: 1;
+    }
+
+    .cloud::before,
+    .cloud::after {
+        content: "";
+        position: absolute;
+        background: #d7e8f7;
+        border-radius: 50%;
+    }
+
+    .cloud-left {
+        width: 56px;
+        height: 18px;
+        left: 48px;
+        top: 22px;
+    }
+
+    .cloud-left::before {
+        width: 20px;
+        height: 20px;
+        left: 8px;
+        top: -10px;
+    }
+
+    .cloud-left::after {
+        width: 24px;
+        height: 24px;
+        left: 26px;
+        top: -12px;
+    }
+
+    .cloud-right {
+        width: 62px;
+        height: 20px;
+        right: 48px;
+        top: 8px;
+    }
+
+    .cloud-right::before {
+        width: 22px;
+        height: 22px;
+        left: 8px;
+        top: -10px;
+    }
+
+    .cloud-right::after {
+        width: 26px;
+        height: 26px;
+        left: 28px;
+        top: -13px;
+    }
+
+    .ground-illustration {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 150px;
+        background: #9dd43a;
+        border-top-left-radius: 42px;
+        border-top-right-radius: 42px;
+        z-index: 2;
+    }
+
+    .house-illustration {
+        position: absolute;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%);
+        width: 132px;
+        height: 105px;
+        z-index: 4;
+    }
+
+    .house-roof {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: 112px;
+        height: 42px;
+        background: #5f3bd8;
+        clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        z-index: 5;
+    }
+
+    .house-body {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 104px;
+        height: 62px;
+        background: #f4cf61;
+        border-radius: 6px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        padding-bottom: 12px;
+        z-index: 4;
+    }
+
+    .house-window {
+        width: 16px;
+        height: 24px;
+        background: #5fc0ef;
+        border-radius: 4px;
+        margin-bottom: 2px;
+    }
+
+    .house-door {
+        width: 20px;
+        height: 34px;
+        background: #5f3bd8;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .tree {
+        position: absolute;
+        bottom: 16px;
+        z-index: 3;
+    }
+
+    .tree-left {
+        left: 42px;
+    }
+
+    .tree-right {
+        right: 42px;
+    }
+
+    .tree-top {
+        width: 30px;
+        height: 64px;
+        background: #8ac53a;
+        border-radius: 20px;
+        margin: 0 auto;
+    }
+
+    .tree-trunk {
+        width: 4px;
+        height: 62px;
+        background: #9c5c2f;
+        margin: -2px auto 0 auto;
+        border-radius: 3px;
+    }
+
+    .qr-main {
+        padding: 34px 48px 0;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .qr-top {
+        margin-bottom: 26px;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .title-row h1 {
+        margin: 0;
+        color: #111827;
+        font-size: 2.05rem;
+        font-weight: 900;
+    }
+
+    .back-link {
+        color: #5f3bd8;
+        text-decoration: none;
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .success-message {
+        background: #dcfce7;
+        color: #166534;
+        padding: 14px 18px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+        font-weight: 800;
+    }
+
+    .hero-card,
+    .active-card,
+    .history-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+    }
+
+    .hero-card {
+        padding: 26px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .hero-text h2 {
+        margin: 0 0 8px;
+        color: #111827;
+        font-size: 1.4rem;
+        font-weight: 900;
+    }
+
+    .hero-text p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.5;
+    }
+
+    .primary-button {
+        height: 56px;
+        border: none;
+        border-radius: 12px;
+        background: #5f3bd8;
+        color: white;
+        padding: 0 28px;
+        font-size: 1rem;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .danger-button {
+        height: 44px;
+        border: none;
+        border-radius: 10px;
+        background: #ef4444;
+        color: white;
+        padding: 0 18px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .active-card,
+    .history-card {
+        padding: 24px 26px;
+        margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+        margin: 0 0 18px;
+        color: #111827;
+        font-size: 1.25rem;
+        font-weight: 900;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 32px 20px;
+    }
+
+    .empty-icon {
+        color: #5f3bd8;
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .empty-box h3 {
+        margin: 0 0 8px;
+        color: #111827;
+    }
+
+    .empty-box p,
+    .muted {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .active-qr-content {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        gap: 26px;
+        align-items: center;
+    }
+
+    .visual-qr {
+        width: 190px;
+        height: 190px;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        background:
+            linear-gradient(90deg, #111 10px, transparent 10px) 0 0 / 20px 20px,
+            linear-gradient(#111 10px, transparent 10px) 0 0 / 20px 20px,
+            #fff;
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .qr-square {
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        border: 9px solid #000;
+        background: #fff;
+    }
+
+    .qr-square::after {
+        content: "";
+        position: absolute;
+        inset: 9px;
+        background: #000;
+    }
+
+    .top-left {
+        top: 16px;
+        left: 16px;
+    }
+
+    .top-right {
+        top: 16px;
+        right: 16px;
+    }
+
+    .bottom-left {
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .qr-dot {
+        position: absolute;
+        background: #000;
+        width: 13px;
+        height: 13px;
+    }
+
+    .d1 { top: 78px; left: 82px; }
+    .d2 { top: 102px; left: 106px; }
+    .d3 { top: 78px; left: 132px; }
+    .d4 { top: 132px; left: 82px; }
+    .d5 { top: 146px; left: 132px; }
+    .d6 { top: 98px; left: 58px; }
+    .d7 { top: 58px; left: 106px; }
+    .d8 { top: 132px; right: 28px; }
+    .d9 { bottom: 48px; right: 58px; }
+    .d10 { bottom: 24px; right: 28px; }
+
+    .qr-info-box {
+        display: grid;
+        gap: 14px;
+    }
+
+    .label {
+        display: block;
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+
+    .qr-info-box strong {
+        color: #111827;
+        font-size: 1rem;
+        word-break: break-word;
+    }
+
+    .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .history-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 14px 16px;
+    }
+
+    .history-row p {
+        margin: 5px 0 0;
+        color: #64748b;
+        font-size: 0.92rem;
+    }
+
+    .history-row.active {
+        border-color: #c4b5fd;
+        background: #faf7ff;
+    }
+
+    .status {
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 0.85rem;
+        font-weight: 900;
+    }
+
+    .active-status {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .inactive-status {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .bottom-menu {
+        margin-top: auto;
+        min-height: 74px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 46px;
+    }
+
+    .bottom-menu a {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.98rem;
+    }
+
+    .bottom-menu a.active {
+        color: #5f3bd8;
+    }
+
+    @@media (max-width: 1000px) {
+        .qr-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .qr-sidebar {
+            display: none;
+        }
+
+        .hero-card,
+        .active-qr-content {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

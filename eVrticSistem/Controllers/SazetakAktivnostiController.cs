@@ -244,6 +244,107 @@ namespace EVrtic.Controllers
             return View(vm);
         }
 
+        // ═══════════════════════════════════════════════════════════════════
+        // ODGAJATELJ — Pregled sažetaka djece iz njegovih grupa
+        // ═══════════════════════════════════════════════════════════════════
+
+        [Authorize(Roles = "ODGAJATELJ")]
+        public async Task<IActionResult> OdgajateljPregled(string period = "Sedmica", DateTime? pocetak = null, int? grupaId = null, int? dijeteId = null)
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+
+            if (korisnik == null)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
+            var grupe = await _context.Grupe
+                .Where(g => g.OdgajateljId == korisnik.Id)
+                .OrderBy(g => g.ImeGrupe)
+                .ToListAsync();
+
+            var idGrupa = grupe.Select(g => g.Id).ToList();
+
+            var djecaQuery = _context.Djeca
+                .Include(d => d.Grupa)
+                .Where(d => d.Aktivno && d.GrupaId != null && idGrupa.Contains(d.GrupaId.Value));
+
+            if (grupaId.HasValue)
+            {
+                djecaQuery = djecaQuery.Where(d => d.GrupaId == grupaId.Value);
+            }
+
+            var djeca = await djecaQuery
+                .OrderBy(d => d.ImePrezime)
+                .ToListAsync();
+
+            var odabranoDijete = dijeteId.HasValue
+                ? djeca.FirstOrDefault(d => d.Id == dijeteId.Value)
+                : djeca.FirstOrDefault();
+
+            var datumPocetka = pocetak?.Date ?? DateTime.Today;
+            DateTime datumKraja;
+
+            if (period.Equals("Mjesec", StringComparison.OrdinalIgnoreCase))
+            {
+                datumPocetka = new DateTime(datumPocetka.Year, datumPocetka.Month, 1);
+                datumKraja = datumPocetka.AddMonths(1).AddDays(-1);
+                period = "Mjesec";
+            }
+            else
+            {
+                int diff = ((int)datumPocetka.DayOfWeek + 6) % 7;
+                datumPocetka = datumPocetka.AddDays(-diff).Date;
+                datumKraja = datumPocetka.AddDays(6);
+                period = "Sedmica";
+            }
+
+            var vm = new OdgajateljSazetakPregledViewModel
+            {
+                Period = period,
+                DatumPocetka = datumPocetka,
+                DatumKraja = datumKraja,
+                Grupe = grupe,
+                Djeca = djeca,
+                Dijete = odabranoDijete,
+                OdabranaGrupaId = grupaId,
+                OdabraniDijeteId = odabranoDijete?.Id
+            };
+
+            if (odabranoDijete == null)
+            {
+                return View(vm);
+            }
+
+            var izvjestaji = await _context.DnevniIzvjestaji
+                .Where(i => i.DijeteId == odabranoDijete.Id
+                    && i.Datum.Date >= datumPocetka
+                    && i.Datum.Date <= datumKraja)
+                .OrderBy(i => i.Datum)
+                .ToListAsync();
+
+            vm.BrojDolazaka = izvjestaji
+                .Select(i => i.Datum.Date)
+                .Distinct()
+                .Count();
+
+            vm.BrojObroka =
+                izvjestaji.Count(i => !string.IsNullOrWhiteSpace(i.Dorucak)
+                    && i.StatusDorucka != StatusObroka.NIJE_POJEDENO)
+                +
+                izvjestaji.Count(i => !string.IsNullOrWhiteSpace(i.Rucak)
+                    && i.StatusRucka != StatusObroka.NIJE_POJEDENO);
+
+            vm.UkupnoSpavanjeMinuta = izvjestaji.Sum(i => i.SpavanjeMinuta);
+
+            vm.Napomene = string.Join("\n",
+                izvjestaji
+                    .Where(i => !string.IsNullOrWhiteSpace(i.NapomenaAktivnosti))
+                    .Select(i => $"{i.Datum:dd.MM.yyyy}: {i.NapomenaAktivnosti}"));
+
+            return View(vm);
+        }
+
         private bool SazetakAktivnostiExists(int id)
         {
             return _context.SazeciAktivnosti.Any(e => e.Id == id);
@@ -258,6 +359,26 @@ namespace EVrtic.Controllers
 
         public List<Dijete> Djeca { get; set; } = new();
         public int? OdabraniDijeteId { get; set; }
+        public Dijete? Dijete { get; set; }
+
+        public int BrojDolazaka { get; set; }
+        public int BrojObroka { get; set; }
+        public int UkupnoSpavanjeMinuta { get; set; }
+        public string Napomene { get; set; } = string.Empty;
+    }
+
+    public class OdgajateljSazetakPregledViewModel
+    {
+        public string Period { get; set; } = "Sedmica";
+        public DateTime DatumPocetka { get; set; }
+        public DateTime DatumKraja { get; set; }
+
+        public List<Grupa> Grupe { get; set; } = new();
+        public List<Dijete> Djeca { get; set; } = new();
+
+        public int? OdabranaGrupaId { get; set; }
+        public int? OdabraniDijeteId { get; set; }
+
         public Dijete? Dijete { get; set; }
 
         public int BrojDolazaka { get; set; }

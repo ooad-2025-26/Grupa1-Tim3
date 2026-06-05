@@ -19,26 +19,48 @@
 
         <aside class="educator-sidebar">
             <h1 class="educator-logo">eVrtić</h1>
-            <nav class="educator-menu">
-                <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
-                    <span>🏠</span> Početna
-                </a>
-                <a class="educator-link active" asp-controller="Odgajatelj" asp-action="EvidencijaAktivnosti">
-                    <span>📝</span> Aktivnosti
-                </a>
-                <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
-                    <span>🔔</span> Obavijesti
-                </a>
-                <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
-                    <span>👤</span> Profil
-                </a>
-                <form asp-area="Identity" asp-page="/Account/Logout"
-                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
-                    <button type="submit" class="educator-link educator-logout-button">
-                        <span>🚪</span> Odjava
-                    </button>
-                </form>
-            </nav>
+   <nav class="educator-menu">
+    <a class="educator-link" asp-controller="Home" asp-action="OdgajateljHome">
+        <span>🏠</span>
+        Početna
+    </a>
+
+    <a class="educator-link active" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+        <span>📝</span>
+        Aktivnosti
+    </a>
+
+    <a class="educator-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="OdgajateljPregled">
+        <span>☑️</span>
+        Dolazak/Odlazak
+    </a>
+
+    <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+        <span>🔔</span>
+        Obavijesti
+    </a>
+
+    <a class="educator-link" asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
+        <span>📊</span>
+        Sažeci
+    </a>
+
+    <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
+        <span>👤</span>
+        Profil
+    </a>
+
+    <form class="educator-logout-form"
+          asp-area="Identity"
+          asp-page="/Account/Logout"
+          asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+          method="post">
+        <button type="submit" class="educator-link educator-logout-button">
+            <span>🚪</span>
+            Odjava
+        </button>
+    </form>
+</nav>
             <div class="educator-side-art">
                 <div class="side-cloud side-cloud-1"></div>
                 <div class="side-cloud side-cloud-2"></div>

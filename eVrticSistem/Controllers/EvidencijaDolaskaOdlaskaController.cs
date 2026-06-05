@@ -285,6 +285,75 @@ namespace EVrtic.Controllers
                 .First();
         }
 
+        // ═══════════════════════════════════════════════════════════════════
+        // ODGAJATELJ — Pregled dolazaka i odlazaka djece iz njegovih grupa
+        // ═══════════════════════════════════════════════════════════════════
+
+        [Authorize(Roles = "ODGAJATELJ")]
+        public async Task<IActionResult> OdgajateljPregled(DateTime? datum = null, int? grupaId = null, int? dijeteId = null)
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+
+            if (korisnik == null)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
+            var odabraniDatum = (datum ?? DateTime.Today).Date;
+
+            var grupe = await _context.Grupe
+                .Where(g => g.OdgajateljId == korisnik.Id)
+                .OrderBy(g => g.ImeGrupe)
+                .ToListAsync();
+
+            var idGrupa = grupe.Select(g => g.Id).ToList();
+
+            var djecaQuery = _context.Djeca
+                .Include(d => d.Grupa)
+                .Where(d => d.Aktivno && d.GrupaId != null && idGrupa.Contains(d.GrupaId.Value));
+
+            if (grupaId.HasValue)
+            {
+                djecaQuery = djecaQuery.Where(d => d.GrupaId == grupaId.Value);
+            }
+
+            var djeca = await djecaQuery
+                .OrderBy(d => d.ImePrezime)
+                .ToListAsync();
+
+            if (dijeteId.HasValue)
+            {
+                djeca = djeca
+                    .Where(d => d.Id == dijeteId.Value)
+                    .ToList();
+            }
+
+            var idDjece = djeca.Select(d => d.Id).ToList();
+
+            var evidencije = await _context.EvidencijeDolaskaOdlaska
+                .Include(e => e.Dijete)
+                    .ThenInclude(d => d.Grupa)
+                .Include(e => e.DnevniQRCode)
+                .Where(e => idDjece.Contains(e.DijeteId)
+                    && e.VrijemeDogadjaja.Date == odabraniDatum)
+                .OrderByDescending(e => e.VrijemeDogadjaja)
+                .ToListAsync();
+
+            var vm = new OdgajateljEvidencijaPregledViewModel
+            {
+                Datum = odabraniDatum,
+                Grupe = grupe,
+                Djeca = djeca,
+                Evidencije = evidencije,
+                OdabranaGrupaId = grupaId,
+                OdabranoDijeteId = dijeteId,
+                BrojDolazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK),
+                BrojOdlazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK),
+                BrojOdbijenih = evidencije.Count(e => e.StatusEvidencije == StatusEvidencije.ODBIJENO)
+            };
+
+            return View(vm);
+        }
 
         private bool EvidencijaDolaskaOdlaskaExists(int id)
         {
@@ -298,5 +367,21 @@ namespace EVrtic.Controllers
         public string TipDogadjaja { get; set; } = "DOLAZAK";
         public DnevniQRCode? DnevniQRCode { get; set; }
         public string? UspjesnaPoruka { get; set; }
+    }
+
+    public class OdgajateljEvidencijaPregledViewModel
+    {
+        public DateTime Datum { get; set; } = DateTime.Today;
+
+        public List<Grupa> Grupe { get; set; } = new();
+        public List<Dijete> Djeca { get; set; } = new();
+        public List<EvidencijaDolaskaOdlaska> Evidencije { get; set; } = new();
+
+        public int? OdabranaGrupaId { get; set; }
+        public int? OdabranoDijeteId { get; set; }
+
+        public int BrojDolazaka { get; set; }
+        public int BrojOdlazaka { get; set; }
+        public int BrojOdbijenih { get; set; }
     }
 }
