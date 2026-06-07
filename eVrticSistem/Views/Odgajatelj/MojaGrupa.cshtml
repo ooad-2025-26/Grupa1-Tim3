@@ -22,12 +22,7 @@
                 <a class="educator-link" asp-controller="Korisnik" asp-action="Profil">
                     <span>👤</span> Profil
                 </a>
-                <form asp-area="Identity" asp-page="/Account/Logout"
-                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
-                    <button type="submit" class="educator-link educator-logout-button">
-                        <span>🚪</span> Odjava
-                    </button>
-                </form>
+               
             </nav>
             <div class="educator-side-art">
                 <div class="side-cloud side-cloud-1"></div>

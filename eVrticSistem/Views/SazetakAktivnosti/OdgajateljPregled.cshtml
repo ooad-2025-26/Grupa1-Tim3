@@ -46,16 +46,7 @@
         Profil
     </a>
 
-    <form class="educator-logout-form"
-          asp-area="Identity"
-          asp-page="/Account/Logout"
-          asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
-          method="post">
-        <button type="submit" class="educator-logout-button">
-            <span class="logout-icon">🚪</span>
-            <span class="logout-text">Odjava</span>
-        </button>
-    </form>
+
 </nav>
 
             <div class="sidebar-decoration">
@@ -209,13 +200,30 @@
                 </section>
             }
 
-            <nav class="educator-bottom-nav">
-    <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome"><span>🏠</span> Početna</a>
-    <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti"><span>📝</span> Aktivnosti</a>
-    <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti"><span>🔔</span> Obavijesti</a>
-    <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil"><span>👤</span> Profil</a>
+<nav class="educator-bottom-nav">
+    <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome">
+        <span>🏠</span> Početna
+    </a>
+
+    <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti">
+        <span>📝</span> Aktivnosti
+    </a>
+
+    <a class="bottom-link active" asp-controller="SazetakAktivnosti" asp-action="OdgajateljPregled">
+        <span>📊</span> Sažeci
+    </a>
+
+    <a class="bottom-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="OdgajateljPregled">
+        <span>☑️</span> Dolazak/Odlazak
+    </a>
+
+    <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
+        <span>🔔</span> Obavijesti
+    </a>
 </nav>
-        </main>
+                </main>
+
+     
     </div>
 </div>
 
@@ -643,14 +651,17 @@
 
 
 .educator-bottom-nav {
-    margin-top: auto;
+    grid-column: 2;
+    width: 100%;
     min-height: 74px;
+    margin-top: auto;
     border-top: 1px solid #e5e7eb;
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 54px;
-    background: #fff;
+    gap: 46px;
+    align-self: end;
 }
 
 .bottom-link {
@@ -660,7 +671,13 @@
     text-decoration: none;
     color: #475569;
     font-weight: 800;
-    font-size: 0.98rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.bottom-link:hover {
+    color: #7447d8;
+    text-decoration: none;
 }
 
 .bottom-link.active {
@@ -668,8 +685,8 @@
 }
 
 .bottom-link span {
-    position: relative;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    line-height: 1;
 }
 
     @@media (max-width: 800px) {
@@ -677,49 +694,11 @@
         .educator-sidebar { display: none; }
         .bottom-nav { gap: 22px; flex-wrap: wrap; }
     }
-    .educator-logout-form {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 18px 0 0 0;
-    position: relative;
-    z-index: 20;
-}
 
-.educator-logout-button {
-    width: 220px;
-    height: 58px;
-    border: 2px solid #111827;
-    border-radius: 12px;
-    background: #ffffff !important;
-    color: #071733;
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    cursor: pointer;
-    padding: 0;
-    box-shadow: none;
-    line-height: 1;
-}
 
-.educator-logout-button .logout-icon {
-    font-size: 1.15rem;
-    line-height: 1;
-}
 
-.educator-logout-button .logout-text {
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1;
-}
 
-.educator-logout-button:hover {
-    background: #f8fafc !important;
-}
+
 </style>
 
 
@@ -833,51 +812,9 @@
         line-height: 1;
     }
 
-    .educator-logout-form {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        margin: 18px 0 0;
-        position: relative;
-        z-index: 20;
-    }
 
-    .educator-logout-button {
-        width: 190px;
-        height: 58px;
-        border: 2px solid #111827;
-        border-radius: 12px;
-        background: #ffffff !important;
-        color: #071733;
-        font-family: inherit;
-        font-size: 1rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 18px;
-        cursor: pointer;
-        padding: 0;
-        box-shadow: none;
-        line-height: 1;
-    }
 
-    .educator-logout-button .logout-icon,
-    .educator-logout-button span:first-child {
-        font-size: 1.15rem;
-        line-height: 1;
-    }
-
-    .educator-logout-button .logout-text,
-    .educator-logout-button span:last-child {
-        font-size: 1rem;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .educator-logout-button:hover {
-        background: #f8fafc !important;
-    }
+   
 
     .educator-side-art {
         margin-top: auto;
@@ -1040,19 +977,18 @@
     }
 
     .bottom-link:hover {
-        color: #7447d8;
-        text-decoration: none;
-    }
+    color: #7447d8;
+    text-decoration: none;
+}
 
-    .bottom-link.active {
-        color: #7447d8;
-    }
+.bottom-link.active {
+    color: #7447d8;
+}
 
-    .bottom-link span {
-        position: relative;
-        font-size: 1.25rem;
-        line-height: 1;
-    }
+.bottom-link span {
+    font-size: 1.25rem;
+    line-height: 1;
+}
 
     @@media (max-width: 1000px) {
         .educator-card,
