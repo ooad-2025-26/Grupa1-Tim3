@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,59 @@ namespace eVrticSistem.Controllers
             return View(roditelj);
         }
 
-        // ─── ADMIN CRUD ───────────────────────────────────────────────────────
+        // ─── RODITELJ: Uređivanje vlastitog profila ──────────────────────────
+
+        [Authorize(Roles = "RODITELJ")]
+        public async Task<IActionResult> UrediProfil()
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null) return Challenge();
+
+            var roditelj = await _context.Roditelji
+                .FirstOrDefaultAsync(r => r.Id == korisnik.Id);
+
+            if (roditelj == null) return Challenge();
+
+            var vm = new UrediProfilViewModel
+            {
+                ImePrezime = roditelj.ImePrezime,
+                KontaktTelefon = roditelj.KontaktTelefon,
+                Email = roditelj.Email
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "RODITELJ")]
+        public async Task<IActionResult> UrediProfil(UrediProfilViewModel vm)
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null) return Challenge();
+
+            var roditelj = await _context.Roditelji
+                .FirstOrDefaultAsync(r => r.Id == korisnik.Id);
+
+            if (roditelj == null) return Challenge();
+
+            // Email je login-identitet i ne mijenja se ovdje — vraćamo postojeći radi prikaza
+            vm.Email = roditelj.Email;
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            roditelj.ImePrezime = vm.ImePrezime.Trim();
+            roditelj.KontaktTelefon = string.IsNullOrWhiteSpace(vm.KontaktTelefon)
+                ? null
+                : vm.KontaktTelefon.Trim();
+
+            await _context.SaveChangesAsync();
+
+            TempData["Uspjeh"] = "Profil je uspješno ažuriran.";
+            return RedirectToAction(nameof(MojProfil));
+        }
 
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
@@ -143,5 +196,20 @@ namespace eVrticSistem.Controllers
         }
 
         private bool RoditeljExists(int id) => _context.Roditelji.Any(e => e.Id == id);
+    }
+
+    public class UrediProfilViewModel
+    {
+        [Required(ErrorMessage = "Ime i prezime je obavezno.")]
+        [StringLength(100, ErrorMessage = "Ime i prezime može imati najviše 100 karaktera.")]
+        [Display(Name = "Ime i prezime")]
+        public string ImePrezime { get; set; } = string.Empty;
+
+        [StringLength(20, ErrorMessage = "Kontakt telefon može imati najviše 20 karaktera.")]
+        [Display(Name = "Kontakt telefon")]
+        public string? KontaktTelefon { get; set; }
+
+        // Samo za prikaz — email se ne mijenja na ovoj stranici
+        public string? Email { get; set; }
     }
 }

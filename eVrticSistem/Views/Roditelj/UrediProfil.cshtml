@@ -1,0 +1,210 @@
+@model eVrticSistem.Controllers.UrediProfilViewModel
+@{
+    ViewData["Title"] = "Uredi profil";
+}
+
+<div class="parent-page">
+    <div class="parent-card">
+
+        <aside class="parent-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
+
+            <nav class="sidebar-menu">
+                <a class="sidebar-link" asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>📅</span> Dolazak/Odlazak
+                </a>
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="RoditeljPregled">
+                    <span>🔔</span> Obavijesti
+                </a>
+                <a class="sidebar-link active" asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
+
+            <div class="sidebar-illustration">
+                <div class="mini-cloud mini-cloud-1"></div>
+                <div class="mini-cloud mini-cloud-2"></div>
+
+                <div class="mini-school">
+                    <div class="mini-roof"></div>
+                    <div class="mini-building">
+                        <div class="mini-window"></div>
+                        <div class="mini-door"></div>
+                        <div class="mini-window"></div>
+                    </div>
+                </div>
+
+                <div class="mini-tree tree-one"></div>
+                <div class="mini-tree tree-two"></div>
+                <div class="mini-tree tree-three"></div>
+            </div>
+        </aside>
+
+        <main class="parent-main parent-main-scroll">
+            <div class="parent-top">
+                <div>
+                    <h2>Uredi profil</h2>
+                    <h1>@Model.ImePrezime <span>✏️</span></h1>
+                </div>
+            </div>
+
+            <form asp-controller="Roditelj" asp-action="UrediProfil" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <h3 class="section-title">Lični podaci</h3>
+
+                <section class="info-card edit-card">
+                    <div class="form-field">
+                        <label class="form-label" asp-for="ImePrezime">Ime i prezime</label>
+                        <input class="form-input" asp-for="ImePrezime" placeholder="Unesite ime i prezime" />
+                        <span class="text-danger" asp-validation-for="ImePrezime"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label" asp-for="KontaktTelefon">Kontakt telefon</label>
+                        <input class="form-input" asp-for="KontaktTelefon" placeholder="npr. 061 123 456" />
+                        <span class="text-danger" asp-validation-for="KontaktTelefon"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Email</label>
+                        <input class="form-input form-input-readonly" value="@Model.Email" readonly disabled />
+                        <span class="form-hint">Email se koristi za prijavu i ne može se mijenjati ovdje.</span>
+                    </div>
+                </section>
+
+                <div class="edit-actions">
+                    <a class="btn-cancel" asp-controller="Roditelj" asp-action="MojProfil">Odustani</a>
+                    <button type="submit" class="btn-save">Sačuvaj izmjene</button>
+                </div>
+            </form>
+        </main>
+
+    </div>
+</div>
+
+<style>
+    .parent-main-scroll {
+        overflow-y: auto;
+    }
+
+    .validation-summary {
+        color: #dc2626;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin: 18px 0 0;
+    }
+
+    .validation-summary:empty {
+        display: none;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #eef2f7;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-field {
+        margin-bottom: 18px;
+    }
+
+    .form-field:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.78rem;
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
+    }
+
+    .form-input {
+        width: 100%;
+        height: 52px;
+        border: 1px solid #dce4f0;
+        border-radius: 12px;
+        padding: 0 16px;
+        font-size: 1rem;
+        color: #16233b;
+        background: #fff;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        border-color: #8bd93b;
+        box-shadow: 0 0 0 3px rgba(28, 161, 60, 0.15);
+    }
+
+    .form-input-readonly {
+        background: #f5f7fa;
+        color: #64748b;
+        cursor: not-allowed;
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 6px;
+        color: #94a3b8;
+        font-size: 0.82rem;
+    }
+
+    .edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .btn-cancel {
+        padding: 13px 22px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        color: #475569;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-cancel:hover {
+        background: #e2e8f0;
+    }
+
+    .btn-save {
+        padding: 13px 26px;
+        border-radius: 12px;
+        border: none;
+        background: #1ca13c;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .btn-save:hover {
+        background: #178634;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

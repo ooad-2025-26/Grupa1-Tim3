@@ -55,7 +55,16 @@
                     <h2>Moj profil</h2>
                     <h1>@Model.ImePrezime <span>👤</span></h1>
                 </div>
+
+                <a class="edit-btn" asp-controller="Roditelj" asp-action="UrediProfil">
+                    ✏️ Uredi profil
+                </a>
             </div>
+
+            @if (TempData["Uspjeh"] != null)
+            {
+                <div class="profil-flash">@TempData["Uspjeh"]</div>
+            }
 
             <section class="profil-hero">
                 <div class="profil-avatar">👤</div>
@@ -140,6 +149,36 @@
 <style>
     .parent-main-scroll {
         overflow-y: auto;
+    }
+
+    .parent-top .edit-btn {
+        align-self: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #eaf8ea;
+        color: #1ca13c;
+        border: 1.5px solid #bfe6c4;
+        border-radius: 12px;
+        padding: 10px 18px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.92rem;
+        white-space: nowrap;
+    }
+
+    .parent-top .edit-btn:hover {
+        background: #d8f1da;
+    }
+
+    .profil-flash {
+        background: #eaf8ea;
+        color: #15803d;
+        border: 1px solid #bfe6c4;
+        font-weight: 700;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-top: 18px;
     }
 
     .profil-hero {
