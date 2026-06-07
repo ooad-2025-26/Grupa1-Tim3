@@ -3,101 +3,303 @@
     ViewData["Title"] = "Moj profil";
 }
 
-<div style="min-height:100vh; background:#bfdbfe; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px;">
-    <div style="width:100%; max-width:580px; display:flex; flex-direction:column; gap:16px;">
+<div class="parent-page">
+    <div class="parent-card">
 
-        @* Header *@
-        <div style="background:linear-gradient(135deg,#3b82f6,#60a5fa); border-radius:24px; padding:28px 32px; display:flex; align-items:center; gap:20px; box-shadow:0 8px 32px rgba(59,130,246,0.3);">
-            <div style="background:rgba(255,255,255,0.25); border-radius:50%; width:68px; height:68px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; flex-shrink:0;">
-                👤
-            </div>
-            <div style="flex:1;">
-                <h2 style="margin:0 0 4px; color:#fff; font-size:1.5rem; font-weight:800;">@Model.ImePrezime</h2>
-                <p style="margin:0; color:rgba(255,255,255,0.85); font-size:0.88rem;">Roditelj · @Model.Email</p>
-            </div>
-        </div>
+        <aside class="parent-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
 
-        @* Podaci *@
-        <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:18px;">
-                📋 Informacije o nalogu
-            </div>
+            <nav class="sidebar-menu">
+                <a class="sidebar-link" asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>📅</span> Dolazak/Odlazak
+                </a>
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="RoditeljPregled">
+                    <span>🔔</span> Obavijesti
+                </a>
+                <a class="sidebar-link active" asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
 
-            <div style="display:flex; flex-direction:column; gap:14px;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:1.1rem">👤</span>
-                    <div>
-                        <div style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Ime i prezime</div>
-                        <div style="color:#1e293b; font-weight:600; margin-top:2px;">@Model.ImePrezime</div>
+            <div class="sidebar-illustration">
+                <div class="mini-cloud mini-cloud-1"></div>
+                <div class="mini-cloud mini-cloud-2"></div>
+
+                <div class="mini-school">
+                    <div class="mini-roof"></div>
+                    <div class="mini-building">
+                        <div class="mini-window"></div>
+                        <div class="mini-door"></div>
+                        <div class="mini-window"></div>
                     </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:1.1rem">✉️</span>
+
+                <div class="mini-tree tree-one"></div>
+                <div class="mini-tree tree-two"></div>
+                <div class="mini-tree tree-three"></div>
+            </div>
+        </aside>
+
+        <main class="parent-main parent-main-scroll">
+            <div class="parent-top">
+                <div>
+                    <h2>Moj profil</h2>
+                    <h1>@Model.ImePrezime <span>👤</span></h1>
+                </div>
+            </div>
+
+            <section class="profil-hero">
+                <div class="profil-avatar">👤</div>
+                <div class="profil-hero-text">
+                    <h3>@Model.ImePrezime</h3>
+                    <p>Roditelj · @Model.Email</p>
+                </div>
+            </section>
+
+            <h3 class="section-title">Informacije o nalogu</h3>
+
+            <section class="info-card">
+                <div class="info-row">
+                    <span class="info-ico">👤</span>
                     <div>
-                        <div style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Email</div>
-                        <div style="color:#1e293b; font-weight:600; margin-top:2px;">@Model.Email</div>
+                        <div class="info-lbl">Ime i prezime</div>
+                        <div class="info-val">@Model.ImePrezime</div>
                     </div>
                 </div>
+
+                <div class="info-row">
+                    <span class="info-ico">✉️</span>
+                    <div>
+                        <div class="info-lbl">Email</div>
+                        <div class="info-val">@Model.Email</div>
+                    </div>
+                </div>
+
                 @if (!string.IsNullOrWhiteSpace(Model.KontaktTelefon))
                 {
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:1.1rem">📱</span>
+                    <div class="info-row">
+                        <span class="info-ico">📱</span>
                         <div>
-                            <div style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Kontakt telefon</div>
-                            <div style="color:#1e293b; font-weight:600; margin-top:2px;">@Model.KontaktTelefon</div>
+                            <div class="info-lbl">Kontakt telefon</div>
+                            <div class="info-val">@Model.KontaktTelefon</div>
                         </div>
                     </div>
                 }
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:1.1rem">🟢</span>
+
+                <div class="info-row">
+                    <span class="info-ico">🟢</span>
                     <div>
-                        <div style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Status naloga</div>
-                        <div style="color:#1e293b; font-weight:600; margin-top:2px;">@Model.StatusNaloga</div>
+                        <div class="info-lbl">Status naloga</div>
+                        <div class="info-val">@Model.StatusNaloga</div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        @* Djeca *@
-        @if (Model.Djeca.Any())
-        {
-            <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-                <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">
-                    👶 Moja djeca
-                </div>
-                <div style="display:flex; flex-direction:column; gap:10px;">
+            @if (Model.Djeca.Any(d => d.ImePrezime != string.Empty))
+            {
+                <h3 class="section-title">Moja djeca</h3>
+
+                <section class="djeca-list">
                     @foreach (var d in Model.Djeca.Where(d => d.ImePrezime != string.Empty))
                     {
-                        <a asp-controller="Dijete" asp-action="MojeDijete" asp-route-id="@d.Id"
-                           style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#f8fafc; border-radius:12px; text-decoration:none; color:inherit; transition:background .15s;"
-                           onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#f8fafc'">
-                            <span style="font-size:1.4rem;">🧒</span>
-                            <span style="font-weight:600; color:#1e293b; flex:1;">@d.ImePrezime</span>
-                            <span style="color:#3b82f6; font-weight:700;">→</span>
+                        <a class="dijete-row" asp-controller="Dijete" asp-action="MojeDijete" asp-route-id="@d.Id">
+                            <span class="dijete-av">🧒</span>
+                            <span class="dijete-nm">@d.ImePrezime</span>
+                            <span class="dijete-arr">→</span>
                         </a>
                     }
-                </div>
-            </div>
-        }
+                </section>
+            }
 
-        @* Odjava *@
-        <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <form asp-area="Identity"
-                  asp-page="/Account/Logout"
-                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
-                  method="post">
-                <button type="submit"
-                        style="width:100%; background:#fee2e2; color:#dc2626; border:1.5px solid #fecaca; border-radius:12px; padding:14px; font-size:1rem; font-weight:700; cursor:pointer; transition:background .15s;"
-                        onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'">
-                    🚪 Odjava
-                </button>
-            </form>
-        </div>
+            <h3 class="section-title">Nalog</h3>
 
-        <a asp-controller="Home" asp-action="RoditeljHome"
-           style="text-align:center; color:#475569; font-size:.88rem; text-decoration:none; padding:8px;">
-            ← Nazad na početnu
-        </a>
+            <section class="info-card">
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                      method="post">
+                    <button type="submit" class="logout-btn">🚪 Odjava</button>
+                </form>
+            </section>
+
+            <a class="back-link" asp-controller="Home" asp-action="RoditeljHome">← Nazad na početnu</a>
+        </main>
 
     </div>
 </div>
+
+<style>
+    .parent-main-scroll {
+        overflow-y: auto;
+    }
+
+    .profil-hero {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: linear-gradient(135deg, #1ca13c, #4fc06a);
+        border-radius: 18px;
+        padding: 24px 26px;
+        color: #fff;
+        margin-top: 22px;
+        box-shadow: 0 8px 22px rgba(28, 161, 60, 0.25);
+    }
+
+    .profil-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .profil-hero-text h3 {
+        margin: 0 0 4px;
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .profil-hero-text p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.92rem;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #eef2f7;
+        border-radius: 16px;
+        padding: 8px 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-ico {
+        font-size: 1.15rem;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #eaf8ea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .info-lbl {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .info-val {
+        color: #16233b;
+        font-weight: 700;
+        margin-top: 2px;
+    }
+
+    .djeca-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dijete-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        background: #fff;
+        border: 1px solid #eef2f7;
+        border-radius: 14px;
+        text-decoration: none;
+        color: inherit;
+        transition: border-color .15s, box-shadow .15s, transform .12s;
+    }
+
+    .dijete-row:hover {
+        border-color: #8bd93b;
+        box-shadow: 0 4px 14px rgba(28, 161, 60, 0.12);
+        transform: translateY(-1px);
+    }
+
+    .dijete-av {
+        font-size: 1.5rem;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #eaf8ea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .dijete-nm {
+        flex: 1;
+        font-weight: 700;
+        color: #16233b;
+    }
+
+    .dijete-arr {
+        color: #1ca13c;
+        font-weight: 800;
+        font-size: 1.2rem;
+    }
+
+    .logout-btn {
+        width: 100%;
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1.5px solid #fecaca;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .15s;
+    }
+
+    .logout-btn:hover {
+        background: #fecaca;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #5c6678;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+        color: #1ca13c;
+    }
+</style>

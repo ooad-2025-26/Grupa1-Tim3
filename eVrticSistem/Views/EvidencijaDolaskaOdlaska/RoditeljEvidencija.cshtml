@@ -73,89 +73,82 @@
                 </div>
             }
 
-            <section class="step-card qr-step-card">
-                <div class="step-title">
-                    <span>1.</span>
-                    <strong>Skenirajte dnevni QR kod</strong>
-                </div>
+            @{
+                bool jeSkenirano = !string.IsNullOrWhiteSpace(Model.ScaniraniKod);
+                string step2Style = jeSkenirano ? "" : "display:none;";
+                string tipText = Model.TipDogadjaja == "ODLAZAK" ? "Odlazak" : "Dolazak";
+                string skenStatus = jeSkenirano ? "QR kod je skeniran ✓" : "";
+            }
 
-                <div class="qr-content">
-                    @if (Model.DnevniQRCode == null)
+            <form asp-action="RoditeljEvidencija" method="post" id="evidencijaForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ScaniraniKod" id="scaniraniKod" />
+                <input type="hidden" asp-for="TipDogadjaja" id="tipDogadjaja" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+
+                <section class="step-card qr-step-card">
+                    <div class="step-title">
+                        <span>1.</span>
+                        <strong>Skenirajte dnevni QR kod</strong>
+                    </div>
+
+                    <div class="qr-content">
+                        @if (Model.DnevniQRCode == null)
+                        {
+                            <div class="qr-placeholder">
+                                <div class="qr-empty-icon">▦</div>
+                            </div>
+
+                            <p class="qr-info text-muted">
+                                Trenutno nema aktivnog dnevnog QR koda. Zatražite ga od odgajatelja.
+                            </p>
+                        }
+                        else
+                        {
+                            <button type="button" id="startScanBtn" class="scan-button">📷 Skeniraj QR kod</button>
+                            <div id="reader" class="reader-box"></div>
+                            <p id="scanStatus" class="qr-info">@skenStatus</p>
+                        }
+                    </div>
+                </section>
+
+                <div class="arrow-down">↓</div>
+
+                <section class="step-card input-step-card" id="step2" style="@step2Style">
+                    <div class="step-title">
+                        <span>2.</span>
+                        <strong>Potvrdite evidenciju</strong>
+                    </div>
+
+                    <div class="scanned-type">
+                        <span class="scanned-type-label">Evidentira se:</span>
+                        <span class="type-pill" id="typePill">@tipText</span>
+                    </div>
+
+                    @if (Model.Djeca == null || !Model.Djeca.Any())
                     {
-                        <div class="qr-placeholder">
-                            <div class="qr-empty-icon">▦</div>
-                        </div>
-
-                        <p class="qr-info text-muted">
-                            Trenutno nema aktivnog dnevnog QR koda.
-                        </p>
+                        <p class="qr-info text-muted">Vašem profilu trenutno nije povezano nijedno aktivno dijete.</p>
                     }
                     else
                     {
-                        <div class="fake-qr">
-                            <div class="qr-square top-left"></div>
-                            <div class="qr-square top-right"></div>
-                            <div class="qr-square bottom-left"></div>
+                        <label class="input-label" asp-for="OdabranoDijeteId">Dijete</label>
 
-                            <div class="qr-dot d1"></div>
-                            <div class="qr-dot d2"></div>
-                            <div class="qr-dot d3"></div>
-                            <div class="qr-dot d4"></div>
-                            <div class="qr-dot d5"></div>
-                            <div class="qr-dot d6"></div>
-                            <div class="qr-dot d7"></div>
-                            <div class="qr-dot d8"></div>
-                            <div class="qr-dot d9"></div>
-                            <div class="qr-dot d10"></div>
+                        <div class="child-select-wrap">
+                            <select asp-for="OdabranoDijeteId" class="child-select" id="childSelect">
+                                @foreach (var d in Model.Djeca)
+                                {
+                                    <option value="@d.Id">@d.ImePrezime — @d.IdentifikacioniKod</option>
+                                }
+                            </select>
                         </div>
 
-                        <p class="scan-link">Skeniraj kod kamerom</p>
-                        <p class="qr-info">
-                            QR kod važi do: @Model.DnevniQRCode.VrijemeIsteka.ToString("dd.MM.yyyy. HH:mm")
-                        </p>
+                        <span asp-validation-for="OdabranoDijeteId" class="text-danger"></span>
+
+                        <button type="submit" class="confirm-button">Evidentiraj</button>
                     }
-                </div>
-            </section>
-
-            <div class="arrow-down">↓</div>
-
-            <section class="step-card input-step-card">
-                <div class="step-title">
-                    <span>2.</span>
-                    <strong>Unesite kod djeteta</strong>
-                </div>
-
-                <form asp-action="RoditeljEvidencija" method="post">
-                    @Html.AntiForgeryToken()
-
-                    <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
-
-                    <div class="type-toggle">
-                        <label class="toggle-option @(Model.TipDogadjaja == "DOLAZAK" ? "selected" : "")">
-                            <input type="radio" name="TipDogadjaja" value="DOLAZAK" checked="@(Model.TipDogadjaja == "DOLAZAK")" />
-                            Dolazak
-                        </label>
-
-                        <label class="toggle-option @(Model.TipDogadjaja == "ODLAZAK" ? "selected" : "")">
-                            <input type="radio" name="TipDogadjaja" value="ODLAZAK" checked="@(Model.TipDogadjaja == "ODLAZAK")" />
-                            Odlazak
-                        </label>
-                    </div>
-
-                    <label class="input-label" asp-for="UneseniKodDjeteta">Kod djeteta</label>
-
-                    <div class="code-input-wrap">
-                        <span class="lock-icon">🔒</span>
-                        <input asp-for="UneseniKodDjeteta" class="code-input" placeholder="Unesite kod" />
-                    </div>
-
-                    <span asp-validation-for="UneseniKodDjeteta" class="text-danger"></span>
-
-                    <button type="submit" class="confirm-button">Potvrdi</button>
-                </form>
-
-                <p class="helper-text">Kod djeteta znaju samo roditelji.</p>
-            </section>
+                </section>
+            </form>
 
             <nav class="bottom-menu">
                 <a asp-controller="Home" asp-action="RoditeljHome">
@@ -187,6 +180,84 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        (function () {
+            var startBtn = document.getElementById('startScanBtn');
+            if (!startBtn) return; // nema aktivnog QR koda za skeniranje
+
+            var reader = document.getElementById('reader');
+            var status = document.getElementById('scanStatus');
+            var step2 = document.getElementById('step2');
+            var scannedInput = document.getElementById('scaniraniKod');
+            var tipInput = document.getElementById('tipDogadjaja');
+            var typePill = document.getElementById('typePill');
+            var html5Qr = null;
+
+            function prikaziTip(tip) {
+                if (!typePill) return;
+                if (tip === 'ODLAZAK') {
+                    typePill.textContent = 'Odlazak';
+                    typePill.classList.remove('dolazak');
+                    typePill.classList.add('odlazak');
+                } else {
+                    typePill.textContent = 'Dolazak';
+                    typePill.classList.remove('odlazak');
+                    typePill.classList.add('dolazak');
+                }
+            }
+
+            function parsiraj(text) {
+                var dijelovi = (text || '').split('|');
+                if (dijelovi.length >= 3 && dijelovi[0] === 'EVRTIC') {
+                    return { token: dijelovi[1], tip: (dijelovi[2] === 'ODLAZAK' ? 'ODLAZAK' : 'DOLAZAK') };
+                }
+                return null;
+            }
+
+            function zaustavi() {
+                if (html5Qr) {
+                    html5Qr.stop().then(function () {
+                        if (reader) reader.style.display = 'none';
+                    }).catch(function () { });
+                }
+            }
+
+            function naSkeniranje(decodedText) {
+                var podaci = parsiraj(decodedText);
+                if (!podaci) {
+                    if (status) status.textContent = 'Neispravan QR kod. Pokusajte ponovo.';
+                    return;
+                }
+                if (scannedInput) scannedInput.value = podaci.token;
+                if (tipInput) tipInput.value = podaci.tip;
+                prikaziTip(podaci.tip);
+                if (status) status.textContent = 'QR kod je uspjesno skeniran ✓';
+                if (step2) step2.style.display = 'block';
+                zaustavi();
+            }
+
+            startBtn.addEventListener('click', function () {
+                if (reader) reader.style.display = 'block';
+                if (status) status.textContent = 'Usmjerite kameru prema QR kodu...';
+                html5Qr = new Html5Qrcode('reader');
+                html5Qr.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: 220 },
+                    function (decodedText) { naSkeniranje(decodedText); },
+                    function () { /* zanemari greske po frame-u */ }
+                ).catch(function () {
+                    if (status) status.textContent = 'Nije moguce pristupiti kameri. Provjerite dozvole (kamera radi samo preko HTTPS ili localhost).';
+                });
+            });
+
+            // Ako se stranica vratila nakon neuspjele validacije (a QR je vec skeniran), zadrzi tip
+            if (tipInput && tipInput.value) {
+                prikaziTip(tipInput.value);
+            }
+        })();
+    </script>
 }
 
 <style>
@@ -691,6 +762,76 @@
         font-weight: 900;
         cursor: pointer;
         margin-top: 10px;
+    }
+
+    /* === Skeniranje QR koda (roditelj) === */
+    .scan-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 6px auto 0;
+        height: 56px;
+        padding: 0 28px;
+        border: none;
+        border-radius: 12px;
+        background: #2f993f;
+        color: #fff;
+        font-size: 1.05rem;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .scan-button:hover { background: #25822f; }
+
+    .reader-box {
+        display: none;
+        width: 280px;
+        max-width: 100%;
+        margin: 16px auto 0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .scanned-type {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 18px 0 6px;
+    }
+
+    .scanned-type-label { color: #334155; font-weight: 700; }
+
+    .type-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-weight: 900;
+        background: #edf8e9;
+        color: #15803d;
+    }
+
+    .type-pill.odlazak { background: #ece9ff; color: #6243db; }
+    .type-pill.dolazak { background: #edf8e9; color: #15803d; }
+
+    .child-select-wrap { margin-bottom: 12px; }
+
+    .child-select {
+        width: 100%;
+        height: 56px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 0 16px;
+        font-size: 1rem;
+        background: #fff;
+        color: #0f172a;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .child-select:focus {
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147, 197, 253, .25);
     }
 
     .helper-text {

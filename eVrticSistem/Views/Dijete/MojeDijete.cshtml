@@ -3,100 +3,354 @@
     ViewData["Title"] = "Moje dijete";
 }
 
-<div style="min-height:100vh; background:#bfdbfe; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px;">
-    <div style="width:100%; max-width:640px; display:flex; flex-direction:column; gap:16px;">
+<div class="parent-page">
+    <div class="parent-card">
 
-        @* Header *@
-        <div style="background:linear-gradient(135deg,#f97316,#fb923c); border-radius:24px; padding:28px 32px; display:flex; align-items:center; gap:20px; box-shadow:0 8px 32px rgba(249,115,22,0.3);">
-            <div style="background:rgba(255,255,255,0.25); border-radius:50%; width:64px; height:64px; display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0;">
-                👶
-            </div>
-            <div style="flex:1; min-width:0;">
-                <h2 style="margin:0 0 4px; color:#fff; font-size:1.5rem; font-weight:800;">@Model.ImePrezime</h2>
-                <p style="margin:0; color:rgba(255,255,255,0.85); font-size:0.88rem;">
-                    Profil djeteta &nbsp;·&nbsp; Kod: <strong>@Model.IdentifikacioniKod</strong>
-                </p>
-            </div>
-            <a asp-action="UnosPodataka" asp-route-id="@Model.Id"
-               style="background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); border:1.5px solid rgba(255,255,255,0.4); color:#fff; border-radius:12px; padding:10px 20px; text-decoration:none; font-weight:600; font-size:0.9rem; white-space:nowrap;">
-                ✏️ Uredi
-            </a>
-        </div>
+        <aside class="parent-sidebar">
+            <h1 class="sidebar-logo">eVrtić</h1>
 
-        @* Osnovne informacije *@
-        <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">
-                📋 Osnovne informacije
+            <nav class="sidebar-menu">
+                <a class="sidebar-link" asp-controller="Home" asp-action="RoditeljHome">
+                    <span>🏠</span> Početna
+                </a>
+                <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
+                    <span>📋</span> Izvještaji
+                </a>
+                <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
+                    <span>📅</span> Dolazak/Odlazak
+                </a>
+                <a class="sidebar-link" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled">
+                    <span>📊</span> Sažeci
+                </a>
+                <a class="sidebar-link" asp-controller="Obavijest" asp-action="RoditeljPregled">
+                    <span>🔔</span> Obavijesti
+                </a>
+                <a class="sidebar-link" asp-controller="Roditelj" asp-action="MojProfil">
+                    <span>👤</span> Profil
+                </a>
+            </nav>
+
+            <div class="sidebar-illustration">
+                <div class="mini-cloud mini-cloud-1"></div>
+                <div class="mini-cloud mini-cloud-2"></div>
+
+                <div class="mini-school">
+                    <div class="mini-roof"></div>
+                    <div class="mini-building">
+                        <div class="mini-window"></div>
+                        <div class="mini-door"></div>
+                        <div class="mini-window"></div>
+                    </div>
+                </div>
+
+                <div class="mini-tree tree-one"></div>
+                <div class="mini-tree tree-two"></div>
+                <div class="mini-tree tree-three"></div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:1.1rem">🎂</span>
+        </aside>
+
+        <main class="parent-main parent-main-scroll">
+            <div class="parent-top">
+                <div>
+                    <h2>Profil djeteta</h2>
+                    <h1>@Model.ImePrezime <span>🧒</span></h1>
+                </div>
+
+                <a class="edit-btn" asp-controller="Dijete" asp-action="UnosPodataka" asp-route-id="@Model.Id">
+                    ✏️ Uredi
+                </a>
+            </div>
+
+            <section class="dijete-hero">
+                <div class="dijete-hero-avatar">👶</div>
+                <div class="dijete-hero-text">
+                    <h3>@Model.ImePrezime</h3>
+                    <span class="kod-chip">Kod: @Model.IdentifikacioniKod</span>
+                </div>
+            </section>
+
+            <h3 class="section-title">Osnovne informacije</h3>
+
+            <section class="info-card">
+                <div class="info-row">
+                    <span class="info-ico">🎂</span>
                     <div>
-                        <div style="font-size:0.78rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Datum rođenja</div>
-                        <div style="color:#1e293b; font-weight:600; margin-top:2px;">
+                        <div class="info-lbl">Datum rođenja</div>
+                        <div class="info-val">
                             @(Model.DatumRodjenja != default ? Model.DatumRodjenja.ToString("dd.MM.yyyy") : "Nije uneseno")
                         </div>
                     </div>
                 </div>
+
                 @if (!string.IsNullOrWhiteSpace(Model.DodatnaNapomena))
                 {
-                    <div style="display:flex; align-items:flex-start; gap:12px;">
-                        <span style="font-size:1.1rem; margin-top:2px;">📝</span>
+                    <div class="info-row">
+                        <span class="info-ico">📝</span>
                         <div>
-                            <div style="font-size:0.78rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Napomena</div>
-                            <div style="color:#334155; margin-top:2px; line-height:1.5;">@Model.DodatnaNapomena</div>
+                            <div class="info-lbl">Napomena</div>
+                            <div class="info-val info-val-normal">@Model.DodatnaNapomena</div>
                         </div>
                     </div>
                 }
-            </div>
-        </div>
+            </section>
 
-        @* Alergije *@
-        <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">⚠️ Alergije</div>
-            @if (Model.Alergije.Any())
-            {
-                <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                    @foreach (var a in Model.Alergije)
+            <h3 class="section-title">Zdravlje</h3>
+
+            <section class="info-card health-card">
+                <div class="health-block">
+                    <div class="health-head">
+                        <span class="info-ico ico-warn">⚠️</span>
+                        <span class="health-title">Alergije</span>
+                    </div>
+                    @if (Model.Alergije.Any())
                     {
-                        <span style="background:#fff1f2; border:1.5px solid #fecdd3; color:#be123c; border-radius:50px; padding:8px 18px; font-size:.9rem; font-weight:600; display:flex; align-items:center; gap:6px;">
-                            🌿 @a.Naziv
-                        </span>
+                        <div class="chips">
+                            @foreach (var a in Model.Alergije)
+                            {
+                                <span class="chip chip-alergija">🌿 @a.Naziv</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="none-text">Nema unesenih alergija.</p>
                     }
                 </div>
-            }
-            else { <p style="margin:0; color:#94a3b8; font-size:.9rem;">Nema unesenih alergija.</p> }
-        </div>
 
-        @* Bolesti *@
-        <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-            <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px;">🏥 Bolesti / hronična stanja</div>
-            @if (Model.Bolesti.Any())
-            {
-                <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                    @foreach (var b in Model.Bolesti)
+                <div class="health-divider"></div>
+
+                <div class="health-block">
+                    <div class="health-head">
+                        <span class="info-ico ico-danger">🏥</span>
+                        <span class="health-title">Bolesti / hronična stanja</span>
+                    </div>
+                    @if (Model.Bolesti.Any())
                     {
-                        <span style="background:#eff6ff; border:1.5px solid #bfdbfe; color:#1d4ed8; border-radius:50px; padding:8px 18px; font-size:.9rem; font-weight:600; display:flex; align-items:center; gap:6px;">
-                            💊 @b.Naziv
-                        </span>
+                        <div class="chips">
+                            @foreach (var b in Model.Bolesti)
+                            {
+                                <span class="chip chip-bolest">💊 @b.Naziv</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="none-text">Nema unesenih bolesti.</p>
                     }
                 </div>
+            </section>
+
+            @if (Model.Grupa != null)
+            {
+                <h3 class="section-title">Grupa</h3>
+
+                <section class="info-card">
+                    <div class="info-row">
+                        <span class="info-ico">🏫</span>
+                        <div>
+                            <div class="info-lbl">Grupa</div>
+                            <div class="info-val">@Model.Grupa.ImeGrupe</div>
+                        </div>
+                    </div>
+                </section>
             }
-            else { <p style="margin:0; color:#94a3b8; font-size:.9rem;">Nema unesenih bolesti.</p> }
-        </div>
 
-        @if (Model.Grupa != null)
-        {
-            <div style="background:#fff; border-radius:20px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-                <div style="font-weight:700; color:#475569; font-size:0.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">🏫 Grupa</div>
-                <p style="margin:0; color:#334155; font-size:.95rem; font-weight:600;">@Model.Grupa.ImeGrupe</p>
-            </div>
-        }
-
-        <a asp-controller="Home" asp-action="RoditeljHome"
-           style="text-align:center; color:#475569; font-size:.88rem; text-decoration:none; padding:8px;">
-            ← Nazad na početnu
-        </a>
+            <a class="back-link" asp-controller="Home" asp-action="RoditeljHome">← Nazad na početnu</a>
+        </main>
 
     </div>
 </div>
+
+<style>
+    .parent-main-scroll {
+        overflow-y: auto;
+    }
+
+    .parent-top .edit-btn {
+        align-self: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #eaf8ea;
+        color: #1ca13c;
+        border: 1.5px solid #bfe6c4;
+        border-radius: 12px;
+        padding: 10px 18px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.92rem;
+        white-space: nowrap;
+    }
+
+    .parent-top .edit-btn:hover {
+        background: #d8f1da;
+    }
+
+    .dijete-hero {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: linear-gradient(135deg, #1ca13c, #4fc06a);
+        border-radius: 18px;
+        padding: 24px 26px;
+        color: #fff;
+        margin-top: 22px;
+        box-shadow: 0 8px 22px rgba(28, 161, 60, 0.25);
+    }
+
+    .dijete-hero-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .dijete-hero-text h3 {
+        margin: 0 0 8px;
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .kod-chip {
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #eef2f7;
+        border-radius: 16px;
+        padding: 8px 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-ico {
+        font-size: 1.15rem;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #eaf8ea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .ico-warn {
+        background: #fff8e1;
+    }
+
+    .ico-danger {
+        background: #ffe8e8;
+    }
+
+    .info-lbl {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .info-val {
+        color: #16233b;
+        font-weight: 700;
+        margin-top: 2px;
+    }
+
+    .info-val-normal {
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+    .health-card {
+        padding: 22px 24px;
+    }
+
+    .health-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .health-title {
+        font-weight: 800;
+        color: #16233b;
+        font-size: 0.98rem;
+    }
+
+    .health-divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin: 18px 0;
+    }
+
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .chip {
+        border-radius: 999px;
+        padding: 8px 16px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .chip-alergija {
+        background: #fff1f2;
+        border: 1.5px solid #fecdd3;
+        color: #be123c;
+    }
+
+    .chip-bolest {
+        background: #eff6ff;
+        border: 1.5px solid #bfdbfe;
+        color: #1d4ed8;
+    }
+
+    .none-text {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #5c6678;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+        color: #1ca13c;
+    }
+</style>

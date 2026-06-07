@@ -169,11 +169,18 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "RODITELJ")]
         public async Task<IActionResult> RoditeljEvidencija()
         {
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null)
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+
             var qrKod = await VratiAktivniQrKod();
+            var djeca = await VratiDjecuRoditelja(korisnik.Id);
 
             return View(new RoditeljEvidencijaDolaskaOdlaskaViewModel
             {
                 DnevniQRCode = qrKod,
+                Djeca = djeca,
+                OdabranoDijeteId = djeca.FirstOrDefault()?.Id,
                 TipDogadjaja = "DOLAZAK"
             });
         }
@@ -187,43 +194,104 @@ namespace EVrtic.Controllers
             if (korisnik == null)
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
 
-            var qrKod = await VratiAktivniQrKod();
-            model.DnevniQRCode = qrKod;
+            var djeca = await VratiDjecuRoditelja(korisnik.Id);
+            model.Djeca = djeca;
+            model.DnevniQRCode = await VratiAktivniQrKod();
+
+            // 1) Validacija skeniranog dnevnog QR koda
+            var skenirano = (model.ScaniraniKod ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(skenirano))
+            {
+                ModelState.AddModelError(string.Empty, "Niste skenirali QR kod. Skenirajte dnevni QR kod prije evidentiranja.");
+                return View(model);
+            }
+
+            var qrKod = await _context.DnevniQRCodovi
+                .Where(q => q.Aktivan
+                    && q.DatumVazenja.Date == DateTime.Today
+                    && q.VrijemeIsteka >= DateTime.Now
+                    && q.VrijednostKoda == skenirano)
+                .OrderByDescending(q => q.VrijemeIsteka)
+                .FirstOrDefaultAsync();
 
             if (qrKod == null)
             {
-                ModelState.AddModelError(string.Empty, "Trenutno ne postoji aktivan dnevni QR kod.");
+                ModelState.AddModelError(string.Empty, "QR kod nije validan ili je istekao. Zatražite od odgajatelja današnji QR kod.");
                 return View(model);
             }
+            model.DnevniQRCode = qrKod;
 
-            if (string.IsNullOrWhiteSpace(model.UneseniKodDjeteta))
+            // 2) Odabir djeteta (ponuđena su samo djeca prijavljenog roditelja)
+            if (!model.OdabranoDijeteId.HasValue)
             {
-                ModelState.AddModelError(nameof(model.UneseniKodDjeteta), "Kod djeteta je obavezan.");
+                ModelState.AddModelError(nameof(model.OdabranoDijeteId), "Odaberite dijete za evidentiranje.");
                 return View(model);
             }
 
-            var uneseniKod = model.UneseniKodDjeteta.Trim();
-
-            var dijete = await _context.Djeca
-                .FirstOrDefaultAsync(d =>
-                    d.RoditeljId == korisnik.Id &&
-                    d.IdentifikacioniKod == uneseniKod &&
-                    d.Aktivno);
-
+            var dijete = djeca.FirstOrDefault(d => d.Id == model.OdabranoDijeteId.Value);
             if (dijete == null)
             {
-                ModelState.AddModelError(nameof(model.UneseniKodDjeteta), "Kod djeteta nije ispravan ili dijete nije povezano s vašim profilom.");
+                ModelState.AddModelError(nameof(model.OdabranoDijeteId), "Odabrano dijete nije povezano s vašim profilom.");
                 return View(model);
+            }
+
+            // 3) QR kod mora pripadati odgajatelju grupe u kojoj se nalazi dijete
+            var odgajateljIdKoda = ParsirajOdgajateljaIzKoda(qrKod.VrijednostKoda);
+            if (odgajateljIdKoda == null)
+            {
+                ModelState.AddModelError(string.Empty, "QR kod nije ispravan. Zatražite od odgajatelja novi QR kod.");
+                return View(model);
+            }
+
+            if (dijete.GrupaId == null || dijete.Grupa == null || dijete.Grupa.OdgajateljId != odgajateljIdKoda)
+            {
+                ModelState.AddModelError(string.Empty, "Ovaj QR kod ne pripada odgajatelju grupe vašeg djeteta. Skenirajte QR kod odgajatelja iz grupe u kojoj je vaše dijete.");
+                return View(model);
+            }
+
+            // 4) Tip događaja (dolazak/odlazak) dolazi iz skeniranog QR koda
+            var tip = ParsirajTipDogadjaja(model.TipDogadjaja);
+
+            // 5) Sprječavanje dvostrukog evidentiranja istog dana
+            var danas = DateTime.Today;
+            var danasnjeEvidencije = await _context.EvidencijeDolaskaOdlaska
+                .Where(e => e.DijeteId == dijete.Id
+                    && e.StatusEvidencije == StatusEvidencije.EVIDENTIRANO
+                    && e.VrijemeDogadjaja.Date == danas)
+                .ToListAsync();
+
+            bool vecImaDolazak = danasnjeEvidencije.Any(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK);
+            bool vecImaOdlazak = danasnjeEvidencije.Any(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK);
+
+            if (tip == TipDogadjaja.DOLAZAK && vecImaDolazak)
+            {
+                ModelState.AddModelError(string.Empty, $"Dolazak za dijete {dijete.ImePrezime} je već evidentiran danas.");
+                return View(model);
+            }
+
+            if (tip == TipDogadjaja.ODLAZAK)
+            {
+                if (!vecImaDolazak)
+                {
+                    ModelState.AddModelError(string.Empty, $"Nije moguće evidentirati odlazak — dolazak za dijete {dijete.ImePrezime} danas nije evidentiran.");
+                    return View(model);
+                }
+
+                if (vecImaOdlazak)
+                {
+                    ModelState.AddModelError(string.Empty, $"Odlazak za dijete {dijete.ImePrezime} je već evidentiran danas.");
+                    return View(model);
+                }
             }
 
             var evidencija = new EvidencijaDolaskaOdlaska
             {
                 VrijemeDogadjaja = DateTime.Now,
-                TipDogadjaja = ParsirajTipDogadjaja(model.TipDogadjaja),
-                UneseniKodDjeteta = uneseniKod,
+                TipDogadjaja = tip,
+                UneseniKodDjeteta = dijete.IdentifikacioniKod,
                 ValidanQRKod = true,
                 KodDjetetaIspravan = true,
-                StatusEvidencije = OdrediStatusEvidencije(true),
+                StatusEvidencije = StatusEvidencije.EVIDENTIRANO,
                 DijeteId = dijete.Id,
                 DnevniQRCodeId = qrKod.Id
             };
@@ -236,9 +304,20 @@ namespace EVrtic.Controllers
             return View(new RoditeljEvidencijaDolaskaOdlaskaViewModel
             {
                 DnevniQRCode = qrKod,
-                TipDogadjaja = model.TipDogadjaja,
-                UspjesnaPoruka = $"{model.TipDogadjaja} je uspješno evidentiran za dijete {dijete.ImePrezime}."
+                Djeca = djeca,
+                OdabranoDijeteId = dijete.Id,
+                TipDogadjaja = tip.ToString(),
+                UspjesnaPoruka = $"{(tip == TipDogadjaja.DOLAZAK ? "Dolazak" : "Odlazak")} je uspješno evidentiran za dijete {dijete.ImePrezime}."
             });
+        }
+
+        private async Task<List<Dijete>> VratiDjecuRoditelja(int roditeljId)
+        {
+            return await _context.Djeca
+                .Include(d => d.Grupa)
+                .Where(d => d.RoditeljId == roditeljId && d.Aktivno)
+                .OrderBy(d => d.ImePrezime)
+                .ToListAsync();
         }
 
         private async Task<DnevniQRCode?> VratiAktivniQrKod()
@@ -264,33 +343,12 @@ namespace EVrtic.Controllers
                 .First();
         }
 
-        private static StatusEvidencije OdrediStatusEvidencije(bool validno)
-        {
-            if (validno)
-            {
-                if (Enum.TryParse<StatusEvidencije>("VALIDNA", true, out var validna))
-                    return validna;
-
-                if (Enum.TryParse<StatusEvidencije>("USPJESNA", true, out var uspjesna))
-                    return uspjesna;
-            }
-            else
-            {
-                if (Enum.TryParse<StatusEvidencije>("NEVALIDNA", true, out var nevalidna))
-                    return nevalidna;
-            }
-
-            return Enum.GetValues(typeof(StatusEvidencije))
-                .Cast<StatusEvidencije>()
-                .First();
-        }
-
         // ═══════════════════════════════════════════════════════════════════
         // ODGAJATELJ — Pregled dolazaka i odlazaka djece iz njegovih grupa
         // ═══════════════════════════════════════════════════════════════════
 
         [Authorize(Roles = "ODGAJATELJ")]
-        public async Task<IActionResult> OdgajateljPregled(DateTime? datum = null, int? grupaId = null, int? dijeteId = null)
+        public async Task<IActionResult> OdgajateljPregled(DateTime? datum = null, int? grupaId = null, int? dijeteId = null, string? tip = null)
         {
             var korisnik = await _userManager.GetUserAsync(User);
 
@@ -349,10 +407,92 @@ namespace EVrtic.Controllers
                 OdabranoDijeteId = dijeteId,
                 BrojDolazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK),
                 BrojOdlazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK),
-                BrojOdbijenih = evidencije.Count(e => e.StatusEvidencije == StatusEvidencije.ODBIJENO)
+                BrojOdbijenih = evidencije.Count(e => e.StatusEvidencije == StatusEvidencije.ODBIJENO),
+                AktivniQRKod = await VratiAktivniQrKodZaOdgajatelja(korisnik.Id),
+                OdabraniTip = (tip == "ODLAZAK") ? "ODLAZAK" : "DOLAZAK"
             };
 
             return View(vm);
+        }
+
+        // POST: EvidencijaDolaskaOdlaska/OdgajateljGenerisiQR
+        // Generiše novi jedinstveni dnevni QR kod i sprema ga u bazu.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ODGAJATELJ")]
+        public async Task<IActionResult> OdgajateljGenerisiQR(string? tip = null)
+        {
+            var korisnik = await _userManager.GetUserAsync(User);
+            if (korisnik == null)
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+            var danas = DateTime.Today;
+            var prefiks = $"EVRTIC-{danas:yyyyMMdd}-O{korisnik.Id}-";
+
+            // Deaktiviraj prethodne današnje kodove OVOG odgajatelja (jedan aktivan kod po odgajatelju/danu)
+            var mojiDanasnji = await _context.DnevniQRCodovi
+                .Where(q => q.Aktivan
+                    && q.DatumVazenja.Date == danas
+                    && q.VrijednostKoda.StartsWith(prefiks))
+                .ToListAsync();
+
+            foreach (var kod in mojiDanasnji)
+            {
+                kod.Aktivan = false;
+            }
+
+            var noviKod = new DnevniQRCode
+            {
+                VrijednostKoda = GenerisiVrijednostKoda(korisnik.Id),
+                DatumVazenja = danas,
+                VrijemeIsteka = danas.AddDays(1).AddSeconds(-1),
+                Aktivan = true
+            };
+
+            _context.DnevniQRCodovi.Add(noviKod);
+            await _context.SaveChangesAsync();
+
+            TempData["Poruka"] = "Novi dnevni QR kod je uspješno generisan.";
+            return RedirectToAction(nameof(OdgajateljPregled), new { tip });
+        }
+
+        private static string GenerisiVrijednostKoda(int odgajateljId)
+        {
+            var token = Guid.NewGuid().ToString("N")[..10].ToUpper();
+            return $"EVRTIC-{DateTime.Today:yyyyMMdd}-O{odgajateljId}-{token}";
+        }
+
+        // Iz vrijednosti koda (EVRTIC-yyyyMMdd-O{id}-XXXX) vraća ID odgajatelja koji ga je kreirao
+        private static int? ParsirajOdgajateljaIzKoda(string? kod)
+        {
+            if (string.IsNullOrWhiteSpace(kod))
+                return null;
+
+            var dijelovi = kod.Split('-');
+            if (dijelovi.Length < 4)
+                return null;
+
+            var segment = dijelovi[2];
+            if (segment.Length < 2 || segment[0] != 'O')
+                return null;
+
+            return int.TryParse(segment.Substring(1), out var id) ? id : (int?)null;
+        }
+
+        // Trenutno aktivni dnevni QR kod konkretnog odgajatelja
+        private async Task<DnevniQRCode?> VratiAktivniQrKodZaOdgajatelja(int odgajateljId)
+        {
+            var danas = DateTime.Today;
+            var sada = DateTime.Now;
+            var prefiks = $"EVRTIC-{danas:yyyyMMdd}-O{odgajateljId}-";
+
+            return await _context.DnevniQRCodovi
+                .Where(q => q.Aktivan
+                    && q.DatumVazenja.Date == danas
+                    && q.VrijemeIsteka >= sada
+                    && q.VrijednostKoda.StartsWith(prefiks))
+                .OrderByDescending(q => q.VrijemeIsteka)
+                .FirstOrDefaultAsync();
         }
 
         private bool EvidencijaDolaskaOdlaskaExists(int id)
@@ -367,6 +507,15 @@ namespace EVrtic.Controllers
         public string TipDogadjaja { get; set; } = "DOLAZAK";
         public DnevniQRCode? DnevniQRCode { get; set; }
         public string? UspjesnaPoruka { get; set; }
+
+        // Vrijednost (token) skeniranog dnevnog QR koda
+        public string? ScaniraniKod { get; set; }
+
+        // Odabrano dijete iz ponuđene liste djece prijavljenog roditelja
+        public int? OdabranoDijeteId { get; set; }
+
+        // Djeca prijavljenog roditelja (za padajući izbornik)
+        public List<Dijete> Djeca { get; set; } = new();
     }
 
     public class OdgajateljEvidencijaPregledViewModel
@@ -383,5 +532,11 @@ namespace EVrtic.Controllers
         public int BrojDolazaka { get; set; }
         public int BrojOdlazaka { get; set; }
         public int BrojOdbijenih { get; set; }
+
+        // Trenutno aktivni dnevni QR kod (za prikaz/generisanje)
+        public DnevniQRCode? AktivniQRKod { get; set; }
+
+        // Odabrani tip koji se kodira u QR ("DOLAZAK" ili "ODLAZAK")
+        public string OdabraniTip { get; set; } = "DOLAZAK";
     }
 }

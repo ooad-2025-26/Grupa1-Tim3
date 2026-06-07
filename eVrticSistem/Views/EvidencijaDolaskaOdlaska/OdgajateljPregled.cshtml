@@ -97,6 +97,48 @@
                 </div>
             </section>
 
+            @if (TempData["Poruka"] != null)
+            {
+                <div class="qr-flash">@TempData["Poruka"]</div>
+            }
+
+            <section class="qr-generate-card">
+                <div class="qr-generate-info">
+                    <h2>Dnevni QR kod</h2>
+                    <p>Odaberite tip evidencije, zatim generišite QR kod za današnji dan. Roditelji ga skeniraju prilikom dolaska ili odlaska djeteta.</p>
+
+                    <form method="post" asp-action="OdgajateljGenerisiQR" id="generisiForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="tip" id="odabraniTipInput" value="@Model.OdabraniTip" />
+
+                        <div class="qr-type-toggle">
+                            <button type="button" class="qr-type-btn @(Model.OdabraniTip == "DOLAZAK" ? "active" : "")" data-tip="DOLAZAK">↓ Dolazak</button>
+                            <button type="button" class="qr-type-btn @(Model.OdabraniTip == "ODLAZAK" ? "active" : "")" data-tip="ODLAZAK">↑ Odlazak</button>
+                        </div>
+
+                        <button type="submit" class="qr-generate-btn">▦ Generiši QR kod</button>
+                    </form>
+
+                    @if (Model.AktivniQRKod != null)
+                    {
+                        <p class="qr-valid-text">QR kod važi do: @Model.AktivniQRKod.VrijemeIsteka.ToString("dd.MM.yyyy. HH:mm")</p>
+                    }
+                </div>
+
+                <div class="qr-generate-preview">
+                    @if (Model.AktivniQRKod != null)
+                    {
+                        <div id="qrcode" class="qr-box" data-token="@Model.AktivniQRKod.VrijednostKoda"></div>
+                        <p class="qr-type-label" id="qrTypeLabel"></p>
+                    }
+                    else
+                    {
+                        <div class="qr-box qr-box-empty">▦</div>
+                        <p class="qr-empty-label">Još nije generisan QR kod za danas.</p>
+                    }
+                </div>
+            </section>
+
             <form class="attendance-filter" method="get" asp-action="OdgajateljPregled">
                 <div class="field-block">
                     <label>Datum</label>
@@ -147,12 +189,6 @@
                     <span class="stat-icon purple">↑</span>
                     <h3>Odlasci</h3>
                     <strong>@Model.BrojOdlazaka</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span class="stat-icon red">!</span>
-                    <h3>Odbijeno</h3>
-                    <strong>@Model.BrojOdbijenih</strong>
                 </div>
             </section>
 
@@ -448,6 +484,102 @@
     .intro-card h2 { margin: 0 0 6px; font-size: 1.35rem; font-weight: 900; }
     .intro-card p { margin: 0; color: #64748b; }
 
+    /* === QR generisanje === */
+    .qr-flash {
+        background: #ece9ff;
+        color: #6243db;
+        font-weight: 800;
+        padding: 14px 18px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+    }
+
+    .qr-generate-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+        padding: 24px 26px;
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: 1fr 230px;
+        gap: 26px;
+        align-items: center;
+    }
+
+    .qr-generate-info h2 { margin: 0 0 8px; font-size: 1.3rem; font-weight: 900; }
+    .qr-generate-info p { margin: 0 0 18px; color: #64748b; }
+
+    .qr-type-toggle {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .qr-type-btn {
+        border: 1px solid #d8def0;
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-weight: 800;
+        color: #334155;
+        background: #fff;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .qr-type-btn.active {
+        background: #ece9ff;
+        color: #6243db;
+        border-color: #c8bdf6;
+    }
+
+    .qr-generate-btn {
+        height: 54px;
+        padding: 0 26px;
+        border: none;
+        border-radius: 12px;
+        background: #6243db;
+        color: #fff;
+        font-weight: 900;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .qr-generate-btn:hover { background: #5436c4; }
+
+    .qr-valid-text { margin: 16px 0 0; color: #475569; font-size: 0.92rem; }
+
+    .qr-generate-preview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qr-box {
+        width: 190px;
+        height: 190px;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    .qr-box img, .qr-box canvas { display: block; }
+
+    .qr-box-empty { color: #c4c9d6; font-size: 4rem; }
+
+    .qr-type-label { margin: 12px 0 0; font-weight: 800; color: #6243db; }
+    .qr-empty-label { margin: 12px 0 0; color: #94a3b8; font-size: 0.9rem; text-align: center; }
+
+    @@media (max-width: 700px) {
+        .qr-generate-card { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: 1fr; }
+    }
+
     .attendance-filter {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 120px;
@@ -505,7 +637,7 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 18px;
         margin-bottom: 20px;
     }
@@ -990,14 +1122,18 @@
 
     .educator-bottom-nav {
         grid-column: 2;
-        margin-top: auto;
+        margin: auto -48px 0;
+        width: calc(100% + 96px);
         min-height: 74px;
         border-top: 1px solid #e5e7eb;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 54px;
+        gap: 40px;
+        padding: 14px 24px;
+        box-sizing: border-box;
         background: #ffffff;
+        flex-wrap: wrap;
         align-self: end;
     }
 
@@ -1047,3 +1183,47 @@
     }
 </style>
 
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        (function () {
+            var tipInput = document.getElementById('odabraniTipInput');
+            var buttons = document.querySelectorAll('.qr-type-btn');
+            var qrBox = document.getElementById('qrcode');
+            var typeLabel = document.getElementById('qrTypeLabel');
+
+            function trenutniTip() { return tipInput ? tipInput.value : 'DOLAZAK'; }
+
+            function renderQR() {
+                if (!qrBox || typeof QRCode === 'undefined') return;
+                var token = qrBox.getAttribute('data-token');
+                if (!token) return;
+
+                var payload = 'EVRTIC|' + token + '|' + trenutniTip();
+                qrBox.innerHTML = '';
+                new QRCode(qrBox, {
+                    text: payload,
+                    width: 174,
+                    height: 174,
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+
+                if (typeLabel) {
+                    typeLabel.textContent = (trenutniTip() === 'DOLAZAK') ? 'Tip: Dolazak' : 'Tip: Odlazak';
+                }
+            }
+
+            buttons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    buttons.forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    if (tipInput) tipInput.value = btn.getAttribute('data-tip');
+                    renderQR();
+                });
+            });
+
+            renderQR();
+        })();
+    </script>
+}
