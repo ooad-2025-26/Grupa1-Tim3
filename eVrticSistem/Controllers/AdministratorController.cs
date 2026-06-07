@@ -20,7 +20,7 @@ namespace eVrticSistem.Controllers
         {
             _context = context;
         }
-         
+
         // GET: Administrator
         public async Task<IActionResult> Index()
         {
@@ -44,7 +44,7 @@ namespace eVrticSistem.Controllers
 
             return View(administrator);
         }
-         
+
         // GET: Administrator/Create
         public IActionResult Create()
         {

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EVrtic.Controllers
 {
-     
     [Authorize(Roles = "ODGAJATELJ,ADMINISTRATOR")]
     public class DnevniQRCodeController : Controller
     {

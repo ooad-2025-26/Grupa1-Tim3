@@ -22,19 +22,9 @@ namespace eVrticSistem.Controllers
         }
 
         // GET: Odgajatelj
-        [Authorize(Roles = "ADMINISTRATOR")]
-        public async Task<IActionResult> Index(bool samoAktivne = false)
+        public async Task<IActionResult> Index()
         {
-            var query = _context.Odgajatelji.AsQueryable();
-
-            if (samoAktivne)
-            {
-                query = query.Where(o => o.StatusNaloga == StatusNaloga.AKTIVAN);
-            }
-
-            var odgajatelji = await query.ToListAsync();
-            ViewBag.SamoAktivne = samoAktivne;
-            return View(odgajatelji);
+            return View(await _context.Odgajatelji.ToListAsync());
         }
 
         // ─── Deaktivacija / aktivacija profila odgajatelja ───────────────────
@@ -70,10 +60,7 @@ namespace eVrticSistem.Controllers
             if (id == null) return NotFound();
 
             var odgajatelj = await _context.Odgajatelji
-                .Include(o => o.Grupe)
-                    .ThenInclude(g => g.Djeca)
                 .FirstOrDefaultAsync(m => m.Id == id);
-
             if (odgajatelj == null) return NotFound();
 
             return View(odgajatelj);

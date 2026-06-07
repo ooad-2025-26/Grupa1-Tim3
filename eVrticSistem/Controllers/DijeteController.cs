@@ -24,18 +24,10 @@ namespace EVrtic.Controllers
 
         // GET: Dijete (admin)
         [Authorize(Roles = "ADMINISTRATOR")]
-        public async Task<IActionResult> Index(bool samoAktivne = false)
+        public async Task<IActionResult> Index()
         {
-            var query = _context.Djeca.Include(d => d.Grupa).Include(d => d.Roditelj).AsQueryable();
-
-            if (samoAktivne)
-            {
-                query = query.Where(d => d.Aktivno);
-            }
-
-            var djeca = await query.ToListAsync();
-            ViewBag.SamoAktivne = samoAktivne;
-            return View(djeca);
+            var applicationDbContext = _context.Djeca.Include(d => d.Grupa).Include(d => d.Roditelj);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Dijete/Details/5 (admin)
