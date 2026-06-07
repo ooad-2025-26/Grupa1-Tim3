@@ -70,7 +70,18 @@
         <main class="qr-main">
             <div class="qr-top">
                 <div class="title-row">
-                    <a asp-controller="Home" asp-action="OdgajateljHome" class="back-link">←</a>
+                    @if (User.IsInRole("ADMINISTRATOR"))
+{
+    <a asp-controller="Home" asp-action="AdministratorHome" class="back-link">←</a>
+}
+else if (User.IsInRole("ODGAJATELJ"))
+{
+    <a asp-controller="Home" asp-action="OdgajateljHome" class="back-link">←</a>
+}
+else
+{
+    <a asp-controller="Home" asp-action="Index" class="back-link">←</a>
+}
                     <h1>Dnevni QR kod</h1>
                 </div>
             </div>
@@ -190,10 +201,24 @@
             </section>
 
             <nav class="bottom-menu">
-                <a asp-controller="Home" asp-action="OdgajateljHome">
-                    <span>⌂</span> Početna
-                </a>
-
+               @if (User.IsInRole("ADMINISTRATOR"))
+{
+    <a asp-controller="Home" asp-action="AdministratorHome">
+        <span>⌂</span> Početna
+    </a>
+}
+else if (User.IsInRole("ODGAJATELJ"))
+{
+    <a asp-controller="Home" asp-action="OdgajateljHome">
+        <span>⌂</span> Početna
+    </a>
+}
+else
+{
+    <a asp-controller="Home" asp-action="Index">
+        <span>⌂</span> Početna
+    </a>
+}
                 <a asp-controller="DnevniIzvjestaj" asp-action="Index">
                     <span>▣</span> Aktivnosti
                 </a>

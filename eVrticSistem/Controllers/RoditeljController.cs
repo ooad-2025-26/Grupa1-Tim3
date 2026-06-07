@@ -42,11 +42,18 @@ namespace eVrticSistem.Controllers
         // ─── ADMIN CRUD ───────────────────────────────────────────────────────
 
         [Authorize(Roles = "ADMINISTRATOR")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(bool samoAktivne = false)
         {
-            return View(await _context.Roditelji
-                .Include(r => r.Djeca)
-                .ToListAsync());
+            var query = _context.Roditelji.Include(r => r.Djeca).AsQueryable();
+
+            if (samoAktivne)
+            {
+                query = query.Where(r => r.StatusNaloga == StatusNaloga.AKTIVAN);
+            }
+
+            var roditelji = await query.ToListAsync();
+            ViewBag.SamoAktivne = samoAktivne;
+            return View(roditelji);
         }
 
         // ─── ADMINISTRATOR: Deaktivacija / aktivacija profila roditelja ──────
@@ -84,8 +91,14 @@ namespace eVrticSistem.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-            var roditelj = await _context.Roditelji.FirstOrDefaultAsync(m => m.Id == id);
+
+            var roditelj = await _context.Roditelji
+                .Include(r => r.Djeca)
+                    .ThenInclude(d => d.Grupa)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (roditelj == null) return NotFound();
+
             return View(roditelj);
         }
 

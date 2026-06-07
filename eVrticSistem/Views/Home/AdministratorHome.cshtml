@@ -5,49 +5,55 @@
     ViewData["ActiveNav"] = "pocetna";
     Layout = "_AdminLayout";
 }
-
+ 
 <div class="admin-top">
     <div>
         <h2>Pozdrav,</h2>
         <h1>Administratore! <span class="title-gear">⚙️</span></h1>
     </div>
-    <span class="admin-bell">🔔</span>
+    <div class="admin-bell" onclick="toggleNotifications()" style="cursor: pointer; position: relative;">
+        🔔
+        @if (ViewBag.BrojObavijesti > 0)
+        {
+            <span class="notification-badge">@ViewBag.BrojObavijesti</span>
+        }
+    </div>
 </div>
 
 <h3 class="admin-section-title">Pregled sistema</h3>
 
 <section class="admin-stats">
-    <div class="admin-stat-card">
+    <a class="admin-stat-card stat-link" asp-controller="Odgajatelj" asp-action="Index" asp-route-samoAktivne="true">
         <div class="admin-stat-ico ico-blue">👩‍🏫</div>
         <div>
             <p class="admin-stat-label">Odgajatelji</p>
             <p class="admin-stat-value">@Model.BrojOdgajatelja</p>
         </div>
-    </div>
+    </a>
 
-    <div class="admin-stat-card">
+    <a class="admin-stat-card stat-link" asp-controller="Roditelj" asp-action="Index" asp-route-samoAktivne="true">
         <div class="admin-stat-ico ico-pink">👨‍👩‍👧</div>
         <div>
             <p class="admin-stat-label">Roditelji</p>
             <p class="admin-stat-value">@Model.BrojRoditelja</p>
         </div>
-    </div>
+    </a>
 
-    <div class="admin-stat-card">
+    <a class="admin-stat-card stat-link" asp-controller="Dijete" asp-action="Index" asp-route-samoAktivne="true">
         <div class="admin-stat-ico ico-teal">👧</div>
         <div>
             <p class="admin-stat-label">Djeca</p>
             <p class="admin-stat-value">@Model.BrojDjece</p>
         </div>
-    </div>
+    </a>
 
-    <div class="admin-stat-card">
+    <a class="admin-stat-card stat-link" asp-controller="Grupa" asp-action="Index">
         <div class="admin-stat-ico ico-yellow">🏫</div>
         <div>
             <p class="admin-stat-label">Grupe</p>
             <p class="admin-stat-value">@Model.BrojGrupa</p>
         </div>
-    </div>
+    </a>
 </section>
 
 <h3 class="admin-section-title">Brzi pristup</h3>
@@ -56,6 +62,12 @@
     <a class="admin-quick-card" asp-controller="Dijete" asp-action="DodajIdentifikacioniKod">
         <div class="admin-quick-icon"><span>🔑</span></div>
         <div><h4>Dodavanje koda</h4></div>
+        <span class="admin-quick-arrow">→</span>
+    </a>
+
+    <a class="admin-quick-card" asp-controller="DnevniQRCode" asp-action="Index">
+        <div class="admin-quick-icon"><span>⛶</span></div>
+        <div><h4>Dnevni QR kod</h4></div>
         <span class="admin-quick-arrow">→</span>
     </a>
 
@@ -77,3 +89,83 @@
         <span class="admin-quick-arrow">→</span>
     </a>
 </section>
+<!-- Popup za obavijesti -->
+<div id="notificationsPopup" style="display: none; position: absolute; top: 80px; right: 30px; width: 350px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;">
+    <div style="padding: 12px 16px; background: #5f3bd8; color: white; border-radius: 12px 12px 0 0;">
+        <h4 style="margin: 0;">Obavijesti</h4>
+    </div>
+    <div style="max-height: 350px; overflow-y: auto;">
+        @if (ViewBag.ZadnjeObavijesti == null || ViewBag.ZadnjeObavijesti.Count == 0)
+        {
+            <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                <span style="font-size: 2rem;">🔔</span>
+                <p style="margin-top: 8px;">Nema novih obavijesti</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var obavijest in ViewBag.ZadnjeObavijesti)
+            {
+                <div style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb;">
+                    <strong style="display: block;">@obavijest.Naslov</strong>
+                    <p style="margin: 4px 0 0; font-size: 0.85rem; color: #4b5563;">@obavijest.Sadrzaj</p>
+                    <small style="color: #9ca3af;">@obavijest.DatumKreiranja.ToString("dd.MM.yyyy HH:mm")</small>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    function toggleNotifications() {
+        var popup = document.getElementById('notificationsPopup');
+        if (popup.style.display === 'none' || popup.style.display === '') {
+            popup.style.display = 'block';
+        } else {
+            popup.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        var popup = document.getElementById('notificationsPopup');
+        var bell = document.querySelector('.admin-bell');
+        if (popup && popup.style.display === 'block' && !popup.contains(event.target) && !bell.contains(event.target)) {
+            popup.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+ 
+    .admin-stat-card.stat-link {
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: white;
+        border-radius: 20px;
+        padding: 15px 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+        .admin-stat-card.stat-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+</style>

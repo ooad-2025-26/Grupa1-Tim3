@@ -1,0 +1,92 @@
+﻿@model IEnumerable<EVrtic.Models.Odgajatelj>
+
+@{
+    ViewData["Title"] = "Odgajatelji";
+    ViewData["ActiveNav"] = "odgajatelji";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-page-head">
+    <h1>👩‍🏫 Odgajatelji</h1>
+</div>
+<p class="admin-page-sub">Pregled svih odgajatelja u sistemu. Kliknite na odgajatelja za prikaz osnovnih podataka.</p>
+
+@if (TempData["Uspjeh"] != null)
+{
+    <div class="admin-flash admin-flash-ok">@TempData["Uspjeh"]</div>
+}
+
+<div class="admin-search">
+    <span class="admin-search-ico">🔍</span>
+    <input type="text" id="pretragaOdgajatelja" placeholder="Pretraži po imenu ili email adresi..." autocomplete="off" />
+</div>
+
+<div class="admin-toolbar">
+    <a asp-action="Create" class="admin-btn admin-btn-primary">+ Dodaj odgajatelja</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="admin-empty">
+        <span class="ico">👩‍🏫</span>
+        Trenutno nema unesenih odgajatelja u sistemu.
+    </div>
+}
+else
+{
+    <div class="admin-list" id="listaOdgajatelja">
+        @foreach (var o in Model.OrderBy(x => x.ImePrezime))
+        {
+            var ime = string.IsNullOrWhiteSpace(o.ImePrezime) ? "(ime još nije uneseno)" : o.ImePrezime;
+            var kljuc = ($"{ime} {o.Email}").ToLower();
+
+            <a class="admin-list-item is-link @(o.StatusNaloga == StatusNaloga.AKTIVAN ? "" : "is-deaktiviran")"
+                   data-search="@kljuc"
+                   asp-action="Details" asp-route-id="@o.Id">
+                <div class="admin-list-avatar">👩‍🏫</div>
+                <div class="admin-list-main">
+                    <p class="name">@ime</p>
+                    <p class="sub">📧 @o.Email</p>
+                </div>
+                <div class="admin-list-actions">
+                    @if (o.StatusNaloga == StatusNaloga.AKTIVAN)
+                    {
+                        <span class="admin-badge admin-badge-on">Aktivan</span>
+                    }
+                    else
+                    {
+                        <span class="admin-badge admin-badge-off">Neaktivan</span>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+
+    <div class="admin-empty" id="nemaRezultata" style="display:none;">
+        <span class="ico">🔎</span>
+        Nema odgajatelja koji odgovaraju pretrazi.
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.getElementById('pretragaOdgajatelja');
+            var lista = document.getElementById('listaOdgajatelja');
+            var prazno = document.getElementById('nemaRezultata');
+            if (!input || !lista) return;
+
+            input.addEventListener('input', function () {
+                var q = this.value.trim().toLowerCase();
+                var stavke = lista.querySelectorAll('.admin-list-item');
+                var vidljivih = 0;
+                stavke.forEach(function (el) {
+                    var match = el.getAttribute('data-search').indexOf(q) !== -1;
+                    el.style.display = match ? '' : 'none';
+                    if (match) vidljivih++;
+                });
+                if (prazno) prazno.style.display = (vidljivih === 0) ? '' : 'none';
+            });
+        })();
+    </script>
+}

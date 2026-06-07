@@ -633,11 +633,22 @@
         background: #fff;
     }
 
-    .toggle-option.selected {
-        background: #edf8e9;
-        color: #15803d;
-        border-color: #a7e3b4;
-    }
+   .toggle-option {
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 800;
+    color: #334155;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.toggle-option.selected {
+    background: #22c55e !important;
+    color: white !important;
+    border-color: #16a34a !important;
+}
 
     .toggle-option input {
         margin-right: 8px;
@@ -763,3 +774,29 @@
         }
     }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dolazakRadio = document.querySelector('input[value="DOLAZAK"]');
+        const odlazakRadio = document.querySelector('input[value="ODLAZAK"]');
+        const dolazakLabel = dolazakRadio?.closest('.toggle-option');
+        const odlazakLabel = odlazakRadio?.closest('.toggle-option');
+        
+        function updateSelected() {
+            // Ukloni selected klasu sa oba
+            if (dolazakLabel) dolazakLabel.classList.remove('selected');
+            if (odlazakLabel) odlazakLabel.classList.remove('selected');
+            
+             if (dolazakRadio && dolazakRadio.checked) {
+                dolazakLabel.classList.add('selected');
+            }
+            if (odlazakRadio && odlazakRadio.checked) {
+                odlazakLabel.classList.add('selected');
+            }
+        }
+        
+        if (dolazakRadio) dolazakRadio.addEventListener('change', updateSelected);
+        if (odlazakRadio) odlazakRadio.addEventListener('change', updateSelected);
+        
+         updateSelected();
+    });
+</script>

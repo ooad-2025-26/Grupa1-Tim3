@@ -78,13 +78,24 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> AdministratorHome()
         {
+            var zadnjeObavijesti = await _context.Obavijesti
+         .OrderByDescending(o => o.DatumKreiranja)
+         .GroupBy(o => new { o.Naslov, o.Sadrzaj })   
+         .Select(g => g.First())                     
+         .Take(5)
+         .ToListAsync();
+
             var vm = new AdministratorHomeViewModel
             {
                 BrojOdgajatelja = await _context.Odgajatelji.CountAsync(),
-                BrojRoditelja   = await _context.Roditelji.CountAsync(),
-                BrojDjece       = await _context.Djeca.CountAsync(),
-                BrojGrupa       = await _context.Grupe.CountAsync()
+                BrojRoditelja = await _context.Roditelji.CountAsync(),
+                BrojDjece = await _context.Djeca.CountAsync(),
+                BrojGrupa = await _context.Grupe.CountAsync()
             };
+
+            ViewBag.ZadnjeObavijesti = zadnjeObavijesti;
+            ViewBag.BrojObavijesti = zadnjeObavijesti.Count;
+
             return View(vm);
         }
 
