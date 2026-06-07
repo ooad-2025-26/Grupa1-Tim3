@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Odgajatelj početna";
-    var brojNovih = Model.BrojNovihObavijesti;
 }
 
 <div class="educator-page">
@@ -28,7 +27,7 @@
     </a>
 
     <a class="educator-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
-        <span class="badge-icon">🔔@if (brojNovih > 0) { <b>@brojNovih</b> }</span>
+        <span>🔔</span>
         Obavijesti
     </a>
 
@@ -78,7 +77,7 @@
                 </div>
 
                 <a class="educator-bell" asp-controller="Obavijest" asp-action="OdgajateljObavijesti">
-                    🔔@if (brojNovih > 0) { <b class="bell-badge">@brojNovih</b> }
+                    🔔
                 </a>
             </div>
 
@@ -186,7 +185,7 @@
         <nav class="educator-bottom-nav">
     <a class="bottom-link active" asp-controller="Home" asp-action="OdgajateljHome"><span>🏠</span> Početna</a>
     <a class="bottom-link" asp-controller="DnevniIzvjestaj" asp-action="EvidencijaAktivnosti"><span>📝</span> Aktivnosti</a>
-    <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti"><span>🔔@if (brojNovih > 0) { <b class="bell-badge">@brojNovih</b> }</span> Obavijesti</a>
+    <a class="bottom-link" asp-controller="Obavijest" asp-action="OdgajateljObavijesti"><span>🔔</span> Obavijesti</a>
     <a class="bottom-link" asp-controller="Korisnik" asp-action="Profil"><span>👤</span> Profil</a>
 </nav>
 
@@ -284,25 +283,7 @@
         background: #ece6ff;
     }
 
-    .badge-icon { position: relative; }
-    .badge-icon b,
-    .bell-badge {
-        position: absolute;
-        top: -9px;
-        right: -11px;
-        min-width: 18px;
-        height: 18px;
-        padding: 0 5px;
-        border-radius: 999px;
-        background: #ef4444;
-        color: white;
-        font-size: 0.68rem;
-        font-weight: 900;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-    }
+   
 
     .educator-logout-form {
         width: 100%;
