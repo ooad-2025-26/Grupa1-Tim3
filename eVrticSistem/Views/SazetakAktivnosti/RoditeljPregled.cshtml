@@ -18,7 +18,7 @@
                 <a class="sidebar-link" asp-controller="DnevniIzvjestaj" asp-action="RoditeljPregled">
                     <span>📋</span> Izvještaji
                 </a>
-                
+
                 <a class="sidebar-link" asp-controller="EvidencijaDolaskaOdlaska" asp-action="RoditeljEvidencija">
                     <span>🗓️</span> Dolazak/Odlazak
                 </a>
@@ -62,46 +62,81 @@
                 <h1>Pregled sažetka</h1>
             </div>
 
-            <form method="get" asp-action="RoditeljPregled" class="summary-filter">
-                <div class="filter-item">
-                    <label>Period</label>
-                    <select name="period">
-                        <option value="Sedmica" selected="@(Model.Period == "Sedmica" ? "selected" : null)">Sedmica</option>
-                        <option value="Mjesec" selected="@(Model.Period == "Mjesec" ? "selected" : null)">Mjesec</option>
+            <form method="get" asp-controller="SazetakAktivnosti" asp-action="RoditeljPregled" class="summary-filter">
+                <div class="filter-item child-select-wrapper">
+                    <label>Dijete</label>
+                    <select name="dijeteId">
+                        <option value="">— Odaberite dijete —</option>
+                        @foreach (var dijete in Model.Djeca)
+                        {
+                            <option value="@dijete.Id" selected="@(Model.OdabraniDijeteId == dijete.Id)">
+                                @dijete.ImePrezime
+                            </option>
+                        }
                     </select>
                 </div>
 
-                <div class="filter-item filter-date">
-                    <label>Datum</label>
-                    <div class="date-box">
-                        <span>@Model.DatumPocetka.ToString("dd.MM.yyyy.") - @Model.DatumKraja.ToString("dd.MM.yyyy.")</span>
-                        <span class="calendar-icon">📅</span>
-                        <input type="date" name="pocetak" value="@Model.DatumPocetka.ToString("yyyy-MM-dd")" />
-                    </div>
+                <div class="period-toggle">
+                    <label class="period-option">
+                        <input type="radio"
+                               name="period"
+                               value="Sedmica"
+                               @(Model.Period == "Sedmica" ? "checked" : "") />
+                        <span>Sedmica</span>
+                    </label>
+
+                    <label class="period-option">
+                        <input type="radio"
+                               name="period"
+                               value="Mjesec"
+                               @(Model.Period == "Mjesec" ? "checked" : "") />
+                        <span>Mjesec</span>
+                    </label>
                 </div>
 
-                @if (Model.Djeca.Any())
-                {
-                    <div class="filter-item">
-                        <label>Dijete</label>
-                        <select name="dijeteId">
-                            @foreach (var dijete in Model.Djeca)
+                <div class="filter-row">
+                    <div class="filter-item period-select-wrapper" id="sedmicaWrapper">
+                        <label>Sedmica</label>
+                        <select id="sedmicaSelect" name="pocetak">
+                            @foreach (var sedmica in Model.SedmicneOpcije)
                             {
-                                <option value="@dijete.Id" selected="@(dijete.Id == Model.OdabraniDijeteId ? "selected" : null)">
-                                    @dijete.ImePrezime
+                                <option value="@sedmica.Vrijednost"
+                                        selected="@(Model.Period == "Sedmica" && Model.DatumPocetka.ToString("yyyy-MM-dd") == sedmica.Vrijednost)">
+                                    @sedmica.Tekst
                                 </option>
                             }
                         </select>
                     </div>
-                }
 
-                <button type="submit" class="filter-button">Prikaži</button>
+                    <div class="filter-item period-select-wrapper" id="mjesecWrapper">
+                        <label>Mjesec</label>
+                        <select id="mjesecSelect">
+                            @foreach (var mjesec in Model.MjesecneOpcije)
+                            {
+                                <option value="@mjesec.Vrijednost"
+                                        selected="@(Model.Period == "Mjesec" && Model.DatumPocetka.ToString("yyyy-MM-dd") == mjesec.Vrijednost)">
+                                    @mjesec.Tekst
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit" class="filter-button">Prikaži</button>
+                </div>
             </form>
 
-            @if (Model.Dijete == null)
+            @if (!Model.Djeca.Any())
             {
                 <section class="empty-box">
-                    <p>Trenutno nemate povezano dijete.</p>
+                    <h3>Trenutno nemate povezano dijete.</h3>
+                    <p>Sažetak će biti dostupan kada administrator poveže dijete sa vašim nalogom.</p>
+                </section>
+            }
+            else if (Model.Dijete == null)
+            {
+                <section class="empty-box">
+                    <h3>Odaberite dijete za pregled sažetka.</h3>
+                    <p>Sažetak se neće prikazivati dok ne izaberete pojedinačno dijete.</p>
                 </section>
             }
             else
@@ -112,41 +147,75 @@
                     <div>
                         <h2>@Model.Dijete.ImePrezime</h2>
                         <p>Grupa: @(Model.Dijete.Grupa?.ImeGrupe ?? "Nije dodijeljena")</p>
+                        <span class="period-label">
+                            @Model.DatumPocetka.ToString("dd.MM.yyyy.") - @Model.DatumKraja.ToString("dd.MM.yyyy.")
+                        </span>
                     </div>
                 </section>
 
                 <section class="stats-grid">
                     <div class="stat-box">
                         <div class="stat-heading">
-                            <span class="stat-icon green">📗</span>
-                            <h3>Broj dolazaka</h3>
+                            <span class="stat-icon green">↓</span>
+                            <h3>Dolasci</h3>
                         </div>
 
                         <div class="stat-number">@Model.BrojDolazaka</div>
-                        <p>u odabranom periodu</p>
+                        <p>evidentiranih dolazaka</p>
                     </div>
 
                     <div class="stat-box">
                         <div class="stat-heading">
-                            <span class="stat-icon blue">🍴</span>
-                            <h3>Obroci</h3>
+                            <span class="stat-icon blue">↑</span>
+                            <h3>Odlasci</h3>
                         </div>
 
-                        <div class="stat-number">@Model.BrojObroka</div>
-                        <p>evidentiranih obroka</p>
+                        <div class="stat-number">@Model.BrojOdlazaka</div>
+                        <p>evidentiranih odlazaka</p>
+                    </div>
+
+                    <div class="stat-box sleep-box">
+                        <div class="stat-heading">
+                            <span class="stat-icon blue">☾</span>
+                            <h3>Spavanje</h3>
+                        </div>
+
+                        <p class="summary-sentence">@Model.OcjenaSpavanja</p>
+                    </div>
+                </section>
+
+                <section class="meal-summary-grid">
+                    <div class="meal-box">
+                        <h3>🍽️ Doručak</h3>
+                        <p>@Model.OcjenaDorucka</p>
+                        <span>@Model.BrojDorucaka evidentiranih doručaka</span>
+                    </div>
+
+                    <div class="meal-box">
+                        <h3>🍲 Ručak</h3>
+                        <p>@Model.OcjenaRucka</p>
+                        <span>@Model.BrojRucaka evidentiranih ručkova</span>
                     </div>
                 </section>
 
                 <section class="note-box">
-                    <h3>Napomena</h3>
+                    <h3>Napomene po datumima</h3>
 
-                    @if (string.IsNullOrWhiteSpace(Model.Napomene))
+                    @if (!Model.NapomenePoDatumima.Any())
                     {
                         <p>Nema napomena za odabrani period.</p>
                     }
                     else
                     {
-                        <p>@Model.Napomene</p>
+                        <div class="note-list">
+                            @foreach (var napomena in Model.NapomenePoDatumima)
+                            {
+                                <div class="note-row">
+                                    <strong>@napomena.Datum.ToString("dd.MM.yyyy.")</strong>
+                                    <p>@napomena.Tekst</p>
+                                </div>
+                            }
+                        </div>
                     }
                 </section>
             }
@@ -179,13 +248,14 @@
 
 <style>
     body {
-        background: #eaf6ff;
+        background: #eaf6ff !important;
     }
 
     .summary-page {
         min-height: 100vh;
         padding: 22px 0;
         font-family: Arial, sans-serif;
+        color: #071733;
     }
 
     .summary-card-layout {
@@ -202,17 +272,21 @@
     }
 
     .summary-sidebar {
-        position: relative;
+        background: #ffffff;
         border-right: 1px solid #eef2f7;
         padding: 28px 22px 0;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
+        min-width: 0;
     }
 
     .sidebar-logo {
         margin: 0 0 34px;
         color: #15913a;
         font-size: 2.65rem;
-        font-weight: 800;
+        line-height: 1;
+        font-weight: 900;
         text-align: center;
     }
 
@@ -225,28 +299,37 @@
     }
 
     .sidebar-link {
+        min-height: 54px;
         display: flex;
         align-items: center;
         gap: 14px;
-        padding: 14px 18px;
+        padding: 0 18px;
         border-radius: 12px;
         color: #0f172a;
         text-decoration: none;
         font-size: 1rem;
-        font-weight: 700;
+        font-weight: 800;
+        box-sizing: border-box;
+    }
+
+    .sidebar-link:hover {
+        color: #15803d;
+        background: #edf8e9;
+        text-decoration: none;
     }
 
     .sidebar-link span {
         width: 24px;
         text-align: center;
         font-size: 1.25rem;
+        line-height: 1;
+        flex-shrink: 0;
     }
 
     .sidebar-link.active {
         color: #15803d;
         background: #edf8e9;
     }
-
 
     .ev-sidebar-illustration {
         margin-top: auto;
@@ -256,6 +339,7 @@
         height: 230px;
         overflow: hidden;
         flex-shrink: 0;
+        pointer-events: none;
     }
 
     .ev-cloud {
@@ -414,6 +498,7 @@
     }
 
     .summary-main {
+        grid-column: 2;
         padding: 38px 48px 0;
         display: flex;
         flex-direction: column;
@@ -424,14 +509,14 @@
         display: flex;
         align-items: center;
         gap: 22px;
-        margin-bottom: 28px;
+        margin-bottom: 26px;
     }
 
     .summary-top h1 {
         margin: 0;
         color: #0f172a;
         font-size: 2.15rem;
-        font-weight: 800;
+        font-weight: 900;
     }
 
     .back-link {
@@ -442,57 +527,68 @@
     }
 
     .summary-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .period-toggle {
+        display: flex;
+        align-items: center;
+        gap: 34px;
+    }
+
+    .period-option {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #0f172a;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .period-option input[type="radio"] {
+        width: 21px;
+        height: 21px;
+        accent-color: #15803d;
+    }
+
+    .filter-row {
         display: grid;
-        grid-template-columns: 190px 330px 220px 115px;
+        grid-template-columns: 1fr 1fr 140px;
         gap: 16px;
         align-items: end;
-        margin-bottom: 24px;
+    }
+
+    .child-select-wrapper {
+        max-width: 420px;
     }
 
     .filter-item {
         display: flex;
         flex-direction: column;
         gap: 8px;
+        min-width: 0;
     }
 
     .filter-item label {
         color: #0f172a;
-        font-weight: 800;
+        font-weight: 900;
         font-size: 0.95rem;
     }
 
-    .filter-item select,
-    .date-box {
+    .filter-item select {
+        width: 100%;
         height: 52px;
         border: 1px solid #e5e7eb;
         border-radius: 12px;
         background: #fff;
         padding: 0 14px;
+        font-family: inherit;
         font-size: 1rem;
+        color: #0f172a;
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-    }
-
-    .filter-item select {
-        width: 100%;
-    }
-
-    .date-box {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        overflow: hidden;
-    }
-
-    .date-box input[type="date"] {
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-    .calendar-icon {
-        font-size: 1.1rem;
     }
 
     .filter-button {
@@ -502,14 +598,20 @@
         background: #15803d;
         color: white;
         font-size: 1rem;
-        font-weight: 800;
+        font-weight: 900;
         cursor: pointer;
+        box-shadow: 0 10px 22px rgba(21, 128, 61, 0.18);
+    }
+
+    .filter-button:hover {
+        background: #116c33;
     }
 
     .child-box,
     .stat-box,
     .note-box,
-    .empty-box {
+    .empty-box,
+    .meal-box {
         background: #fff;
         border-radius: 16px;
         box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
@@ -539,42 +641,47 @@
         margin: 0 0 8px;
         font-size: 1.65rem;
         color: #0f172a;
-        font-weight: 800;
+        font-weight: 900;
     }
 
     .child-box p {
-        margin: 0;
+        margin: 0 0 6px;
         color: #475569;
         font-size: 1.05rem;
     }
 
+    .period-label {
+        color: #64748b;
+        font-weight: 700;
+    }
+
     .stats-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
         margin-bottom: 20px;
     }
 
     .stat-box {
-        padding: 24px 28px;
-        min-height: 170px;
+        padding: 22px 26px;
+        min-height: 158px;
     }
 
     .stat-heading {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
     }
 
     .stat-heading h3 {
         margin: 0;
         color: #0f172a;
-        font-size: 1.15rem;
-        font-weight: 800;
+        font-size: 1.08rem;
+        font-weight: 900;
     }
 
     .stat-icon {
-        font-size: 1.45rem;
+        font-size: 1.25rem;
     }
 
     .stat-icon.green {
@@ -587,7 +694,7 @@
 
     .stat-number {
         text-align: center;
-        font-size: 3.4rem;
+        font-size: 3.2rem;
         line-height: 1;
         color: #0f172a;
         font-weight: 900;
@@ -601,6 +708,55 @@
         font-size: 1rem;
     }
 
+    .sleep-box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .summary-sentence {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 230px;
+        margin: 0 auto !important;
+        text-align: center !important;
+        color: #64748b !important;
+        font-weight: 700;
+        line-height: 1.45;
+    }
+
+    .meal-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .meal-box {
+        padding: 24px 28px;
+        min-height: 140px;
+    }
+
+    .meal-box h3 {
+        margin: 0 0 12px;
+        color: #0f172a;
+        font-size: 1.15rem;
+        font-weight: 900;
+    }
+
+    .meal-box p {
+        color: #334155;
+        margin: 0 0 10px;
+        line-height: 1.5;
+        font-weight: 700;
+    }
+
+    .meal-box span {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+
     .note-box {
         padding: 24px 28px;
         margin-bottom: 24px;
@@ -609,7 +765,7 @@
     .note-box h3 {
         color: #c0560b;
         font-size: 1.25rem;
-        font-weight: 800;
+        font-weight: 900;
         margin: 0 0 14px;
     }
 
@@ -622,14 +778,41 @@
         white-space: pre-line;
     }
 
+    .note-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .note-row {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: #f8fafc;
+    }
+
+    .note-row strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #15803d;
+    }
+
     .empty-box {
-        padding: 24px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+    }
+
+    .empty-box h3 {
+        margin: 0 0 8px;
+        color: #0f172a;
+        font-weight: 900;
     }
 
     .bottom-menu {
         margin-top: auto;
         min-height: 74px;
         border-top: 1px solid #e5e7eb;
+        background: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -642,8 +825,9 @@
         gap: 9px;
         text-decoration: none;
         color: #475569;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 0.98rem;
+        white-space: nowrap;
     }
 
     .bottom-menu a.active {
@@ -661,8 +845,12 @@
             padding: 32px 34px 0;
         }
 
-        .summary-filter {
+        .filter-row {
             grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-button {
+            grid-column: 1 / -1;
         }
 
         .bottom-menu {
@@ -679,12 +867,55 @@
             display: none;
         }
 
-        .stats-grid {
+        .summary-main {
+            grid-column: 1;
+        }
+
+        .stats-grid,
+        .meal-summary-grid,
+        .filter-row {
             grid-template-columns: 1fr;
         }
 
-        .summary-filter {
-            grid-template-columns: 1fr;
+        .child-select-wrapper {
+            max-width: none;
+        }
+
+        .bottom-menu {
+            gap: 18px;
+            flex-wrap: wrap;
         }
     }
 </style>
+
+<script>
+    function osvjeziPeriodPolja() {
+        const odabraniPeriod = document.querySelector('input[name="period"]:checked')?.value || "Sedmica";
+
+        const sedmicaWrapper = document.getElementById("sedmicaWrapper");
+        const mjesecWrapper = document.getElementById("mjesecWrapper");
+
+        const sedmicaSelect = document.getElementById("sedmicaSelect");
+        const mjesecSelect = document.getElementById("mjesecSelect");
+
+        if (odabraniPeriod === "Mjesec") {
+            sedmicaWrapper.style.display = "none";
+            mjesecWrapper.style.display = "flex";
+
+            sedmicaSelect.removeAttribute("name");
+            mjesecSelect.setAttribute("name", "pocetak");
+        } else {
+            sedmicaWrapper.style.display = "flex";
+            mjesecWrapper.style.display = "none";
+
+            mjesecSelect.removeAttribute("name");
+            sedmicaSelect.setAttribute("name", "pocetak");
+        }
+    }
+
+    document.querySelectorAll('input[name="period"]').forEach(radio => {
+        radio.addEventListener("change", osvjeziPeriodPolja);
+    });
+
+    osvjeziPeriodPolja();
+</script>
