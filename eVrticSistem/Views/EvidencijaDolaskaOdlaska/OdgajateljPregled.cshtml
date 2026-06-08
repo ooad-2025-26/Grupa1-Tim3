@@ -134,9 +134,12 @@
                 <div class="field-block">
                     <label>Datum</label>
                     <div class="date-box">
-                        <span>@Model.Datum.ToString("dd.MM.yyyy.")</span>
-                        <span class="calendar-symbol">▣</span>
-                        <input type="date" name="datum" value="@Model.Datum.ToString("yyyy-MM-dd")" />
+                        <span id="datumPrikaz">@Model.Datum.ToString("dd.MM.yyyy.")</span>
+                        <span class="calendar-symbol">📅</span>
+                        <input id="datumInput"
+                              type="date"
+                              name="datum"
+                              value="@Model.Datum.ToString("yyyy-MM-dd")" />
                     </div>
                 </div>
 
@@ -1114,6 +1117,34 @@
     }
 </style>
 
+
+<script>
+    function formatirajDatumZaPrikaz(vrijednost) {
+        if (!vrijednost) {
+            return "";
+        }
+
+        const dijelovi = vrijednost.split("-");
+        if (dijelovi.length !== 3) {
+            return vrijednost;
+        }
+
+        const godina = dijelovi[0];
+        const mjesec = dijelovi[1];
+        const dan = dijelovi[2];
+
+        return `${dan}.${mjesec}.${godina}.`;
+    }
+
+    const datumInput = document.getElementById("datumInput");
+    const datumPrikaz = document.getElementById("datumPrikaz");
+
+    if (datumInput && datumPrikaz) {
+        datumInput.addEventListener("change", function () {
+            datumPrikaz.textContent = formatirajDatumZaPrikaz(this.value);
+        });
+    }
+</script>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
