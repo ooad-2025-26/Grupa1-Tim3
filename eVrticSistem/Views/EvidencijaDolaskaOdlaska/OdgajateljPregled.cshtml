@@ -133,14 +133,16 @@
             <form class="attendance-filter" method="get" asp-action="OdgajateljPregled">
                 <div class="field-block">
                     <label>Datum</label>
-                    <div class="date-box">
-                        <span id="datumPrikaz">@Model.Datum.ToString("dd.MM.yyyy.")</span>
-                        <span class="calendar-symbol">📅</span>
-                        <input id="datumInput"
-                              type="date"
-                              name="datum"
-                              value="@Model.Datum.ToString("yyyy-MM-dd")" />
-                    </div>
+                 <div class="date-box" id="datePickerBox">
+                      <span id="datumPrikaz">@Model.Datum.ToString("dd.MM.yyyy.")</span>
+                      <span class="calendar-symbol">📅</span>
+
+    <input id="datumInput"
+           class="date-real-input"
+           type="date"
+           name="datum"
+           value="@Model.Datum.ToString("yyyy-MM-dd")" />
+</div>
                 </div>
 
                 <div class="field-block">
@@ -159,14 +161,15 @@
                 <div class="field-block">
                     <label>Dijete</label>
                     <select name="dijeteId">
-                        <option value="">Sva djeca</option>
-                        @foreach (var dijete in Model.Djeca)
-                        {
-                            <option value="@dijete.Id" selected="@(dijete.Id == Model.OdabranoDijeteId ? "selected" : null)">
-                                @dijete.ImePrezime
-                            </option>
-                        }
-                    </select>
+    <option value="" selected="@(!Model.OdabranoDijeteId.HasValue)">Sva djeca</option>
+
+    @foreach (var dijete in Model.Djeca)
+    {
+        <option value="@dijete.Id" selected="@(Model.OdabranoDijeteId == dijete.Id)">
+            @dijete.ImePrezime
+        </option>
+    }
+</select>
                 </div>
 
                 <button type="submit">Prikaži</button>
@@ -604,32 +607,56 @@
         font-weight: 900;
     }
 
-    .field-block select,
-    .date-box {
-        width: 100%;
-        height: 54px;
-        border: 1px solid #d8def0;
-        border-radius: 12px;
-        background: #fff;
-        padding: 0 14px;
-        font-size: 1rem;
-        color: #111827;
-        box-sizing: border-box;
-    }
+   .field-block select,
+.date-box {
+    position: relative;
+    height: 58px;
+    border: 1px solid #dbe3f0;
+    border-radius: 12px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    box-sizing: border-box;
+    cursor: pointer;
+    overflow: hidden;
+}
 
-    .date-box {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+.date-box span {
+    pointer-events: none;
+    position: relative;
+    z-index: 2;
+}
 
-    .date-box input[type="date"] {
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        cursor: pointer;
-    }
+.calendar-symbol {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.date-box input[type="date"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+    border: none;
+}
+
+.calendar-symbol { color: #6243db; font-weight: 900; }
+
+.date-box input[type="date"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+    border: none;
+}
 
     .calendar-symbol { color: #6243db; font-weight: 900; }
 
@@ -1129,17 +1156,23 @@
             return vrijednost;
         }
 
-        const godina = dijelovi[0];
-        const mjesec = dijelovi[1];
-        const dan = dijelovi[2];
-
-        return `${dan}.${mjesec}.${godina}.`;
+        return `${dijelovi[2]}.${dijelovi[1]}.${dijelovi[0]}.`;
     }
 
+    const datePickerBox = document.getElementById("datePickerBox");
     const datumInput = document.getElementById("datumInput");
     const datumPrikaz = document.getElementById("datumPrikaz");
 
-    if (datumInput && datumPrikaz) {
+    if (datePickerBox && datumInput && datumPrikaz) {
+        datePickerBox.addEventListener("click", function () {
+            if (typeof datumInput.showPicker === "function") {
+                datumInput.showPicker();
+            } else {
+                datumInput.focus();
+                datumInput.click();
+            }
+        });
+
         datumInput.addEventListener("change", function () {
             datumPrikaz.textContent = formatirajDatumZaPrikaz(this.value);
         });

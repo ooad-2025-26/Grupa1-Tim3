@@ -375,24 +375,28 @@ namespace EVrtic.Controllers
                 djecaQuery = djecaQuery.Where(d => d.GrupaId == grupaId.Value);
             }
 
-            var djeca = await djecaQuery
+            // OVA LISTA IDE U DROPDOWN — uvijek sva djeca iz odabrane grupe/svih grupa
+            var djecaZaDropdown = await djecaQuery
                 .OrderBy(d => d.ImePrezime)
                 .ToListAsync();
 
+            // OVA LISTA IDE ZA PRIKAZ — sva djeca ili samo odabrano dijete
+            var djecaZaPrikaz = djecaZaDropdown;
+
             if (dijeteId.HasValue)
             {
-                djeca = djeca
+                djecaZaPrikaz = djecaZaDropdown
                     .Where(d => d.Id == dijeteId.Value)
                     .ToList();
             }
 
-            var idDjece = djeca.Select(d => d.Id).ToList();
+            var idDjeceZaPrikaz = djecaZaPrikaz.Select(d => d.Id).ToList();
 
             var evidencije = await _context.EvidencijeDolaskaOdlaska
                 .Include(e => e.Dijete)
                     .ThenInclude(d => d.Grupa)
                 .Include(e => e.DnevniQRCode)
-                .Where(e => idDjece.Contains(e.DijeteId)
+                .Where(e => idDjeceZaPrikaz.Contains(e.DijeteId)
                     && e.VrijemeDogadjaja.Date == odabraniDatum)
                 .OrderByDescending(e => e.VrijemeDogadjaja)
                 .ToListAsync();
@@ -401,13 +405,18 @@ namespace EVrtic.Controllers
             {
                 Datum = odabraniDatum,
                 Grupe = grupe,
-                Djeca = djeca,
+
+                // BITNO: dropdown dobija sva djeca, ne samo filtrirano dijete
+                Djeca = djecaZaDropdown,
+
                 Evidencije = evidencije,
                 OdabranaGrupaId = grupaId,
                 OdabranoDijeteId = dijeteId,
+
                 BrojDolazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK),
                 BrojOdlazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK),
                 BrojOdbijenih = evidencije.Count(e => e.StatusEvidencije == StatusEvidencije.ODBIJENO),
+
                 AktivniQRKod = await VratiAktivniQrKodZaOdgajatelja(korisnik.Id),
                 OdabraniTip = (tip == "ODLAZAK") ? "ODLAZAK" : "DOLAZAK"
             };

@@ -138,109 +138,107 @@
             </select>
         </div>
 
-        <div class="filter-group">
-            <label>Grupa</label>
-            <select name="grupaId" onchange="this.form.submit()">
-                <option value="">Sve grupe</option>
-                @foreach (var grupa in Model.Grupe)
-                {
-                    <option value="@grupa.Id" selected="@(Model.OdabranaGrupaId == grupa.Id)">
-                        @grupa.ImeGrupe
-                    </option>
-                }
-            </select>
-        </div>
+        
 
         <div class="filter-group">
-            <label>Dijete</label>
-            <select name="dijeteId">
-                <option value="">— Odaberite dijete —</option>
-                @foreach (var dijete in Model.Djeca)
-                {
-                    <option value="@dijete.Id" selected="@(Model.OdabraniDijeteId == dijete.Id)">
-                        @dijete.ImePrezime
-                    </option>
-                }
-            </select>
-        </div>
+    <label>Grupa</label>
+    <select name="grupaId">
+        <option value="">Sve grupe</option>
+        @foreach (var grupa in Model.Grupe)
+        {
+            <option value="@grupa.Id" selected="@(Model.OdabranaGrupaId == grupa.Id)">
+                @grupa.ImeGrupe
+            </option>
+        }
+    </select>
+</div>
     </div>
 
-    <button type="submit" class="generate-button">
-        ▣ Generiši sažetak
-    </button>
+    <button type="submit" name="generisi" value="true" class="generate-button">
+    ▣ Generiši sažetak
+</button>
 </form>
                
-            @if (Model.Dijete == null)
-            {
-                <section class="empty-card">
-                    @if (!Model.Djeca.Any())
-                    {
-                        <h3>Nema djece za prikaz.</h3>
-                        <p>Dodijeljene grupe trenutno nemaju aktivnu djecu.</p>
-                    }
-                    else
-                    {
-                        <h3>Odaberite dijete za generisanje sažetka.</h3>
-                        <p>Sažetak se neće prikazivati dok ne izaberete pojedinačno dijete.</p>
-                    }
-                </section>
-            }
-            else
-            {
+@if (!Model.PrikaziSazetak)
+{
+    <section class="empty-card">
+        <h3>Odaberite period i grupu.</h3>
+        <p>Sažetak će se prikazati nakon što kliknete na dugme Generiši sažetak.</p>
+    </section>
+}
+else if (!Model.Djeca.Any())
+{
+    <section class="empty-card">
+        <h3>Nema djece za prikaz.</h3>
+        <p>Odabrana grupa trenutno nema aktivnu djecu.</p>
+    </section>
+}
+else if (!Model.SazeciDjece.Any())
+{
+    <section class="empty-card">
+        <h3>Nema podataka za odabrani period.</h3>
+        <p>Za odabranu grupu i period nisu pronađeni sažeci aktivnosti.</p>
+    </section>
+}
+else
+{
+    <section class="children-summary-list">
+        @foreach (var sazetak in Model.SazeciDjece)
+        {
+            <article class="child-summary-block">
                 <section class="child-card">
                     <div class="child-avatar">🧒</div>
                     <div>
-                        <h2>@Model.Dijete.ImePrezime</h2>
-                        <p>Grupa: @(Model.Dijete.Grupa?.ImeGrupe ?? "Nije dodijeljena")</p>
+                        <h2>@sazetak.Dijete.ImePrezime</h2>
+                        <p>Grupa: @(sazetak.Dijete.Grupa?.ImeGrupe ?? "Nije dodijeljena")</p>
                         <p>Period: @prikazPerioda</p>
                     </div>
                 </section>
 
-             <section class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-title"><span>↓</span> Dolasci</div>
-        <strong>@Model.BrojDolazaka</strong>
-        <p>evidentiranih dolazaka</p>
-    </div>
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title"><span>↓</span> Dolasci</div>
+                        <strong>@sazetak.BrojDolazaka</strong>
+                        <p>evidentiranih dolazaka</p>
+                    </div>
 
-    <div class="stat-card">
-        <div class="stat-title"><span>↑</span> Odlasci</div>
-        <strong>@Model.BrojOdlazaka</strong>
-        <p>evidentiranih odlazaka</p>
-    </div>
+                    <div class="stat-card">
+                        <div class="stat-title"><span>↑</span> Odlasci</div>
+                        <strong>@sazetak.BrojOdlazaka</strong>
+                        <p>evidentiranih odlazaka</p>
+                    </div>
 
-    <div class="stat-card sleep-evaluation-card">
-        <div class="stat-title"><span>☾</span> Spavanje</div>
-        <p class="summary-sentence">@Model.OcjenaSpavanja</p>
-    </div>
-</section>
+                    <div class="stat-card sleep-evaluation-card">
+                        <div class="stat-title"><span>☾</span> Spavanje</div>
+                        <p class="summary-sentence">@sazetak.OcjenaSpavanja</p>
+                    </div>
+                </section>
 
                 <section class="meal-summary-grid">
                     <div class="meal-summary-card">
                         <h3>🍽️ Doručak</h3>
-                        <p>@Model.OcjenaDorucka</p>
-                        <span>@Model.BrojDorucaka evidentiranih doručaka</span>
+                        <p>@sazetak.OcjenaDorucka</p>
+                        <span>@sazetak.BrojDorucaka evidentiranih doručaka</span>
                     </div>
 
                     <div class="meal-summary-card">
                         <h3>🍲 Ručak</h3>
-                        <p>@Model.OcjenaRucka</p>
-                        <span>@Model.BrojRucaka evidentiranih ručkova</span>
+                        <p>@sazetak.OcjenaRucka</p>
+                        <span>@sazetak.BrojRucaka evidentiranih ručkova</span>
                     </div>
                 </section>
 
-                
-
                 <section class="note-card">
                     <h3>Napomene po datumima</h3>
-                    @if (!Model.NapomenePoDatumima.Any())
+
+                    @if (!sazetak.NapomenePoDatumima.Any())
                     {
                         <p>Nema napomena za odabrani period.</p>
                     }
                     else
                     {
                         <div class="note-list">
-                            @foreach (var napomena in Model.NapomenePoDatumima)
+                            @foreach (var napomena in sazetak.NapomenePoDatumima)
                             {
                                 <div class="note-row">
                                     <strong>@napomena.Datum.ToString("dd.MM.yyyy.")</strong>
@@ -249,9 +247,11 @@
                             }
                         </div>
                     }
-                   
                 </section>
-            }
+            </article>
+        }
+    </section>
+}
 
 <nav class="educator-bottom-nav">
     <a class="bottom-link" asp-controller="Home" asp-action="OdgajateljHome">
@@ -713,9 +713,9 @@
         color: #071733;
     }
 
-    .filters-row {
+.filters-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 18px;
     margin-bottom: 18px;
     align-items: end;
@@ -985,6 +985,59 @@
         font-size: 1.2rem;
         line-height: 1;
     }
+    .children-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    margin-top: 22px;
+}
+
+.child-summary-block {
+    background: #ffffff;
+    border: 1px solid #d8e0ef;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.child-summary-block::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 6px;
+    background: #6d42db;
+    border-radius: 0 0 999px 999px;
+}
+
+.child-summary-block .child-card {
+    margin-bottom: 0;
+    box-shadow: none;
+    border: 1px solid #e8ddff;
+    background: #fbfaff;
+}
+
+.child-summary-block .stat-card,
+.child-summary-block .meal-summary-card,
+.child-summary-block .note-card {
+    box-shadow: none;
+    border: 1px solid #eef2ff;
+    background: #ffffff;
+}
+
+.child-summary-block .note-card {
+    margin-bottom: 0;
+}
+
+.child-summary-block:last-child {
+    margin-bottom: 0;
+}
 
     @@media (max-width: 1000px) {
         .educator-summary-card {
@@ -1016,14 +1069,6 @@
             flex-wrap: wrap;
         }
 
-
-.summary-sentence {
-    margin-top: 26px !important;
-    text-align: left !important;
-    color: #334155 !important;
-    font-weight: 800;
-    line-height: 1.45;
-}
     }
 </style>
 

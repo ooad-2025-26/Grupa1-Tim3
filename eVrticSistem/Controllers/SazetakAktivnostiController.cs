@@ -307,13 +307,12 @@ namespace EVrtic.Controllers
         // ═══════════════════════════════════════════════════════════════════
         // ODGAJATELJ — Pregled sažetaka djece iz njegovih grupa
         // ═══════════════════════════════════════════════════════════════════
-
         [Authorize(Roles = "ODGAJATELJ")]
         public async Task<IActionResult> OdgajateljPregled(
-    string period = "Sedmica",
-    DateTime? pocetak = null,
-    int? grupaId = null,
-    int? dijeteId = null)
+            string period = "Sedmica",
+            DateTime? pocetak = null,
+            int? grupaId = null,
+            bool generisi = false)
         {
             var korisnik = await _userManager.GetUserAsync(User);
 
@@ -339,20 +338,15 @@ namespace EVrtic.Controllers
             }
 
             var djeca = await djecaQuery
-                .OrderBy(d => d.ImePrezime)
+                .OrderBy(d => d.Grupa!.ImeGrupe)
+                .ThenBy(d => d.ImePrezime)
                 .ToListAsync();
-
-            var odabranoDijete = dijeteId.HasValue
-                ? djeca.FirstOrDefault(d => d.Id == dijeteId.Value)
-                : null;
 
             const int prvaGodinaAplikacije = 2024;
             int zadnjaGodinaAplikacije = DateTime.Today.Year;
 
             var prviDanKalendara = new DateTime(prvaGodinaAplikacije, 1, 1);
             var zadnjiDanKalendara = new DateTime(zadnjaGodinaAplikacije, 12, 31);
-
-
 
             period = period.Equals("Mjesec", StringComparison.OrdinalIgnoreCase)
                 ? "Mjesec"
@@ -379,20 +373,26 @@ namespace EVrtic.Controllers
                 DatumKraja = datumKraja,
                 Grupe = grupe,
                 Djeca = djeca,
-                Dijete = odabranoDijete,
                 OdabranaGrupaId = grupaId,
-                OdabraniDijeteId = dijeteId,
+                PrikaziSazetak = generisi,
                 SedmicneOpcije = GenerisiSedmicneOpcije(prviDanKalendara, zadnjiDanKalendara),
                 MjesecneOpcije = GenerisiMjesecneOpcije(prvaGodinaAplikacije, zadnjaGodinaAplikacije)
             };
 
-            if (odabranoDijete == null)
+            if (!generisi)
+            {
+                return View(vm);
+            }
+
+            var idDjece = djeca.Select(d => d.Id).ToList();
+
+            if (!idDjece.Any())
             {
                 return View(vm);
             }
 
             var izvjestajiRaw = await _context.DnevniIzvjestaji
-                .Where(i => i.DijeteId == odabranoDijete.Id
+                .Where(i => idDjece.Contains(i.DijeteId)
                     && i.Datum.Date >= datumPocetka
                     && i.Datum.Date <= datumKraja)
                 .OrderBy(i => i.Datum)
@@ -403,7 +403,7 @@ namespace EVrtic.Controllers
                 .ToList();
 
             var evidencijeRaw = await _context.EvidencijeDolaskaOdlaska
-                .Where(e => e.DijeteId == odabranoDijete.Id
+                .Where(e => idDjece.Contains(e.DijeteId)
                     && e.StatusEvidencije == StatusEvidencije.EVIDENTIRANO
                     && e.VrijemeDogadjaja.Date >= datumPocetka
                     && e.VrijemeDogadjaja.Date <= datumKraja)
@@ -413,63 +413,75 @@ namespace EVrtic.Controllers
                 .Where(e => JeRadniDan(e.VrijemeDogadjaja))
                 .ToList();
 
-            vm.BrojDolazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK);
-            vm.BrojOdlazaka = evidencije.Count(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK);
-
-            var dorucakOcjene = izvjestaji
-                .Where(i => !string.IsNullOrWhiteSpace(i.Dorucak))
-                .Select(i => VrijednostStatusaObroka(i.StatusDorucka))
-                .ToList();
-
-            var rucakOcjene = izvjestaji
-                .Where(i => !string.IsNullOrWhiteSpace(i.Rucak))
-                .Select(i => VrijednostStatusaObroka(i.StatusRucka))
-                .ToList();
-
-            vm.BrojDorucaka = dorucakOcjene.Count;
-            vm.BrojRucaka = rucakOcjene.Count;
-
-            vm.ProsjekDorucka = dorucakOcjene.Any()
-                ? dorucakOcjene.Average()
-                : null;
-
-            vm.ProsjekRucka = rucakOcjene.Any()
-                ? rucakOcjene.Average()
-                : null;
-
-            vm.OcjenaDorucka = PorukaZaObrok("Doručak", vm.ProsjekDorucka);
-            vm.OcjenaRucka = PorukaZaObrok("Ručak", vm.ProsjekRucka);
-
-            vm.BrojObroka = vm.BrojDorucaka + vm.BrojRucaka;
-
-            vm.UkupnoSpavanjeMinuta = izvjestaji.Sum(i => i.SpavanjeMinuta);
-
-            if (vm.BrojDolazaka > 0)
+            foreach (var dijete in djeca)
             {
-                vm.ProsjecnoSpavanjeMinuta = vm.UkupnoSpavanjeMinuta / vm.BrojDolazaka;
-                vm.OcjenaSpavanja = PorukaZaSpavanje(vm.ProsjecnoSpavanjeMinuta);
-            }
-            else
-            {
-                vm.ProsjecnoSpavanjeMinuta = 0;
-                vm.OcjenaSpavanja = "Nema dovoljno podataka za ocjenu spavanja jer nema evidentiranih dolazaka.";
-            }
+                var izvjestajiDjeteta = izvjestaji
+                    .Where(i => i.DijeteId == dijete.Id)
+                    .ToList();
 
-            vm.NapomenePoDatumima = izvjestaji
-                .Where(i => !string.IsNullOrWhiteSpace(i.NapomenaAktivnosti))
-                .Select(i => new NapomenaSazetkaViewModel
+                var evidencijeDjeteta = evidencije
+                    .Where(e => e.DijeteId == dijete.Id)
+                    .ToList();
+
+                var sazetak = new DijeteSazetakViewModel
                 {
-                    Datum = i.Datum.Date,
-                    Tekst = i.NapomenaAktivnosti
-                })
-                .ToList();
+                    Dijete = dijete,
+                    BrojDolazaka = evidencijeDjeteta.Count(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK),
+                    BrojOdlazaka = evidencijeDjeteta.Count(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK)
+                };
 
-            vm.Napomene = string.Join("\n",
-                vm.NapomenePoDatumima.Select(n => $"{n.Datum:dd.MM.yyyy}: {n.Tekst}"));
+                var dorucakOcjene = izvjestajiDjeteta
+                    .Where(i => !string.IsNullOrWhiteSpace(i.Dorucak))
+                    .Select(i => VrijednostStatusaObroka(i.StatusDorucka))
+                    .ToList();
+
+                var rucakOcjene = izvjestajiDjeteta
+                    .Where(i => !string.IsNullOrWhiteSpace(i.Rucak))
+                    .Select(i => VrijednostStatusaObroka(i.StatusRucka))
+                    .ToList();
+
+                sazetak.BrojDorucaka = dorucakOcjene.Count;
+                sazetak.BrojRucaka = rucakOcjene.Count;
+                sazetak.BrojObroka = sazetak.BrojDorucaka + sazetak.BrojRucaka;
+
+                sazetak.ProsjekDorucka = dorucakOcjene.Any()
+                    ? dorucakOcjene.Average()
+                    : null;
+
+                sazetak.ProsjekRucka = rucakOcjene.Any()
+                    ? rucakOcjene.Average()
+                    : null;
+
+                sazetak.OcjenaDorucka = PorukaZaObrok("Doručak", sazetak.ProsjekDorucka);
+                sazetak.OcjenaRucka = PorukaZaObrok("Ručak", sazetak.ProsjekRucka);
+
+                sazetak.UkupnoSpavanjeMinuta = izvjestajiDjeteta.Sum(i => i.SpavanjeMinuta);
+
+                if (sazetak.BrojDolazaka > 0)
+                {
+                    sazetak.ProsjecnoSpavanjeMinuta = sazetak.UkupnoSpavanjeMinuta / sazetak.BrojDolazaka;
+                    sazetak.OcjenaSpavanja = PorukaZaSpavanje(sazetak.ProsjecnoSpavanjeMinuta);
+                }
+                else
+                {
+                    sazetak.ProsjecnoSpavanjeMinuta = 0;
+                    sazetak.OcjenaSpavanja = "Nema dovoljno podataka za ocjenu spavanja jer nema evidentiranih dolazaka.";
+                }
+
+                sazetak.NapomenePoDatumima = izvjestajiDjeteta
+                    .Where(i => !string.IsNullOrWhiteSpace(i.NapomenaAktivnosti))
+                    .Select(i => new NapomenaSazetkaViewModel
+                    {
+                        Datum = i.Datum.Date,
+                        Tekst = i.NapomenaAktivnosti
+                    })
+                    .ToList();
+
+                vm.SazeciDjece.Add(sazetak);
+            }
 
             return View(vm);
         }
-
 
 
 
@@ -621,6 +633,7 @@ namespace EVrtic.Controllers
 
     public class OdgajateljSazetakPregledViewModel
     {
+        public List<DijeteSazetakViewModel> SazeciDjece { get; set; } = new();
         public string Period { get; set; } = "Sedmica";
         public DateTime DatumPocetka { get; set; }
         public DateTime DatumKraja { get; set; }
@@ -655,6 +668,31 @@ namespace EVrtic.Controllers
 
         public List<PeriodOpcijaViewModel> SedmicneOpcije { get; set; } = new();
         public List<PeriodOpcijaViewModel> MjesecneOpcije { get; set; } = new();
+        public bool PrikaziSazetak { get; set; }
+    }
+
+    public class DijeteSazetakViewModel
+    {
+        public Dijete Dijete { get; set; } = new();
+
+        public int BrojDolazaka { get; set; }
+        public int BrojOdlazaka { get; set; }
+
+        public int BrojObroka { get; set; }
+        public int BrojDorucaka { get; set; }
+        public int BrojRucaka { get; set; }
+
+        public double? ProsjekDorucka { get; set; }
+        public double? ProsjekRucka { get; set; }
+
+        public string OcjenaDorucka { get; set; } = string.Empty;
+        public string OcjenaRucka { get; set; } = string.Empty;
+
+        public int UkupnoSpavanjeMinuta { get; set; }
+        public int ProsjecnoSpavanjeMinuta { get; set; }
+        public string OcjenaSpavanja { get; set; } = string.Empty;
+
+        public List<NapomenaSazetkaViewModel> NapomenePoDatumima { get; set; } = new();
     }
 
     public class PeriodOpcijaViewModel
