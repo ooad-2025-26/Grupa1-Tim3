@@ -45,12 +45,14 @@
                     <span class="evr-input-icon">🔑</span>
                     <input asp-for="IdentifikacioniKod"
                            class="evr-input"
-                           placeholder="npr. VRTIC-2024-001"
+                           placeholder="npr. AbCd1234"
                            autocomplete="off" />
                 </div>
                 <span asp-validation-for="IdentifikacioniKod" class="text-danger"></span>
                 <small class="evr-hint">
-                    Kod mora biti jedinstven. Roditelju dostavite ovaj kod kako bi se
+                    Kod mora biti jedinstven i imati tačno 8 karaktera, 
+                    razliku prave velika i mala slova.
+                    Roditelju dostavite ovaj kod kako bi se
                     registrirao i povezao sa djetetom.
                 </small>
             </div>

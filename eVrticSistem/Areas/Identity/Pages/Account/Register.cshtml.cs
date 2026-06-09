@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace EVrtic.Areas.Identity.Pages.Account
 {
@@ -75,15 +76,53 @@ namespace EVrtic.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        private static bool ImePrezimeJeIspravno(string? imePrezime)
+        {
+            if (string.IsNullOrWhiteSpace(imePrezime))
+                return false;
+
+            var dijelovi = Regex.Split(imePrezime.Trim(), @"\s+");
+
+            if (dijelovi.Length < 2)
+                return false;
+
+            return dijelovi.All(dio =>
+                Regex.IsMatch(dio, @"^[A-ZČĆŽŠĐ][a-zčćžšđ]+$"));
+        }
+
         public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            if (Input.Uloga == Uloga.ADMINISTRATOR)
-                ModelState.AddModelError("Input.Uloga", "Administrator se ne može registrovati putem forme.");
+            Input.ImePrezime = Regex.Replace(Input.ImePrezime.Trim(), @"\s+", " ");
+            Input.Email = Input.Email.Trim();
 
-            if (Input.Uloga == Uloga.RODITELJ && string.IsNullOrWhiteSpace(Input.IdentifikacioniKodDjeteta))
-                ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Identifikacioni kod djeteta je obavezan za roditelja.");
+            if (!ImePrezimeJeIspravno(Input.ImePrezime))
+            {
+                ModelState.AddModelError(
+                    "Input.ImePrezime",
+                    "Ime i prezime moraju sadržavati najmanje dvije riječi. Svaka riječ mora početi velikim slovom i sadržavati samo slova."
+                );
+            }
+
+            if (Input.Uloga == Uloga.ADMINISTRATOR)
+            {
+                ModelState.AddModelError("Input.Uloga", "Administrator se ne može registrovati putem forme.");
+            }
+
+            var kodDjeteta = Input.IdentifikacioniKodDjeteta?.Trim() ?? string.Empty;
+
+            if (Input.Uloga == Uloga.RODITELJ)
+            {
+                if (string.IsNullOrWhiteSpace(kodDjeteta))
+                {
+                    ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Identifikacioni kod djeteta je obavezan za roditelja.");
+                }
+                else if (kodDjeteta.Length != 8)
+                {
+                    ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Identifikacioni kod djeteta mora imati tačno 8 karaktera.");
+                }
+            }
 
             bool emailVecPostoji = await _userManager.FindByEmailAsync(Input.Email) != null;
             if (emailVecPostoji)
@@ -91,15 +130,20 @@ namespace EVrtic.Areas.Identity.Pages.Account
 
             Dijete? dijete = null;
 
-            if (Input.Uloga == Uloga.RODITELJ && !string.IsNullOrWhiteSpace(Input.IdentifikacioniKodDjeteta))
+            if (Input.Uloga == Uloga.RODITELJ && !string.IsNullOrWhiteSpace(kodDjeteta) && kodDjeteta.Length == 8)
             {
                 dijete = await _context.Djeca
-                    .FirstOrDefaultAsync(d => d.IdentifikacioniKod == Input.IdentifikacioniKodDjeteta.Trim());
+                    .FirstOrDefaultAsync(d =>
+                        EF.Functions.Collate(d.IdentifikacioniKod, "Latin1_General_100_CS_AS") == kodDjeteta);
 
                 if (dijete == null)
+                {
                     ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Dijete sa unesenim identifikacionim kodom nije pronađeno.");
+                }
                 else if (dijete.RoditeljId != null)
+                {
                     ModelState.AddModelError("Input.IdentifikacioniKodDjeteta", "Dijete je već povezano sa roditeljem.");
+                }
             }
 
             if (!ModelState.IsValid)
@@ -114,7 +158,7 @@ namespace EVrtic.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     EmailConfirmed = true,
-                    ImePrezime = Input.ImePrezime,
+                    ImePrezime = Input.ImePrezime.Trim(),
                     StatusNaloga = StatusNaloga.AKTIVAN,
                     KontaktTelefon = Input.KontaktTelefon?.Trim()
                 };
@@ -126,7 +170,7 @@ namespace EVrtic.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     EmailConfirmed = true,
-                    ImePrezime = Input.ImePrezime,
+                    ImePrezime = Input.ImePrezime.Trim(),
                     StatusNaloga = StatusNaloga.AKTIVAN
                 };
             }

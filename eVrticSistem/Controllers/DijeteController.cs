@@ -140,22 +140,37 @@ namespace EVrtic.Controllers
             ModelState.Remove("DodatnaNapomena");
             ModelState.Remove("DatumRodjenja");
 
-            if (string.IsNullOrWhiteSpace(dijete.IdentifikacioniKod))
-                ModelState.AddModelError("IdentifikacioniKod", "Identifikacioni kod je obavezan.");
-            else if (await _context.Djeca.AnyAsync(d => d.IdentifikacioniKod == dijete.IdentifikacioniKod))
-                ModelState.AddModelError("IdentifikacioniKod", "Dijete sa ovim identifikacionim kodom već postoji.");
+            var kod = dijete.IdentifikacioniKod?.Trim() ?? string.Empty;
 
-            if (!ModelState.IsValid) return View(dijete);
+            if (string.IsNullOrWhiteSpace(kod))
+            {
+                ModelState.AddModelError("IdentifikacioniKod", "Identifikacioni kod je obavezan.");
+            }
+            else if (kod.Length != 8)
+            {
+                ModelState.AddModelError("IdentifikacioniKod", "Identifikacioni kod mora imati tačno 8 karaktera.");
+            }
+            else if (await _context.Djeca.AnyAsync(d =>
+                EF.Functions.Collate(d.IdentifikacioniKod, "Latin1_General_CS_AS") == kod))
+            {
+                ModelState.AddModelError("IdentifikacioniKod", "Dijete sa ovim identifikacionim kodom već postoji.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(dijete);
+            }
 
             _context.Add(new Dijete
             {
-                IdentifikacioniKod = dijete.IdentifikacioniKod.Trim(),
+                IdentifikacioniKod = kod,
                 ImePrezime = string.Empty,
                 Aktivno = true
             });
+
             await _context.SaveChangesAsync();
 
-            TempData["Uspjeh"] = $"Identifikacioni kod \"{dijete.IdentifikacioniKod.Trim()}\" je uspješno dodan.";
+            TempData["Uspjeh"] = $"Identifikacioni kod \"{kod}\" je uspješno dodan.";
             return RedirectToAction(nameof(DodajIdentifikacioniKod));
         }
 
@@ -264,7 +279,16 @@ namespace EVrtic.Controllers
                 return View();
             }
 
-            var dijete = await _context.Djeca.FirstOrDefaultAsync(d => d.IdentifikacioniKod == identifikacioniKod.Trim());
+            var kod = identifikacioniKod.Trim();
+
+            if (kod.Length != 8)
+            {
+                ModelState.AddModelError("identifikacioniKod", "Identifikacioni kod mora imati tačno 8 karaktera.");
+                return View();
+            }
+
+            var dijete = await _context.Djeca.FirstOrDefaultAsync(d =>
+                EF.Functions.Collate(d.IdentifikacioniKod, "Latin1_General_CS_AS") == kod);
 
             if (dijete == null)
             {

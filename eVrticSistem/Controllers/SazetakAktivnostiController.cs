@@ -190,7 +190,7 @@ namespace EVrtic.Controllers
             int zadnjaGodinaAplikacije = DateTime.Today.Year;
 
             var prviDanKalendara = new DateTime(prvaGodinaAplikacije, 1, 1);
-            var zadnjiDanKalendara = new DateTime(zadnjaGodinaAplikacije, 12, 31);
+            var zadnjiDanZaSedmice = DateTime.Today;
 
             period = period.Equals("Mjesec", StringComparison.OrdinalIgnoreCase)
                 ? "Mjesec"
@@ -218,7 +218,7 @@ namespace EVrtic.Controllers
                 Djeca = djeca,
                 Dijete = odabranoDijete,
                 OdabraniDijeteId = dijeteId,
-                SedmicneOpcije = GenerisiSedmicneOpcije(prviDanKalendara, zadnjiDanKalendara),
+                SedmicneOpcije = GenerisiSedmicneOpcije(prviDanKalendara, zadnjiDanZaSedmice),
                 MjesecneOpcije = GenerisiMjesecneOpcije(prvaGodinaAplikacije, zadnjaGodinaAplikacije)
             };
 
@@ -346,7 +346,7 @@ namespace EVrtic.Controllers
             int zadnjaGodinaAplikacije = DateTime.Today.Year;
 
             var prviDanKalendara = new DateTime(prvaGodinaAplikacije, 1, 1);
-            var zadnjiDanKalendara = new DateTime(zadnjaGodinaAplikacije, 12, 31);
+            var zadnjiDanZaSedmice = DateTime.Today;
 
             period = period.Equals("Mjesec", StringComparison.OrdinalIgnoreCase)
                 ? "Mjesec"
@@ -375,7 +375,7 @@ namespace EVrtic.Controllers
                 Djeca = djeca,
                 OdabranaGrupaId = grupaId,
                 PrikaziSazetak = generisi,
-                SedmicneOpcije = GenerisiSedmicneOpcije(prviDanKalendara, zadnjiDanKalendara),
+                SedmicneOpcije = GenerisiSedmicneOpcije(prviDanKalendara, zadnjiDanZaSedmice),
                 MjesecneOpcije = GenerisiMjesecneOpcije(prvaGodinaAplikacije, zadnjaGodinaAplikacije)
             };
 

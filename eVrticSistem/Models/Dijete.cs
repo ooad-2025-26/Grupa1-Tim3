@@ -13,7 +13,7 @@ namespace EVrtic.Models
         public string ImePrezime { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(30)]
+        [StringLength(8, MinimumLength = 8, ErrorMessage = "Identifikacioni kod mora imati tačno 8 karaktera.")]
         public string IdentifikacioniKod { get; set; } = string.Empty;
 
         [StringLength(500)]
