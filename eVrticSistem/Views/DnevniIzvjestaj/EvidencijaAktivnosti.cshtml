@@ -171,86 +171,97 @@
 
                 @if (Model.OdabraniDijeteId.HasValue)
                 {
-                    @* ── Obroci (Doručak i Ručak): tekst + status ── *@
-                    <div class="ev-field">
-                        <label class="ev-label">Obroci</label>
-                        @if (Model.TekstJePrijedlog)
-                        {
-                            <p class="ev-prijedlog-hint">
-                                💡 Tekst obroka je predložen na osnovu prethodnog unosa za ovaj dan. Možete ga izmijeniti.
-                            </p>
-                        }
-                        <div class="ev-obroci-grid">
-                            @foreach (var obrok in obrociDef)
+                    @if (!Model.MozeUnositiAktivnosti)
+                    {
+                        <div class="edu-flash-error">
+                            ⚠️ @Model.PorukaZakljucavanja
+                        </div>
+                    }
+
+                    <fieldset disabled="@(!Model.MozeUnositiAktivnosti)" class="ev-locked-fieldset">
+                        @* ── Obroci (Doručak i Ručak): tekst + status ── *@
+                        <div class="ev-field">
+                            <label class="ev-label">Obroci</label>
+                            @if (Model.TekstJePrijedlog)
                             {
-                                <div class="ev-obrok-item">
-                                    <label class="ev-obrok-label">@obrok.Naziv</label>
+                                <p class="ev-prijedlog-hint">
+                                    💡 Tekst obroka je predložen na osnovu prethodnog unosa za ovaj dan. Možete ga izmijeniti.
+                                </p>
+                            }
+                            <div class="ev-obroci-grid">
+                                @foreach (var obrok in obrociDef)
+                                {
+                                    <div class="ev-obrok-item">
+                                        <label class="ev-obrok-label">@obrok.Naziv</label>
 
-                                    <input type="text" name="@obrok.TekstName" class="ev-obrok-tekst"
-                                           value="@obrok.Tekst" placeholder="@obrok.Placeholder" />
+                                        <input type="text" name="@obrok.TekstName" class="ev-obrok-tekst"
+                                               value="@obrok.Tekst" placeholder="@obrok.Placeholder" />
 
-                                    <div class="ev-obrok-options">
-                                        @foreach (var s in statusi)
-                                        {
-                                            <label class="ev-radio-label @(obrok.StatusVal == s.Val ? "ev-selected" : "")">
-                                                <input type="radio" name="@obrok.StatusName"
-                                                       value="@s.Val"
-                                                       @(obrok.StatusVal == s.Val ? "checked" : "")
-                                                       onchange="updateRadioStyle(this)" />
-                                                <span>@s.Tekst</span>
-                                            </label>
-                                        }
+                                        <div class="ev-obrok-options">
+                                            @foreach (var s in statusi)
+                                            {
+                                                <label class="ev-radio-label @(obrok.StatusVal == s.Val ? "ev-selected" : "")">
+                                                    <input type="radio" name="@obrok.StatusName"
+                                                           value="@s.Val"
+                                                           @(obrok.StatusVal == s.Val ? "checked" : "")
+                                                           onchange="updateRadioStyle(this)" />
+                                                    <span>@s.Tekst</span>
+                                                </label>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @* ── Spavanje ── *@
+                        <div class="ev-field">
+                            <label class="ev-label">Spavanje</label>
+                            <div class="ev-spavanje-row">
+                                <div class="ev-time-group">
+                                    <label class="ev-time-label">Od</label>
+                                    <div class="ev-time-wrap">
+                                        <input type="time"
+                                               id="spavOd"
+                                               value="@SpavaStart"
+                                               min="08:00"
+                                               max="16:00"
+                                               class="ev-time-input"
+                                               placeholder="HH:MM" />
+                                        <span class="ev-time-icon">🕐</span>
                                     </div>
                                 </div>
-                            }
-                        </div>
-                    </div>
-
-                    @* ── Spavanje ── *@
-                    <div class="ev-field">
-                        <label class="ev-label">Spavanje</label>
-                        <div class="ev-spavanje-row">
-                            <div class="ev-time-group">
-                                <label class="ev-time-label">Od</label>
-                                <div class="ev-time-wrap">
-                                    <input type="time"
-                                           id="spavOd"
-                                           value="@SpavaStart"
-                                           min="08:00"
-                                           max="16:00"
-                                           class="ev-time-input"
-                                           placeholder="HH:MM" />
-                                    <span class="ev-time-icon">🕐</span>
+                                <div class="ev-time-group">
+                                    <label class="ev-time-label">Do</label>
+                                    <div class="ev-time-wrap">
+                                        <input type="time"
+                                               id="spavDo"
+                                               value="@SpavaEnd"
+                                               min="08:00"
+                                               max="16:00"
+                                               class="ev-time-input"
+                                               placeholder="HH:MM" />
+                                        <span class="ev-time-icon">🕐</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="ev-time-group">
-                                <label class="ev-time-label">Do</label>
-                                <div class="ev-time-wrap">
-                                    <input type="time"
-                                           id="spavDo"
-                                           value="@SpavaEnd"
-                                           min="08:00"
-                                           max="16:00"
-                                           class="ev-time-input"
-                                           placeholder="HH:MM" />
-                                    <span class="ev-time-icon">🕐</span>
-                                </div>
-                            </div>
+                            <div id="spavanje-error" class="ev-inline-error" style="display:none;"></div>
                         </div>
-                        <div id="spavanje-error" class="ev-inline-error" style="display:none;"></div>
-                    </div>
 
-                    @* ── Napomena ── *@
-                    <div class="ev-field">
-                        <label class="ev-label">Napomena</label>
-                        <textarea name="Napomena" class="ev-textarea" rows="3"
-                                  placeholder="Npr. Mirno spavao.">@Napomena</textarea>
-                    </div>
+                        @* ── Napomena ── *@
+                        <div class="ev-field">
+                            <label class="ev-label">Napomena</label>
+                            <textarea name="Napomena" class="ev-textarea" rows="3"
+                                      placeholder="Npr. Mirno spavao.">@Napomena</textarea>
+                        </div>
+                    </fieldset>
 
-                    <button type="submit" class="ev-submit" formnovalidate="formnovalidate"
-                            id="saveBtn">
-                        💾 Sačuvaj zapis
-                    </button>
+                    @if (Model.MozeUnositiAktivnosti)
+                    {
+                        <button type="submit" class="ev-submit" formnovalidate="formnovalidate" id="saveBtn">
+                            💾 Sačuvaj zapis
+                        </button>
+                    }
                 }
                 else
                 {
@@ -286,6 +297,16 @@
 <style>
     .educator-main-scroll { overflow-y: auto; }
 
+
+    .ev-locked-fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .ev-locked-fieldset[disabled] {
+        opacity: 0.65;
+    }
     .ev-header {
         display: flex;
         justify-content: space-between;

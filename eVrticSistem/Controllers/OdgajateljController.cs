@@ -9,7 +9,7 @@ using EVrtic.Data;
 using EVrtic.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace eVrticSistem.Controllers
+namespace EVrtic.Controllers
 {
     [Authorize(Roles = "ADMINISTRATOR")]
     public class OdgajateljController : Controller

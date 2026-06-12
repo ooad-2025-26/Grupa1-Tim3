@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace eVrticSistem.Controllers
 {
+    [Authorize(Roles = "ADMINISTRATOR")]
     public class RoditeljController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EVrtic.Data;
 using EVrtic.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EVrtic.Controllers
 {
+    [Authorize(Roles = "ADMINISTRATOR")]
     public class AlergijaDjetetaController : Controller
-    {
+    {   
         private readonly ApplicationDbContext _context;
 
         public AlergijaDjetetaController(ApplicationDbContext context)

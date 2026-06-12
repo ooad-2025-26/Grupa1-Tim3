@@ -24,6 +24,8 @@ namespace EVrtic.Controllers
         }
 
         // GET: DnevniIzvjestaj
+        [Authorize(Roles = "ADMINISTRATOR")]
+
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.DnevniIzvjestaji.Include(d => d.Dijete);
@@ -31,6 +33,8 @@ namespace EVrtic.Controllers
         }
 
         // GET: DnevniIzvjestaj/Details/5
+        [Authorize(Roles = "ADMINISTRATOR")]
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -50,6 +54,8 @@ namespace EVrtic.Controllers
         }
 
         // GET: DnevniIzvjestaj/Create
+        [Authorize(Roles = "ADMINISTRATOR")]
+
         public IActionResult Create()
         {
             ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
@@ -196,6 +202,17 @@ namespace EVrtic.Controllers
 
             if (dijeteId.HasValue)
             {
+                var odabranoDijete = djeca.FirstOrDefault(d => d.Id == dijeteId.Value);
+
+                if (odabranoDijete == null)
+                {
+                    return Forbid();
+                }
+
+                var provjera = await ProvjeriDozvoluUnosaAktivnosti(dijeteId.Value, odabraniDatum);
+
+                vm.MozeUnositiAktivnosti = provjera.Dozvoljeno;
+                vm.PorukaZakljucavanja = provjera.Poruka;
                 // Da li ovo dijete već ima sačuvan izvještaj za odabrani dan?
                 var postojeci = await _context.DnevniIzvjestaji
                     .FirstOrDefaultAsync(i => i.DijeteId == dijeteId.Value
@@ -273,6 +290,19 @@ namespace EVrtic.Controllers
                     && dj.Grupa.OdgajateljId == odgajatelj.Id);
 
             if (dijete == null) return NotFound();
+
+            var provjera = await ProvjeriDozvoluUnosaAktivnosti(DijeteId, odabraniDatum);
+
+            if (!provjera.Dozvoljeno)
+            {
+                TempData["Greska"] = provjera.Poruka;
+
+                return RedirectToAction(nameof(EvidencijaAktivnosti), new
+                {
+                    dijeteId = DijeteId,
+                    datum = odabraniDatum.ToString("yyyy-MM-dd")
+                });
+            }
 
             static bool ImaUnosVremena(params string?[] dijeloviVremena)
             {
@@ -434,6 +464,31 @@ namespace EVrtic.Controllers
             });
         }
 
+        private async Task<(bool Dozvoljeno, string Poruka)> ProvjeriDozvoluUnosaAktivnosti(int dijeteId, DateTime datum)
+        {
+            var evidencije = await _context.EvidencijeDolaskaOdlaska
+                .Where(e => e.DijeteId == dijeteId
+                    && e.StatusEvidencije == StatusEvidencije.EVIDENTIRANO
+                    && e.VrijemeDogadjaja.Date == datum.Date)
+                .OrderBy(e => e.VrijemeDogadjaja)
+                .ToListAsync();
+
+            bool imaDolazak = evidencije.Any(e => e.TipDogadjaja == TipDogadjaja.DOLAZAK);
+            bool imaOdlazak = evidencije.Any(e => e.TipDogadjaja == TipDogadjaja.ODLAZAK);
+
+            if (!imaDolazak)
+            {
+                return (false, "Nije moguće unositi aktivnosti jer dolazak djeteta nije evidentiran za odabrani dan.");
+            }
+
+            if (imaOdlazak)
+            {
+                return (false, "Aktivnosti za ovaj dan su zaključane jer je odlazak djeteta već evidentiran.");
+            }
+
+            return (true, string.Empty);
+        }
+
         private bool DnevniIzvjestajExists(int id)
         {
             return _context.DnevniIzvjestaji.Any(e => e.Id == id);
@@ -469,6 +524,9 @@ namespace EVrtic.Controllers
         // Status obroka: -1 = ništa nije odabrano (novi unos), inače 0/1/2
         public int StatusDoruckaVal { get; set; } = -1;
         public int StatusRuckaVal { get; set; } = -1;
+
+        public bool MozeUnositiAktivnosti { get; set; }
+        public string? PorukaZakljucavanja { get; set; }
 
         // Zadržano radi kompatibilnosti sa starim (neaktivnim) pogledom
         // Views/Odgajatelj/EvidencijaAktivnosti.cshtml

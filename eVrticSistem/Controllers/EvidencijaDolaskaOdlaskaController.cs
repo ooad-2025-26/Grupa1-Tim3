@@ -24,6 +24,7 @@ namespace EVrtic.Controllers
         }
 
         // GET: EvidencijaDolaskaOdlaska
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.EvidencijeDolaskaOdlaska.Include(e => e.Dijete).Include(e => e.DnevniQRCode);
@@ -31,6 +32,7 @@ namespace EVrtic.Controllers
         }
 
         // GET: EvidencijaDolaskaOdlaska/Details/5
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -51,6 +53,7 @@ namespace EVrtic.Controllers
         }
 
         // GET: EvidencijaDolaskaOdlaska/Create
+        [Authorize(Roles = "ADMINISTRATOR")]
         public IActionResult Create()
         {
             ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
@@ -77,6 +80,7 @@ namespace EVrtic.Controllers
         }
 
         // GET: EvidencijaDolaskaOdlaska/Edit/5
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -132,6 +136,7 @@ namespace EVrtic.Controllers
         }
 
         // GET: EvidencijaDolaskaOdlaska/Delete/5
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,8 +157,10 @@ namespace EVrtic.Controllers
         }
 
         // POST: EvidencijaDolaskaOdlaska/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var evidencijaDolaskaOdlaska = await _context.EvidencijeDolaskaOdlaska.FindAsync(id);
