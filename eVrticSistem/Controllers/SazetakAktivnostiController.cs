@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EVrtic.Controllers
 {
-    [Authorize(Roles = "ADMINISTRATOR")]
     public class SazetakAktivnostiController : Controller
     {
         private readonly ApplicationDbContext _context;
