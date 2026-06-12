@@ -24,7 +24,7 @@ namespace eVrticSistem.Controllers
         // GET: Administrator
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Administratori.ToListAsync());
+            return NotFound();
         }
 
         // GET: Administrator/Details/5
@@ -48,7 +48,7 @@ namespace eVrticSistem.Controllers
         // GET: Administrator/Create
         public IActionResult Create()
         {
-            return View();
+            return NotFound();
         }
 
         // POST: Administrator/Create
@@ -70,17 +70,7 @@ namespace eVrticSistem.Controllers
         // GET: Administrator/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var administrator = await _context.Administratori.FindAsync(id);
-            if (administrator == null)
-            {
-                return NotFound();
-            }
-            return View(administrator);
+            return NotFound();
         }
 
         // POST: Administrator/Edit/5
@@ -121,19 +111,7 @@ namespace eVrticSistem.Controllers
         // GET: Administrator/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var administrator = await _context.Administratori
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (administrator == null)
-            {
-                return NotFound();
-            }
-
-            return View(administrator);
+            return NotFound();
         }
 
         // POST: Administrator/Delete/5

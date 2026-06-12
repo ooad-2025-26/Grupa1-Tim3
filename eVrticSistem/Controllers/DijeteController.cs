@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -174,6 +177,37 @@ namespace EVrtic.Controllers
             return RedirectToAction(nameof(DodajIdentifikacioniKod));
         }
 
+        private static bool ImePrezimeImaNajmanjeDvijeRijeciSaVelikimSlovom(string? imePrezime)
+        {
+            if (string.IsNullOrWhiteSpace(imePrezime))
+                return false;
+
+            var dijelovi = Regex.Split(imePrezime.Trim(), @"\s+");
+
+            return dijelovi.Length >= 2 &&
+                   dijelovi.All(dio => Regex.IsMatch(dio, @"^[A-ZČĆŽŠĐ][a-zčćžšđ]+$"));
+        }
+
+        private static bool DatumRodjenjaJeUDozvoljenomRasponu(DateTime datumRodjenja)
+        {
+            var danas = DateTime.Today;
+            var najmladjiDozvoljeniDatum = danas.AddMonths(-3);
+            var najstarijiDozvoljeniDatum = danas.AddYears(-7);
+
+            return datumRodjenja.Date <= najmladjiDozvoljeniDatum &&
+                   datumRodjenja.Date >= najstarijiDozvoljeniDatum;
+        }
+
+        private static bool SveStavkeImajuNajvise100Slova(IEnumerable<string>? stavke)
+        {
+            if (stavke == null)
+                return true;
+
+            return stavke
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .All(s => s.Trim().Length <= 100);
+        }
+
         // ─── RODITELJ: Unos podataka o djetetu ──────────────────────────────
 
         [Authorize(Roles = "RODITELJ")]
@@ -223,6 +257,30 @@ namespace EVrtic.Controllers
             var dijete = await _context.Djeca.Include(d => d.Alergije).Include(d => d.Bolesti)
                 .FirstOrDefaultAsync(d => d.Id == vm.DijeteId && d.RoditeljId == korisnik.Id);
             if (dijete == null) return Forbid();
+
+            vm.ImePrezime = Regex.Replace((vm.ImePrezime ?? string.Empty).Trim(), @"\s+", " ");
+
+            if (!ImePrezimeImaNajmanjeDvijeRijeciSaVelikimSlovom(vm.ImePrezime))
+            {
+                ModelState.AddModelError(
+                    nameof(vm.ImePrezime),
+                    "Ime i prezime djeteta moraju imati najmanje dvije riječi. Svaka riječ mora početi velikim slovom i sadržavati samo slova."
+                );
+            }
+
+            if (!DatumRodjenjaJeUDozvoljenomRasponu(vm.DatumRodjenja))
+            {
+                ModelState.AddModelError(
+                    nameof(vm.DatumRodjenja),
+                    "Datum rođenja mora biti u prošlosti, dijete mora imati najmanje 3 mjeseca i najviše 7 godina."
+                );
+            }
+
+            if (!SveStavkeImajuNajvise100Slova(vm.Alergije))
+                ModelState.AddModelError("Alergije", "Svaka alergija može imati najviše 100 slova.");
+
+            if (!SveStavkeImajuNajvise100Slova(vm.Bolesti))
+                ModelState.AddModelError("Bolesti", "Svaka bolest/stanje može imati najviše 100 slova.");
 
             if (vm.Alergije != null)
             {
@@ -426,7 +484,7 @@ namespace EVrtic.Controllers
         public int DijeteId { get; set; }
 
         [Required(ErrorMessage = "Ime i prezime djeteta je obavezno.")]
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "Ime i prezime djeteta može imati najviše 100 karaktera.")]
         [Display(Name = "Ime i prezime djeteta")]
         public string ImePrezime { get; set; } = string.Empty;
 

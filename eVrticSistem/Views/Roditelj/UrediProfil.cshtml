@@ -71,7 +71,7 @@
 
                     <div class="form-field">
                         <label class="form-label" asp-for="KontaktTelefon">Kontakt telefon</label>
-                        <input class="form-input" asp-for="KontaktTelefon" placeholder="npr. 061 123 456" />
+                        <input class="form-input" asp-for="KontaktTelefon" placeholder="npr. 061123456" maxlength="9" inputmode="numeric" />
                         <span class="text-danger" asp-validation-for="KontaktTelefon"></span>
                     </div>
 

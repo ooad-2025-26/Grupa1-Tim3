@@ -80,7 +80,7 @@
 
                         <div class="register-input">
                             <span>📱</span>
-                            <input asp-for="Input.KontaktTelefon" placeholder="Kontakt telefon" autocomplete="tel" />
+                            <input asp-for="Input.KontaktTelefon" placeholder="npr. 061123456" autocomplete="tel" maxlength="9" inputmode="numeric" />
                         </div>
                         <span asp-validation-for="Input.KontaktTelefon" class="text-danger"></span>
 

@@ -274,6 +274,71 @@ namespace EVrtic.Controllers
 
             if (dijete == null) return NotFound();
 
+            static bool ImaUnosVremena(params string?[] dijeloviVremena)
+            {
+                return dijeloviVremena.Any(v => !string.IsNullOrWhiteSpace(v));
+            }
+
+            static bool TryParseVrijeme(string? satiText, string? minuteText, out TimeSpan vrijeme)
+            {
+                vrijeme = TimeSpan.Zero;
+
+                if (!int.TryParse(satiText, out var sati) || !int.TryParse(minuteText, out var minute))
+                    return false;
+
+                if (sati < 0 || sati > 23 || minute < 0 || minute > 59)
+                    return false;
+
+                vrijeme = new TimeSpan(sati, minute, 0);
+                return true;
+            }
+
+            IActionResult VratiNaEvidencijuSaGreskom(string poruka)
+            {
+                TempData["Greska"] = poruka;
+                return RedirectToAction(nameof(EvidencijaAktivnosti), new
+                {
+                    dijeteId = DijeteId,
+                    datum = odabraniDatum.ToString("yyyy-MM-dd")
+                });
+            }
+
+            var imaPocetakSpavanja = ImaUnosVremena(SpavanjePocetakSati, SpavanjePocetakMinuta);
+            var imaKrajSpavanja = ImaUnosVremena(SpavanjeKrajSati, SpavanjeKrajMinuta);
+            TimeSpan? pocetakSpavanja = null;
+            TimeSpan? krajSpavanja = null;
+
+            if (imaPocetakSpavanja || imaKrajSpavanja)
+            {
+                if (!imaPocetakSpavanja || !imaKrajSpavanja)
+                {
+                    return VratiNaEvidencijuSaGreskom("Unesite i početak i kraj spavanja.");
+                }
+
+                if (!TryParseVrijeme(SpavanjePocetakSati, SpavanjePocetakMinuta, out var pocetak)
+                    || !TryParseVrijeme(SpavanjeKrajSati, SpavanjeKrajMinuta, out var kraj))
+                {
+                    return VratiNaEvidencijuSaGreskom("Vrijeme spavanja nije ispravno uneseno.");
+                }
+
+                var najranijeSpavanje = new TimeSpan(8, 0, 0);
+                var najkasnijeSpavanje = new TimeSpan(16, 0, 0);
+
+                if (pocetak < najranijeSpavanje || pocetak > najkasnijeSpavanje
+                    || kraj < najranijeSpavanje || kraj > najkasnijeSpavanje)
+                {
+                    return VratiNaEvidencijuSaGreskom("Vrijeme spavanja mora biti između 08:00 i 16:00.");
+                }
+
+                if (kraj <= pocetak)
+                {
+                    return VratiNaEvidencijuSaGreskom("Kraj spavanja mora biti poslije početka spavanja.");
+                }
+
+                pocetakSpavanja = pocetak;
+                krajSpavanja = kraj;
+            }
+
             // Pronađi ili kreiraj izvještaj za taj dan (upsert)
             var izvjestaj = await _context.DnevniIzvjestaji
                 .FirstOrDefaultAsync(i => i.DijeteId == DijeteId
@@ -302,32 +367,13 @@ namespace EVrtic.Controllers
             izvjestaj.Rucak = (RucakTekst ?? string.Empty).Trim();
             izvjestaj.StatusRucka = ParseStatus(StatusRucka);
 
-            // Parsiraj vrijeme spavanja (od / do)
-            if (int.TryParse(SpavanjePocetakSati, out int pocSati)
-                && int.TryParse(SpavanjePocetakMinuta, out int pocMin))
-            {
-                izvjestaj.VrijemeDolaska = new TimeSpan(pocSati, pocMin, 0);
-            }
-            else
-            {
-                izvjestaj.VrijemeDolaska = null;
-            }
-
-            if (int.TryParse(SpavanjeKrajSati, out int krajSati)
-                && int.TryParse(SpavanjeKrajMinuta, out int krajMin))
-            {
-                izvjestaj.VrijemeOdlaska = new TimeSpan(krajSati, krajMin, 0);
-            }
-            else
-            {
-                izvjestaj.VrijemeOdlaska = null;
-            }
-
-            if (izvjestaj.VrijemeDolaska.HasValue && izvjestaj.VrijemeOdlaska.HasValue)
-            {
-                var razlika = izvjestaj.VrijemeOdlaska.Value - izvjestaj.VrijemeDolaska.Value;
-                izvjestaj.SpavanjeMinuta = razlika.TotalMinutes > 0 ? (int)razlika.TotalMinutes : 0;
-            }
+            // Vrijeme spavanja je već validirano iznad.
+            // Ako se ne unese ništa, spavanje ostaje prazno i minute se postavljaju na 0.
+            izvjestaj.VrijemeDolaska = pocetakSpavanja;
+            izvjestaj.VrijemeOdlaska = krajSpavanja;
+            izvjestaj.SpavanjeMinuta = pocetakSpavanja.HasValue && krajSpavanja.HasValue
+                ? (int)(krajSpavanja.Value - pocetakSpavanja.Value).TotalMinutes
+                : 0;
 
             izvjestaj.NapomenaAktivnosti = Napomena ?? string.Empty;
 

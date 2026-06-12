@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,23 @@ namespace eVrticSistem.Controllers
         {
             _context = context;
             _userManager = userManager;
+        }
+
+        private static bool ImePrezimeJeIspravno(string? imePrezime)
+        {
+            if (string.IsNullOrWhiteSpace(imePrezime))
+                return false;
+
+            var dijelovi = Regex.Split(imePrezime.Trim(), @"\s+");
+
+            return dijelovi.Length >= 2 &&
+                   dijelovi.All(dio => Regex.IsMatch(dio, @"^[A-ZČĆŽŠĐ][a-zčćžšđ]+$"));
+        }
+
+        private static bool TelefonJeIspravan(string? telefon)
+        {
+            return string.IsNullOrWhiteSpace(telefon) ||
+                   Regex.IsMatch(telefon.Trim(), @"^(03|06)\d{7}$");
         }
 
         // ─── RODITELJ: Pregled vlastitog profila ─────────────────────────────
@@ -77,6 +95,26 @@ namespace eVrticSistem.Controllers
 
             // Email je login-identitet i ne mijenja se ovdje — vraćamo postojeći radi prikaza
             vm.Email = roditelj.Email;
+            vm.ImePrezime = Regex.Replace((vm.ImePrezime ?? string.Empty).Trim(), @"\s+", " ");
+            vm.KontaktTelefon = string.IsNullOrWhiteSpace(vm.KontaktTelefon)
+                ? null
+                : Regex.Replace(vm.KontaktTelefon.Trim(), @"\s+", "");
+
+            if (!ImePrezimeJeIspravno(vm.ImePrezime))
+            {
+                ModelState.AddModelError(
+                    nameof(vm.ImePrezime),
+                    "Ime i prezime mora imati najmanje dvije riječi. Svaka riječ mora početi velikim slovom i sadržavati samo slova."
+                );
+            }
+
+            if (!TelefonJeIspravan(vm.KontaktTelefon))
+            {
+                ModelState.AddModelError(
+                    nameof(vm.KontaktTelefon),
+                    "Broj telefona mora imati tačno 9 cifara i počinjati sa 03 ili 06."
+                );
+            }
 
             if (!ModelState.IsValid)
             {
@@ -84,9 +122,7 @@ namespace eVrticSistem.Controllers
             }
 
             roditelj.ImePrezime = vm.ImePrezime.Trim();
-            roditelj.KontaktTelefon = string.IsNullOrWhiteSpace(vm.KontaktTelefon)
-                ? null
-                : vm.KontaktTelefon.Trim();
+            roditelj.KontaktTelefon = vm.KontaktTelefon;
 
             await _context.SaveChangesAsync();
 
@@ -205,7 +241,7 @@ namespace eVrticSistem.Controllers
         [Display(Name = "Ime i prezime")]
         public string ImePrezime { get; set; } = string.Empty;
 
-        [StringLength(20, ErrorMessage = "Kontakt telefon može imati najviše 20 karaktera.")]
+        [RegularExpression(@"^(03|06)\d{7}$", ErrorMessage = "Broj telefona mora imati tačno 9 cifara i počinjati sa 03 ili 06.")]
         [Display(Name = "Kontakt telefon")]
         public string? KontaktTelefon { get; set; }
 

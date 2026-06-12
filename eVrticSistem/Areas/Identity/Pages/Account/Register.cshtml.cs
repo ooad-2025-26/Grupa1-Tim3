@@ -66,7 +66,7 @@ namespace EVrtic.Areas.Identity.Pages.Account
             public string? IdentifikacioniKodDjeteta { get; set; }
 
             [Display(Name = "Kontakt telefon")]
-            [StringLength(20, ErrorMessage = "Broj telefona može imati najviše 20 karaktera.")]
+            [RegularExpression(@"^(03|06)\d{7}$", ErrorMessage = "Broj telefona mora imati tačno 9 cifara i počinjati sa 03 ili 06.")]
             public string? KontaktTelefon { get; set; }
         }
 
@@ -83,11 +83,8 @@ namespace EVrtic.Areas.Identity.Pages.Account
 
             var dijelovi = Regex.Split(imePrezime.Trim(), @"\s+");
 
-            if (dijelovi.Length < 2)
-                return false;
-
-            return dijelovi.All(dio =>
-                Regex.IsMatch(dio, @"^[A-ZČĆŽŠĐ][a-zčćžšđ]+$"));
+            return dijelovi.Length >= 2 &&
+                   dijelovi.All(dio => Regex.IsMatch(dio, @"^[A-ZČĆŽŠĐ][a-zčćžšđ]+$"));
         }
 
         public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
@@ -96,12 +93,15 @@ namespace EVrtic.Areas.Identity.Pages.Account
 
             Input.ImePrezime = Regex.Replace(Input.ImePrezime.Trim(), @"\s+", " ");
             Input.Email = Input.Email.Trim();
+            Input.KontaktTelefon = string.IsNullOrWhiteSpace(Input.KontaktTelefon)
+                ? null
+                : Regex.Replace(Input.KontaktTelefon.Trim(), @"\s+", "");
 
             if (!ImePrezimeJeIspravno(Input.ImePrezime))
             {
                 ModelState.AddModelError(
                     "Input.ImePrezime",
-                    "Ime i prezime moraju sadržavati najmanje dvije riječi. Svaka riječ mora početi velikim slovom i sadržavati samo slova."
+                    "Ime i prezime mora imati najmanje dvije riječi. Svaka riječ mora početi velikim slovom i sadržavati samo slova."
                 );
             }
 

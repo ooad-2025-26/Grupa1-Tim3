@@ -3,6 +3,7 @@ using EVrtic.Services;
 using EVrtic.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+
+var fho = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+fho.KnownNetworks.Clear();
+fho.KnownProxies.Clear();
+app.UseForwardedHeaders(fho);
 
 using (var scope = app.Services.CreateScope())
 {

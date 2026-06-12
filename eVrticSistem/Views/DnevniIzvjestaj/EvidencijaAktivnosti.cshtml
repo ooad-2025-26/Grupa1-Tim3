@@ -97,7 +97,12 @@
                 <div class="edu-flash-ok">✅ @TempData["Uspjeh"]</div>
             }
 
-            <form asp-action="SacuvajAktivnosti" method="post" class="ev-form">
+            @if (TempData["Greska"] != null)
+            {
+                <div class="edu-flash-error">⚠️ @TempData["Greska"]</div>
+            }
+
+            <form asp-action="SacuvajAktivnosti" method="post" class="ev-form" id="evForm">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="Datum" value="@Model.Datum.ToString("yyyy-MM-dd")" />
 
@@ -211,6 +216,8 @@
                                     <input type="time"
                                            id="spavOd"
                                            value="@SpavaStart"
+                                           min="08:00"
+                                           max="16:00"
                                            class="ev-time-input"
                                            placeholder="HH:MM" />
                                     <span class="ev-time-icon">🕐</span>
@@ -222,12 +229,15 @@
                                     <input type="time"
                                            id="spavDo"
                                            value="@SpavaEnd"
+                                           min="08:00"
+                                           max="16:00"
                                            class="ev-time-input"
                                            placeholder="HH:MM" />
                                     <span class="ev-time-icon">🕐</span>
                                 </div>
                             </div>
                         </div>
+                        <div id="spavanje-error" class="ev-inline-error" style="display:none;"></div>
                     </div>
 
                     @* ── Napomena ── *@
@@ -294,6 +304,26 @@
         padding: 12px 18px;
         margin-bottom: 18px;
         font-weight: 600;
+    }
+
+    .edu-flash-error {
+        background: #fff4e5;
+        border: 1px solid #f2b84b;
+        color: #9a5b00;
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 18px;
+        font-weight: 700;
+    }
+
+    .ev-inline-error {
+        background: #fff4e5;
+        border: 1px solid #f2b84b;
+        color: #9a5b00;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        font-weight: 700;
     }
 
     .ev-update-note {
@@ -738,29 +768,15 @@
         radio.closest('.ev-radio-label').classList.add('ev-selected');
     }
 
-    // Handle time input — split into hours and minutes hidden fields
+    // Handle time input — split into hours/minutes hidden fields and validate sleep time
     document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('evForm') || document.querySelector('.ev-form');
         var spavOd = document.getElementById('spavOd');
         var spavDo = document.getElementById('spavDo');
-
-        function injectTimeParts(timeInput, hourName, minName) {
-            if (!timeInput) return;
-            timeInput.addEventListener('change', function () {
-                var parts = this.value.split(':');
-                var form = this.closest('form');
-                setHidden(form, hourName, parts[0] || '');
-                setHidden(form, minName, parts[1] || '');
-            });
-            // Trigger on load if already has value
-            if (timeInput.value) {
-                var parts = timeInput.value.split(':');
-                var form = timeInput.closest('form');
-                setHidden(form, hourName, parts[0] || '');
-                setHidden(form, minName, parts[1] || '');
-            }
-        }
+        var spavanjeError = document.getElementById('spavanje-error');
 
         function setHidden(form, name, val) {
+            if (!form) return;
             var el = form.querySelector('input[name="' + name + '"]');
             if (!el) {
                 el = document.createElement('input');
@@ -771,8 +787,101 @@
             el.value = val;
         }
 
-        injectTimeParts(spavOd, 'SpavanjePocetakSati', 'SpavanjePocetakMinuta');
-        injectTimeParts(spavDo, 'SpavanjeKrajSati', 'SpavanjeKrajMinuta');
+        function updateHiddenParts(timeInput, hourName, minName) {
+            if (!timeInput) return;
+            var parts = (timeInput.value || '').split(':');
+            var form = timeInput.closest('form');
+            setHidden(form, hourName, parts[0] || '');
+            setHidden(form, minName, parts[1] || '');
+        }
+
+        function minutesFromTime(value) {
+            if (!value) return null;
+            var parts = value.split(':');
+            if (parts.length !== 2) return NaN;
+
+            var h = parseInt(parts[0], 10);
+            var m = parseInt(parts[1], 10);
+            if (isNaN(h) || isNaN(m)) return NaN;
+
+            return h * 60 + m;
+        }
+
+        function showSleepError(message) {
+            if (!spavanjeError) return;
+            spavanjeError.textContent = message;
+            spavanjeError.style.display = message ? 'block' : 'none';
+        }
+
+        function validateSleepTime(showMessage) {
+            if (!spavOd || !spavDo) return true;
+
+            var od = spavOd.value;
+            var doVrijeme = spavDo.value;
+
+            if (!od && !doVrijeme) {
+                showSleepError('');
+                return true;
+            }
+
+            if (!od || !doVrijeme) {
+                if (showMessage) showSleepError('Unesite i početak i kraj spavanja.');
+                return false;
+            }
+
+            var odMin = minutesFromTime(od);
+            var doMin = minutesFromTime(doVrijeme);
+            var minDozvoljeno = 8 * 60;
+            var maxDozvoljeno = 16 * 60;
+
+            if (isNaN(odMin) || isNaN(doMin)) {
+                if (showMessage) showSleepError('Vrijeme spavanja nije ispravno uneseno.');
+                return false;
+            }
+
+            if (odMin < minDozvoljeno || odMin > maxDozvoljeno || doMin < minDozvoljeno || doMin > maxDozvoljeno) {
+                if (showMessage) showSleepError('Vrijeme spavanja mora biti između 08:00 i 16:00.');
+                return false;
+            }
+
+            if (doMin <= odMin) {
+                if (showMessage) showSleepError('Kraj spavanja mora biti poslije početka spavanja.');
+                return false;
+            }
+
+            showSleepError('');
+            return true;
+        }
+
+        function bindTimeInput(timeInput, hourName, minName) {
+            if (!timeInput) return;
+
+            timeInput.addEventListener('input', function () {
+                updateHiddenParts(timeInput, hourName, minName);
+                validateSleepTime(true);
+            });
+
+            timeInput.addEventListener('change', function () {
+                updateHiddenParts(timeInput, hourName, minName);
+                validateSleepTime(true);
+            });
+
+            updateHiddenParts(timeInput, hourName, minName);
+        }
+
+        bindTimeInput(spavOd, 'SpavanjePocetakSati', 'SpavanjePocetakMinuta');
+        bindTimeInput(spavDo, 'SpavanjeKrajSati', 'SpavanjeKrajMinuta');
+
+        if (form) {
+            form.addEventListener('submit', function (event) {
+                updateHiddenParts(spavOd, 'SpavanjePocetakSati', 'SpavanjePocetakMinuta');
+                updateHiddenParts(spavDo, 'SpavanjeKrajSati', 'SpavanjeKrajMinuta');
+
+                if (!validateSleepTime(true)) {
+                    event.preventDefault();
+                }
+            });
+        }
 
         // Initialize radio styles on load
         document.querySelectorAll('.ev-radio-label input[type="radio"]:checked').forEach(function(r) {

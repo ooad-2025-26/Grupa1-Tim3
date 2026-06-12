@@ -60,6 +60,8 @@ namespace EVrtic.Controllers
 
             if (string.IsNullOrWhiteSpace(vm.ImeGrupe))
                 ModelState.AddModelError(nameof(vm.ImeGrupe), "Ime grupe je obavezno.");
+            else if (await _context.Grupe.AnyAsync(g => g.ImeGrupe.ToLower() == vm.ImeGrupe.Trim().ToLower()))
+                ModelState.AddModelError(nameof(vm.ImeGrupe), "Grupa sa ovim imenom već postoji.");
 
             if (vm.OdgajateljId == null)
                 ModelState.AddModelError(nameof(vm.OdgajateljId), "Morate dodijeliti odgajatelja grupi.");
@@ -133,6 +135,8 @@ namespace EVrtic.Controllers
 
             if (string.IsNullOrWhiteSpace(vm.ImeGrupe))
                 ModelState.AddModelError(nameof(vm.ImeGrupe), "Ime grupe je obavezno.");
+            else if (await _context.Grupe.AnyAsync(g => g.Id != id && g.ImeGrupe.ToLower() == vm.ImeGrupe.Trim().ToLower()))
+                ModelState.AddModelError(nameof(vm.ImeGrupe), "Grupa sa ovim imenom već postoji.");
 
             if (vm.OdgajateljId == null)
                 ModelState.AddModelError(nameof(vm.OdgajateljId), "Morate dodijeliti odgajatelja grupi.");

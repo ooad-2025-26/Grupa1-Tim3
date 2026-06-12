@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Podaci o djetetu";
     bool novaRegistracija = (bool)(ViewData["NovaRegistracija"] ?? false);
+    string najstarijiDatumRodjenja = DateTime.Today.AddYears(-7).ToString("yyyy-MM-dd");
+    string najmladjiDatumRodjenja = DateTime.Today.AddMonths(-3).ToString("yyyy-MM-dd");
 }
 
 <div class="unos-page">
@@ -33,13 +35,13 @@
             <section class="info-card">
                 <div class="unos-input">
                     <span>👤</span>
-                    <input asp-for="ImePrezime" placeholder="Ime i prezime djeteta *" />
+                    <input asp-for="ImePrezime" placeholder="Ime i prezime djeteta *" autocomplete="name" />
                 </div>
                 <span asp-validation-for="ImePrezime" class="text-danger validation-msg"></span>
 
                 <div class="unos-input">
                     <span>🎂</span>
-                    <input asp-for="DatumRodjenja" type="date" />
+                    <input asp-for="DatumRodjenja" type="date" min="@najstarijiDatumRodjenja" max="@najmladjiDatumRodjenja" />
                 </div>
                 <span asp-validation-for="DatumRodjenja" class="text-danger validation-msg"></span>
 
@@ -70,7 +72,8 @@
                                            value="@Model.Alergije[i]"
                                            placeholder="Naziv alergije"
                                            class="unos-tag-input"
-                                           oninput="provjeriDuplicate('alergije-container','Alergije','alergija-error')" />
+                                           maxlength="100"
+                                           oninput="provjeriPolja('alergije-container','Alergije','alergija-error')" />
                                 </div>
 
                                 <button type="button"
@@ -83,6 +86,7 @@
                     </div>
 
                     <div id="alergija-error" class="text-danger duplicate-error"></div>
+                    <span asp-validation-for="Alergije" class="text-danger validation-msg"></span>
 
                     <button type="button"
                             class="unos-add-btn"
@@ -110,7 +114,8 @@
                                            value="@Model.Bolesti[i]"
                                            placeholder="Naziv bolesti ili stanja"
                                            class="unos-tag-input"
-                                           oninput="provjeriDuplicate('bolesti-container','Bolesti','bolest-error')" />
+                                           maxlength="100"
+                                           oninput="provjeriPolja('bolesti-container','Bolesti','bolest-error')" />
                                 </div>
 
                                 <button type="button"
@@ -123,6 +128,7 @@
                     </div>
 
                     <div id="bolest-error" class="text-danger duplicate-error"></div>
+                    <span asp-validation-for="Bolesti" class="text-danger validation-msg"></span>
 
                     <button type="button"
                             class="unos-add-btn"
@@ -518,7 +524,8 @@
                            name="${fieldName}[${idx}]"
                            placeholder="${placeholder}"
                            class="unos-tag-input"
-                           oninput="provjeriDuplicate('${containerId}','${fieldName}','${errorId}')" />
+                           maxlength="100"
+                           oninput="provjeriPolja('${containerId}','${fieldName}','${errorId}')" />
                 </div>
                 <button type="button"
                         class="unos-remove-btn"
@@ -533,7 +540,7 @@
         function ukloniRed(btn, containerId, fieldName, errorId) {
             btn.closest('.unos-tag-row').remove();
             renumeriraj(containerId, fieldName);
-            provjeriDuplicate(containerId, fieldName, errorId);
+            provjeriPolja(containerId, fieldName, errorId);
         }
 
         function renumeriraj(containerId, fieldName) {
@@ -541,30 +548,33 @@
                 .forEach((inp, i) => inp.name = `${fieldName}[${i}]`);
         }
 
-        function provjeriDuplicate(containerId, fieldName, errorId) {
+        function provjeriPolja(containerId, fieldName, errorId) {
             const inputs = document.querySelectorAll(`#${containerId} input[type="text"]`);
             const errDiv = document.getElementById(errorId);
+            const greske = [];
 
             const vrijednosti = Array.from(inputs)
                 .map(i => i.value.trim().toLowerCase())
                 .filter(v => v !== '');
 
             const duplikati = vrijednosti.filter((v, i) => vrijednosti.indexOf(v) !== i);
-
             if (duplikati.length > 0) {
-                errDiv.textContent = `Duplikat: "${duplikati[0]}" je već unesen/a.`;
-
-                inputs.forEach(inp => {
-                    inp.closest('.unos-tag-input-wrap').style.borderColor =
-                        (inp.value.trim().toLowerCase() !== '' &&
-                         duplikati.includes(inp.value.trim().toLowerCase()))
-                            ? '#dc2626'
-                            : '';
-                });
-            } else {
-                errDiv.textContent = '';
-                inputs.forEach(inp => inp.closest('.unos-tag-input-wrap').style.borderColor = '');
+                greske.push(`Duplikat: "${duplikati[0]}" je već unesen/a.`);
             }
+
+            const predugo = Array.from(inputs).find(i => i.value.trim().length > 100);
+            if (predugo) {
+                greske.push('Svaki unos može imati najviše 100 slova.');
+            }
+
+            errDiv.textContent = greske.join(' ');
+
+            inputs.forEach(inp => {
+                const vrijednost = inp.value.trim().toLowerCase();
+                const imaDuplikat = vrijednost !== '' && duplikati.includes(vrijednost);
+                const jePredugo = inp.value.trim().length > 100;
+                inp.closest('.unos-tag-input-wrap').style.borderColor = (imaDuplikat || jePredugo) ? '#dc2626' : '';
+            });
 
             document.getElementById('submitBtn').disabled =
                 document.getElementById('alergija-error').textContent !== '' ||
@@ -572,8 +582,8 @@
         }
 
         document.getElementById('unosForm').addEventListener('submit', function(e) {
-            provjeriDuplicate('alergije-container', 'Alergije', 'alergija-error');
-            provjeriDuplicate('bolesti-container', 'Bolesti', 'bolest-error');
+            provjeriPolja('alergije-container', 'Alergije', 'alergija-error');
+            provjeriPolja('bolesti-container', 'Bolesti', 'bolest-error');
 
             if (document.getElementById('submitBtn').disabled) {
                 e.preventDefault();

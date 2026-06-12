@@ -89,7 +89,7 @@
                 else if (Model.Grupe.Count == 1)
                 {
                     var grupa = Model.Grupe.First();
-                    <div class="group-card">
+                    <a class="group-card group-card-link" asp-controller="Grupa" asp-action="MojaGrupa">
                         <h3>Moja grupa</h3>
                         <div class="group-info">
                             <div class="group-avatar">🦋</div>
@@ -97,9 +97,8 @@
                                 <h4>@grupa.ImeGrupe</h4>
                                 <p>@grupa.Djeca.Count(d => d.Aktivno) djece</p>
                             </div>
-                            <a class="group-arrow" asp-controller="Grupa" asp-action="MojaGrupa">→</a>
                         </div>
-                    </div>
+                    </a>
                 }
                 else
                 {
@@ -107,14 +106,13 @@
                         <h3>Moje grupe</h3>
                         @foreach (var grupa in Model.Grupe)
                         {
-                            <div class="group-info">
+                            <a class="group-info group-info-link" asp-controller="Grupa" asp-action="MojaGrupa">
                                 <div class="group-avatar">🦋</div>
                                 <div>
                                     <h4>@grupa.ImeGrupe</h4>
                                     <p>@grupa.Djeca.Count(d => d.Aktivno) djece</p>
                                 </div>
-                                <a class="group-arrow" asp-controller="Grupa" asp-action="MojaGrupa">→</a>
-                            </div>
+                            </a>
                         }
                     </div>
                 }
@@ -183,6 +181,33 @@
     /* === ODGAJATELJ UI STANDARDIZACIJA === */
     body {
         background: #eef3ff !important;
+    }
+
+    .group-card-link,
+    .group-info-link {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .group-card-link {
+        display: block;
+    }
+
+    .group-info-link {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        border-radius: 12px;
+        padding: 8px 0;
+    }
+
+    .group-card-link:hover,
+    .group-info-link:hover {
+        color: inherit;
+        text-decoration: none;
+        transform: translateY(-2px);
     }
 
     .educator-page,
