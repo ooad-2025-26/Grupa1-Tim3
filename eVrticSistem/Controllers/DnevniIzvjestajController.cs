@@ -28,6 +28,7 @@ namespace EVrtic.Controllers
 
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             var applicationDbContext = _context.DnevniIzvjestaji.Include(d => d.Dijete);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -37,6 +38,7 @@ namespace EVrtic.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -58,6 +60,7 @@ namespace EVrtic.Controllers
 
         public IActionResult Create()
         {
+            return Forbid();
             ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
             return View();
         }
@@ -69,6 +72,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Datum,Dorucak,StatusDorucka,Rucak,StatusRucka,SpavanjeMinuta,VrijemeDolaska,VrijemeOdlaska,NapomenaAktivnosti,DatumKreiranja,DijeteId")] DnevniIzvjestaj dnevniIzvjestaj)
         {
+            return Forbid();
             if (ModelState.IsValid)
             {
                 _context.Add(dnevniIzvjestaj);
@@ -82,6 +86,7 @@ namespace EVrtic.Controllers
         // GET: DnevniIzvjestaj/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -103,6 +108,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Datum,Dorucak,StatusDorucka,Rucak,StatusRucka,SpavanjeMinuta,VrijemeDolaska,VrijemeOdlaska,NapomenaAktivnosti,DatumKreiranja,DijeteId")] DnevniIzvjestaj dnevniIzvjestaj)
         {
+            return Forbid();
             if (id != dnevniIzvjestaj.Id)
             {
                 return NotFound();
@@ -135,6 +141,7 @@ namespace EVrtic.Controllers
         // GET: DnevniIzvjestaj/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -156,6 +163,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
             var dnevniIzvjestaj = await _context.DnevniIzvjestaji.FindAsync(id);
             if (dnevniIzvjestaj != null)
             {

@@ -29,13 +29,12 @@ namespace EVrtic.Controllers
             _emailService = emailService;
         }
 
-        // ═══════════════════════════════════════════════════════════════════
-        // ADMINISTRATOR — CRUD nad obavijestima (zadržano iz scaffolda)
-        // ═══════════════════════════════════════════════════════════════════
+       
 
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             var applicationDbContext = _context.Obavijesti
                 .Include(o => o.Odgajatelj)
                 .Include(o => o.Roditelj);
@@ -44,6 +43,7 @@ namespace EVrtic.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var obavijest = await _context.Obavijesti
                 .Include(o => o.Odgajatelj)
@@ -56,6 +56,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public IActionResult Create()
         {
+            return Forbid();
             ViewData["OdgajateljId"] = new SelectList(_context.Odgajatelji, "Id", "Email");
             ViewData["RoditeljId"]   = new SelectList(_context.Roditelji,   "Id", "Email");
             return View();
@@ -68,6 +69,7 @@ namespace EVrtic.Controllers
             [Bind("Id,Naslov,Sadrzaj,DatumKreiranja,DatumSlanja,KanalSlanja,StatusObavijesti,RoditeljId,OdgajateljId")]
             Obavijest obavijest)
         {
+            return Forbid();
             if (ModelState.IsValid)
             {
                 _context.Add(obavijest);
@@ -82,6 +84,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var obavijest = await _context.Obavijesti.FindAsync(id);
             if (obavijest == null) return NotFound();
@@ -97,6 +100,7 @@ namespace EVrtic.Controllers
             [Bind("Id,Naslov,Sadrzaj,DatumKreiranja,DatumSlanja,KanalSlanja,StatusObavijesti,RoditeljId,OdgajateljId")]
             Obavijest obavijest)
         {
+            return Forbid();
             if (id != obavijest.Id) return NotFound();
             if (ModelState.IsValid)
             {
@@ -120,6 +124,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var obavijest = await _context.Obavijesti
                 .Include(o => o.Odgajatelj)

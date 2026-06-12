@@ -24,6 +24,7 @@ namespace EVrtic.Controllers
         // GET: Odgajatelj
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             return View(await _context.Odgajatelji.ToListAsync());
         }
 
@@ -57,6 +58,7 @@ namespace EVrtic.Controllers
         // GET: Odgajatelj/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
 
             var odgajatelj = await _context.Odgajatelji
@@ -69,6 +71,7 @@ namespace EVrtic.Controllers
         // GET: Odgajatelj/Create
         public IActionResult Create()
         {
+            return Forbid();
             return View();
         }
 
@@ -77,6 +80,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Odgajatelj odgajatelj)
         {
+            return Forbid();
             if (ModelState.IsValid)
             {
                 _context.Add(odgajatelj);
@@ -89,6 +93,7 @@ namespace EVrtic.Controllers
         // GET: Odgajatelj/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
 
             var odgajatelj = await _context.Odgajatelji.FindAsync(id);
@@ -101,6 +106,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Odgajatelj odgajatelj)
         {
+            return Forbid();
             if (id != odgajatelj.Id) return NotFound();
 
             if (ModelState.IsValid)
@@ -123,6 +129,7 @@ namespace EVrtic.Controllers
         // GET: Odgajatelj/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
 
             var odgajatelj = await _context.Odgajatelji

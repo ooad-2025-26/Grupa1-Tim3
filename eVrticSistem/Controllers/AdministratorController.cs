@@ -24,31 +24,19 @@ namespace eVrticSistem.Controllers
         // GET: Administrator
         public async Task<IActionResult> Index()
         {
-            return NotFound();
+            return Forbid();
         }
 
         // GET: Administrator/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var administrator = await _context.Administratori
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (administrator == null)
-            {
-                return NotFound();
-            }
-
-            return View(administrator);
+            return Forbid();
         }
 
         // GET: Administrator/Create
         public IActionResult Create()
         {
-            return NotFound();
+            return Forbid();
         }
 
         // POST: Administrator/Create
@@ -58,19 +46,13 @@ namespace eVrticSistem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Administrator administrator)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(administrator);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(administrator);
+            return Forbid();
         }
 
         // GET: Administrator/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return NotFound();
+            return Forbid();
         }
 
         // POST: Administrator/Edit/5
@@ -80,32 +62,7 @@ namespace eVrticSistem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Administrator administrator)
         {
-            if (id != administrator.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(administrator);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AdministratorExists(administrator.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(administrator);
+            return Forbid();
         }
 
         // GET: Administrator/Delete/5

@@ -24,34 +24,19 @@ namespace EVrtic.Controllers
         // GET: AlergijaDjeteta
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.AlergijeDjece.Include(a => a.Dijete);
-            return View(await applicationDbContext.ToListAsync());
+            return Forbid();
         }
 
         // GET: AlergijaDjeteta/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var alergijaDjeteta = await _context.AlergijeDjece
-                .Include(a => a.Dijete)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (alergijaDjeteta == null)
-            {
-                return NotFound();
-            }
-
-            return View(alergijaDjeteta);
+            return Forbid();
         }
 
         // GET: AlergijaDjeteta/Create
         public IActionResult Create()
         {
-            ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
-            return View();
+            return Forbid();
         }
 
         // POST: AlergijaDjeteta/Create
@@ -61,31 +46,13 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Naziv,DijeteId")] AlergijaDjeteta alergijaDjeteta)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(alergijaDjeteta);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod", alergijaDjeteta.DijeteId);
-            return View(alergijaDjeteta);
+            return Forbid();
         }
 
         // GET: AlergijaDjeteta/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var alergijaDjeteta = await _context.AlergijeDjece.FindAsync(id);
-            if (alergijaDjeteta == null)
-            {
-                return NotFound();
-            }
-            ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod", alergijaDjeteta.DijeteId);
-            return View(alergijaDjeteta);
+            return Forbid();
         }
 
         // POST: AlergijaDjeteta/Edit/5
@@ -95,52 +62,13 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Naziv,DijeteId")] AlergijaDjeteta alergijaDjeteta)
         {
-            if (id != alergijaDjeteta.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(alergijaDjeteta);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AlergijaDjetetaExists(alergijaDjeteta.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod", alergijaDjeteta.DijeteId);
-            return View(alergijaDjeteta);
+            return Forbid();
         }
 
         // GET: AlergijaDjeteta/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var alergijaDjeteta = await _context.AlergijeDjece
-                .Include(a => a.Dijete)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (alergijaDjeteta == null)
-            {
-                return NotFound();
-            }
-
-            return View(alergijaDjeteta);
+            return Forbid();
         }
 
         // POST: AlergijaDjeteta/Delete/5

@@ -133,6 +133,7 @@ namespace eVrticSistem.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             return View(await _context.Roditelji
                 .Include(r => r.Djeca)
                 .ToListAsync());
@@ -172,6 +173,7 @@ namespace eVrticSistem.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var roditelj = await _context.Roditelji.FirstOrDefaultAsync(m => m.Id == id);
             if (roditelj == null) return NotFound();
@@ -179,8 +181,13 @@ namespace eVrticSistem.Controllers
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            return Forbid();
+            View();
 
+
+        }
         [HttpPost, ValidateAntiForgeryToken]
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Create([Bind("Id,ImePrezime,Email,Uloga,StatusNaloga")] Roditelj roditelj)
@@ -192,6 +199,7 @@ namespace eVrticSistem.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var roditelj = await _context.Roditelji.FindAsync(id);
             if (roditelj == null) return NotFound();
@@ -215,6 +223,7 @@ namespace eVrticSistem.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var rodatelj = await _context.Roditelji.FirstOrDefaultAsync(m => m.Id == id);
             if (rodatelj == null) return NotFound();

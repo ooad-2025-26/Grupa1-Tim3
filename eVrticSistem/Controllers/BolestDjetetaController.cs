@@ -22,6 +22,7 @@ namespace EVrtic.Controllers
         // GET: BolestDjeteta
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             var applicationDbContext = _context.BolestiDjece.Include(b => b.Dijete);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -29,6 +30,7 @@ namespace EVrtic.Controllers
         // GET: BolestDjeteta/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -48,6 +50,7 @@ namespace EVrtic.Controllers
         // GET: BolestDjeteta/Create
         public IActionResult Create()
         {
+            return Forbid();
             ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
             return View();
         }
@@ -59,6 +62,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Naziv,DijeteId")] BolestDjeteta bolestDjeteta)
         {
+            return Forbid();
             if (ModelState.IsValid)
             {
                 _context.Add(bolestDjeteta);
@@ -72,6 +76,7 @@ namespace EVrtic.Controllers
         // GET: BolestDjeteta/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -93,6 +98,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Naziv,DijeteId")] BolestDjeteta bolestDjeteta)
         {
+            return Forbid();
             if (id != bolestDjeteta.Id)
             {
                 return NotFound();
@@ -125,6 +131,7 @@ namespace EVrtic.Controllers
         // GET: BolestDjeteta/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();

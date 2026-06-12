@@ -26,6 +26,7 @@ namespace EVrtic.Controllers
         // GET: SazetakAktivnosti
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             var applicationDbContext = _context.SazeciAktivnosti.Include(s => s.Dijete);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -33,6 +34,7 @@ namespace EVrtic.Controllers
         // GET: SazetakAktivnosti/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -53,6 +55,7 @@ namespace EVrtic.Controllers
         // GET: SazetakAktivnosti/Create
         public IActionResult Create()
         {
+            return Forbid();
             ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
             return View();
         }
@@ -62,6 +65,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,DatumPocetka,DatumKraja,TipSazetka,BrojObroka,BrojDolazaka,AgregiranoSpavanjeMinuta,OsnovneNapomene,DatumGenerisanja,DijeteId")] SazetakAktivnosti sazetakAktivnosti)
         {
+            return Forbid();
             if (ModelState.IsValid)
             {
                 _context.Add(sazetakAktivnosti);
@@ -76,6 +80,7 @@ namespace EVrtic.Controllers
         // GET: SazetakAktivnosti/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -97,6 +102,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,DatumPocetka,DatumKraja,TipSazetka,BrojObroka,BrojDolazaka,AgregiranoSpavanjeMinuta,OsnovneNapomene,DatumGenerisanja,DijeteId")] SazetakAktivnosti sazetakAktivnosti)
         {
+            return Forbid();
             if (id != sazetakAktivnosti.Id)
             {
                 return NotFound();
@@ -129,6 +135,7 @@ namespace EVrtic.Controllers
         // GET: SazetakAktivnosti/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -151,6 +158,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
             var sazetakAktivnosti = await _context.SazeciAktivnosti.FindAsync(id);
 
             if (sazetakAktivnosti != null)

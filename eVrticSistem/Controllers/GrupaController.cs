@@ -181,6 +181,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var grupa = await _context.Grupe
                 .Include(g => g.Odgajatelj)

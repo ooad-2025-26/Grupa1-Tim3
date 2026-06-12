@@ -27,6 +27,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Index()
         {
+            return Forbid();
             var applicationDbContext = _context.EvidencijeDolaskaOdlaska.Include(e => e.Dijete).Include(e => e.DnevniQRCode);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -35,6 +36,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Details(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -56,6 +58,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public IActionResult Create()
         {
+            return Forbid();
             ViewData["DijeteId"] = new SelectList(_context.Djeca, "Id", "IdentifikacioniKod");
             ViewData["DnevniQRCodeId"] = new SelectList(_context.DnevniQRCodovi, "Id", "VrijednostKoda");
             return View();
@@ -68,6 +71,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VrijemeDogadjaja,TipDogadjaja,UneseniKodDjeteta,ValidanQRKod,KodDjetetaIspravan,StatusEvidencije,DijeteId,DnevniQRCodeId")] EvidencijaDolaskaOdlaska evidencijaDolaskaOdlaska)
         {
+            return Forbid();
             if (ModelState.IsValid)
             {
                 _context.Add(evidencijaDolaskaOdlaska);
@@ -83,6 +87,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();
@@ -105,6 +110,7 @@ namespace EVrtic.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,VrijemeDogadjaja,TipDogadjaja,UneseniKodDjeteta,ValidanQRKod,KodDjetetaIspravan,StatusEvidencije,DijeteId,DnevniQRCodeId")] EvidencijaDolaskaOdlaska evidencijaDolaskaOdlaska)
         {
+            return Forbid();
             if (id != evidencijaDolaskaOdlaska.Id)
             {
                 return NotFound();
@@ -139,6 +145,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null)
             {
                 return NotFound();

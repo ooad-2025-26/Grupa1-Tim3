@@ -415,24 +415,20 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public IActionResult Create()
         {
-            ViewData["GrupaId"] = new SelectList(_context.Grupe, "Id", "ImeGrupe");
-            ViewData["RoditeljId"] = new SelectList(_context.Roditelji, "Id", "Email");
-            return View();
+            return Forbid();
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Create([Bind("Id,ImePrezime,IdentifikacioniKod,DatumRodjenja,DodatnaNapomena,Aktivno,GrupaId,RoditeljId")] Dijete dijete)
         {
-            if (ModelState.IsValid) { _context.Add(dijete); await _context.SaveChangesAsync(); return RedirectToAction(nameof(Index)); }
-            ViewData["GrupaId"] = new SelectList(_context.Grupe, "Id", "ImeGrupe", dijete.GrupaId);
-            ViewData["RoditeljId"] = new SelectList(_context.Roditelji, "Id", "Email", dijete.RoditeljId);
-            return View(dijete);
+            return Forbid();
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var dijete = await _context.Djeca.FindAsync(id);
             if (dijete == null) return NotFound();
@@ -445,6 +441,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ImePrezime,IdentifikacioniKod,DatumRodjenja,DodatnaNapomena,Aktivno,GrupaId,RoditeljId")] Dijete dijete)
         {
+            return Forbid();
             if (id != dijete.Id) return NotFound();
             if (ModelState.IsValid)
             {
@@ -460,6 +457,7 @@ namespace EVrtic.Controllers
         [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> Delete(int? id)
         {
+            return Forbid();
             if (id == null) return NotFound();
             var dijete = await _context.Djeca.Include(d => d.Grupa).Include(d => d.Roditelj).FirstOrDefaultAsync(m => m.Id == id);
             if (dijete == null) return NotFound();
